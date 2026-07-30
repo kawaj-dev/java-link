@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Link | コードを左から読む</title>
+    <link rel="stylesheet"
+          th:href="@{/css/style.css(v='quiz-three-stage-2')}"
+          href="/css/style.css?v=quiz-three-stage-2">
+</head>
+<body>
+<main class="quiz-page quiz-course-page">
+    <nav class="page-home-navigation" aria-label="ページ案内">
+        <a th:href="@{/}" href="/">← Java Linkトップへ</a>
+    </nav>
+    <header class="page-header quiz-course-header">
+        <p class="label">BEGINNER JAVA LESSON</p>
+        <h1>Java Link</h1>
+    </header>
+
+    <div id="quiz-workspace" class="quiz-workspace">
+        <!-- 左側では、学習中も完成プログラムの全体像を常に見せます。 -->
+        <section class="quiz-program-pane" aria-labelledby="program-overview-title">
+            <div class="quiz-program-intro">
+                <p>今回つくるプログラム</p>
+                <h2 id="program-overview-title">「Hello」と表示するプログラム</h2>
+            </div>
+
+            <div class="quiz-full-code" aria-label="完成するJavaコード">
+                <div class="quiz-full-code-line"
+                     th:classappend="|${stageStates[0].current ? ' quiz-full-code-line--current' : ''}${stageStates[0].completed ? ' quiz-full-code-line--completed' : ''}|">
+                    <span class="syntax-keyword">public class</span> Main {
+                    <span class="quiz-stage-check"
+                          th:if="${stageStates[0].completed == true}"
+                          aria-label="Stage 1 理解済み">✓</span>
+                </div>
+                <div class="quiz-full-code-line quiz-full-code-indent-one"
+                     th:classappend="|${stageStates[1].current ? ' quiz-full-code-line--current' : ''}${stageStates[1].completed ? ' quiz-full-code-line--completed' : ''}|">
+                    <span class="syntax-keyword">public static void</span> main(String[] args) {
+                    <span class="quiz-stage-check"
+                          th:if="${stageStates[1].completed == true}"
+                          aria-label="Stage 2 理解済み">✓</span>
+                </div>
+                <div class="quiz-full-code-line quiz-full-code-indent-two"
+                     th:classappend="|${stageStates[2].current ? ' quiz-full-code-line--current' : ''}${stageStates[2].completed ? ' quiz-full-code-line--completed' : ''}|">
+                    System.out.println(<span class="syntax-string">"Hello"</span>);
+                    <span class="quiz-stage-check"
+                          th:if="${stageStates[2].completed == true}"
+                          aria-label="Stage 3 理解済み">✓</span>
+                </div>
+                <div class="quiz-full-code-line quiz-full-code-indent-one">}</div>
+                <div class="quiz-full-code-line">}</div>
+            </div>
+
+            <section class="quiz-console-panel" aria-labelledby="console-title" aria-live="polite">
+                <h2 id="console-title">Console</h2>
+                <pre class="console-output"><code
+                        th:text="${programRunResult != null and programRunResult.success
+                            ? programRunResult.consoleOutput
+                            : '実行すると、ここに結果が表示されます。'}">実行すると、ここに結果が表示されます。</code></pre>
+            </section>
+
+            <section class="quiz-run-panel" aria-labelledby="run-title">
+                <h2 id="run-title">プログラム実行</h2>
+                <form th:action="@{/quiz/run}" method="post">
+                    <button id="quiz-run-button"
+                            class="run-button"
+                            type="submit"
+                            th:disabled="${lessonViewModel.runEnabled == false}"
+                            th:attr="data-run-ready=${lessonViewModel.runEnabled},
+                                     aria-disabled=${lessonViewModel.runEnabled == false}">
+                        ▶ 実行
+                    </button>
+                </form>
+                <p class="run-help"
+                   th:if="${lessonViewModel.runEnabled == false}">
+                    3つのステージをすべて読むと実行できます。
+                </p>
+                <div class="code-complete"
+                     th:if="${lessonViewModel.codeComplete == true}"
+                     aria-live="polite">
+                    <p class="code-complete-title">Code Complete!</p>
+                    <p>完成プログラムを左から読み終えました。</p>
+                </div>
+            </section>
+        </section>
+
+        <!-- 右側では、現在の1ステージだけを左から読み進めます。 -->
+        <section class="quiz-learning-pane" aria-labelledby="current-stage-title">
+            <header class="quiz-stage-header">
+                <p th:text="|Stage ${currentStage.order} / ${stageCount}|">Stage 1 / 3</p>
+                <h2 id="current-stage-title" th:text="${currentStage.title}">Mainクラスを作る</h2>
+            </header>
+
+            <section class="code-area quiz-stage-code" aria-labelledby="stage-code-title">
+                <h3 id="stage-code-title">現在学習するコード</h3>
+                <div class="reading-code-scroll">
+                    <div class="reading-code-line">
+                        <div class="reading-code-unit"
+                             th:each="item : ${readingItems}"
+                             th:classappend="|${item.current ? ' reading-code-unit--current' : ''}${item.completed ? ' reading-code-unit--completed' : ''}${item.stepId == 'string-array' ? ' reading-code-unit--parameter-start' : ''}|">
+                            <span class="reading-code-token">
+                                <span th:if="${item.stepId == 'string-array'}">(</span><button
+                                    th:if="${item.keyword == 'public' or item.keyword == 'static' or item.keyword == 'void' or item.keyword == 'main' or item.keyword == 'String[]' or item.keyword == 'args'}"
+                                    class="glossary-code-term"
+                                    type="button"
+                                    th:attr="data-glossary-term=${item.keyword},
+                                             aria-label=|${item.keyword}の意味をJavaことば図鑑で確認する|"
+                                    th:text="${item.keyword}">public</button><span
+                                    th:unless="${item.keyword == 'public' or item.keyword == 'static' or item.keyword == 'void' or item.keyword == 'main' or item.keyword == 'String[]' or item.keyword == 'args'}"
+                                    th:text="${item.keyword}">class</span><span
+                                    th:if="${item.stepId == 'args'}">)</span>
+                            </span>
+                            <span class="reading-code-meaning quiz-card-target"
+                                  th:attr="data-card-target=${item.stepId}"
+                                  th:classappend="${item.completed ? ' quiz-card-target--placed' : ''}"
+                                  th:text="${item.completed ? item.meaning : ''}"></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="reading-card-area"
+                     th:if="${stageComplete == false}"
+                     aria-label="意味カードの選択">
+                <section class="card-selection-area"
+                         aria-labelledby="card-selection-title">
+                    <h3 id="card-selection-title">カード選択場所</h3>
+                    <div class="answer-grid">
+                        <form th:each="option : ${shuffledOptions}"
+                              th:action="@{/quiz/answer}"
+                              method="post">
+                            <button class="answer-card"
+                                    th:classappend="|${answered == true and selectedOption != null and selectedOption == option.id ? ' answer-option--selected' : ''}${answered == true and correct == false and selectedOption == option.id ? ' answer-option--incorrect' : ''}|"
+                                    type="submit"
+                                    name="selectedOption"
+                                    th:value="${option.id}"
+                                    th:attr="data-quiz-correct=${option.id == lessonViewModel.currentStep.question.correctOptionId},
+                                             data-target-step=${lessonViewModel.currentStep.id}"
+                                    th:text="${option.text}">
+                                意味カード
+                            </button>
+                        </form>
+                    </div>
+
+                    <section class="result-area quiz-incorrect-message"
+                             th:if="${answered == true and correct == false}"
+                             th:classappend="' incorrect'"
+                             aria-live="polite">
+                        <p class="result-message">もう一度考えてみましょう。</p>
+                    </section>
+                </section>
+
+                <section class="card-waiting-area"
+                         aria-labelledby="card-waiting-title">
+                    <h3 id="card-waiting-title">これから使うカード</h3>
+                    <div class="card-waiting-grid">
+                        <div class="answer-card waiting-card"
+                             th:each="item : ${readingItems}"
+                             th:classappend="|${item.completed ? ' waiting-card--placed' : ''}${selectionOptionIds.contains(item.optionId) ? ' waiting-card--in-selection' : ''}|">
+                            <span th:text="${item.meaning}">外から使える</span>
+                            <small th:if="${item.completed == true}">配置済み</small>
+                            <small th:if="${item.completed == false and selectionOptionIds.contains(item.optionId)}">
+                                選択場所へ移動中
+                            </small>
+                        </div>
+                    </div>
+                </section>
+            </section>
+
+            <section class="circuit-area quiz-stage-circuit-area"
+                     aria-labelledby="circuit-title">
+                <h3 id="circuit-title">ステージ回路</h3>
+                <div class="circuit-scroll">
+                    <ol class="circuit quiz-circuit"
+                        th:classappend="|${stageComplete ? ' quiz-circuit--complete' : ''}${currentStage.order == stageCount and stageComplete ? ' quiz-final-stage-circuit--complete' : ''}|">
+                        <li class="circuit-step lesson-step"
+                            th:each="item : ${readingItems}"
+                            th:classappend="|${item.completed ? ' lesson-step--completed' : ''}${item.current and not item.completed ? ' lesson-step--current' : ''}|">
+                            <span class="circuit-node lesson-bulb" aria-hidden="true"></span>
+                            <span class="circuit-label" th:text="${item.keyword}">public</span>
+                            <span class="visually-hidden" th:if="${item.completed}">完了</span>
+                            <span class="visually-hidden"
+                                  th:if="${item.current and not item.completed}">
+                                現在学習中
+                            </span>
+                        </li>
+                    </ol>
+                </div>
+            </section>
+
+            <section class="quiz-stage-review"
+                     th:if="${stageComplete == true}"
+                     aria-labelledby="stage-review-title">
+                <p class="quiz-stage-complete-label">Stage Complete!</p>
+                <h3 id="stage-review-title" th:text="${currentStage.title}">Mainクラスを作る</h3>
+                <p th:text="${currentStage.reviewSummary}">ステージのまとめです。</p>
+                <dl class="quiz-stage-review-list">
+                    <div th:each="item : ${readingItems}">
+                        <dt th:text="${item.keyword}">public</dt>
+                        <dd>
+                            <strong th:text="${item.meaning}">外から使える</strong>
+                            <span th:text="|（${item.roleLabel}）|">（役割）</span>
+                        </dd>
+                    </div>
+                </dl>
+                <form th:if="${hasNextStage == true}"
+                      th:action="@{/quiz/stage/next}"
+                      method="post">
+                    <button class="next-button" type="submit">次のステージへ →</button>
+                </form>
+                <p class="quiz-closing-brace-note"
+                   th:if="${currentStage.order == 3}">
+                    1つ目の <code>}</code> はmainメソッドの終わり、
+                    2つ目の <code>}</code> はMainクラスの終わりです。
+                </p>
+            </section>
+
+            <section class="quiz-final-review"
+                     th:if="${lessonViewModel.consoleVisible == true}"
+                     aria-labelledby="reading-review-title">
+                <p class="step-label">REVIEW</p>
+                <h2 id="reading-review-title">完成プログラムを左から読む</h2>
+                <article th:each="state : ${stageStates}">
+                    <h3 th:text="|Stage ${state.stage.order}：${state.stage.title}|">Stage 1</h3>
+                    <code th:text="${state.stage.targetCode}">public class Main {</code>
+                    <p th:text="${state.stage.reviewSummary}">読み方のまとめ</p>
+                </article>
+                <div class="quiz-brace-review">
+                    <p><code>}</code> mainメソッドの終わり。</p>
+                    <p><code>}</code> Mainクラスの終わり。</p>
+                </div>
+            </section>
+
+            <section class="reset-area">
+                <form th:action="@{/quiz/reset}" method="post">
+                    <button class="reset-button" type="submit">最初からやり直す</button>
+                </form>
+            </section>
+        </section>
+
+    </div>
+</main>
+
+<script>
+    (() => {
+        const answerButtons =
+            Array.from(document.querySelectorAll(".card-selection-area .answer-card"));
+        const resetButton = document.querySelector(".reset-button");
+        const reducedMotion =
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        let isAnimating = false;
+
+        function wait(milliseconds) {
+            return new Promise((resolve) => setTimeout(resolve, milliseconds));
+        }
+
+        async function flyCorrectCard(button) {
+            const target = Array.from(
+                document.querySelectorAll(".quiz-card-target")
+            ).find((item) => item.dataset.cardTarget === button.dataset.targetStep);
+
+            if (!target) {
+                button.form.requestSubmit(button);
+                return;
+            }
+
+            isAnimating = true;
+            document.body.classList.add("quiz-card-animation-active");
+            answerButtons.forEach((item) => item.disabled = true);
+            if (resetButton) {
+                resetButton.disabled = true;
+            }
+
+            const codeScroll = target.closest(".reading-code-scroll");
+            if (codeScroll) {
+                const targetRect = target.getBoundingClientRect();
+                const scrollRect = codeScroll.getBoundingClientRect();
+                codeScroll.scrollLeft +=
+                    targetRect.left + targetRect.width / 2
+                    - scrollRect.left - scrollRect.width / 2;
+                await wait(reducedMotion ? 1 : 60);
+            }
+
+            const start = button.getBoundingClientRect();
+            const destination = target.getBoundingClientRect();
+            const flyingCard = button.cloneNode(true);
+            flyingCard.disabled = true;
+            flyingCard.classList.remove(
+                "answer-option--selected",
+                "answer-option--correct",
+                "answer-option--incorrect"
+            );
+            flyingCard.classList.add("stage-flying-card", "quiz-flying-card");
+            flyingCard.style.left = `${start.left}px`;
+            flyingCard.style.top = `${start.top}px`;
+            flyingCard.style.width = `${start.width}px`;
+            flyingCard.style.height = `${start.height}px`;
+            flyingCard.style.transform = "scale(0.9)";
+            document.body.appendChild(flyingCard);
+            flyingCard.getBoundingClientRect();
+
+            const destinationX =
+                destination.left + destination.width / 2
+                - start.left - start.width / 2;
+            const destinationY =
+                destination.top + destination.height / 2
+                - start.top - start.height / 2;
+
+            requestAnimationFrame(() => {
+                flyingCard.style.transform =
+                    `translate(${destinationX}px, ${destinationY}px) scale(0.8)`;
+                flyingCard.style.opacity = "0.94";
+            });
+
+            await wait(reducedMotion ? 40 : 650);
+            flyingCard.style.transitionDuration = reducedMotion ? "10ms" : "90ms";
+            flyingCard.style.transform =
+                `translate(${destinationX}px, ${destinationY}px) scale(0.76)`;
+            flyingCard.classList.add("quiz-flying-card--arrived");
+            target.classList.add("quiz-card-target--arriving");
+            await wait(reducedMotion ? 10 : 90);
+            flyingCard.remove();
+            button.disabled = false;
+            button.form.requestSubmit(button);
+        }
+
+        answerButtons.forEach((button) => {
+            button.addEventListener("click", (event) => {
+                if (isAnimating) {
+                    event.preventDefault();
+                    return;
+                }
+                if (button.dataset.quizCorrect !== "true") {
+                    return;
+                }
+                event.preventDefault();
+                flyCorrectCard(button);
+            });
+        });
+
+    })();
+</script>
+<div th:replace="~{fragments/java-glossary :: glossary}"></div>
+</body>
+</html>

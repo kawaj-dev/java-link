@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage 2 | Java Link</title>
+    <link rel="stylesheet" href="/css/style.css?v=stage2-code-editor-2">
+</head>
+<body>
+<main class="stage-page stage2-page">
+    <nav class="page-home-navigation stage-page-navigation" aria-label="ページ案内">
+        <a href="/">← Java Linkトップへ</a>
+        <a href="/stage1">← Stage1へ戻る</a>
+    </nav>
+
+    <header class="stage-header">
+        <p class="stage-label">BEGINNER JAVA LESSON</p>
+        <h1>Java Link</h1>
+        <p class="stage-number">Stage 2</p>
+        <h2>mainメソッドを完成させよう</h2>
+        <p>カードを並べて、プログラムのスタート地点を作ってください。</p>
+    </header>
+
+    <section class="stage2-code-preview" aria-labelledby="class-code-title">
+        <h3 id="class-code-title">WelcomeSignクラス</h3>
+        <div id="stage2-code-block" class="stage2-code-editor" aria-live="polite">
+            <div class="stage2-code-line">public class WelcomeSign {</div>
+            <div id="method-card-line" class="stage2-code-line stage2-code-indent-one">
+                <span id="method-cards" class="stage2-fixed-card-list"></span>
+                <span id="code-cursor" class="stage2-code-cursor" aria-hidden="true">│</span>
+            </div>
+            <div id="method-body-line" class="stage2-code-line stage2-code-indent-two" hidden></div>
+            <div id="method-closing-line" class="stage2-code-line stage2-code-indent-one" hidden>
+                <span id="closing-cards" class="stage2-fixed-card-list"></span>
+            </div>
+            <div class="stage2-code-line">}</div>
+        </div>
+    </section>
+
+    <section class="stage-builder" aria-labelledby="card-heading">
+        <h3 id="card-heading">コードカード</h3>
+        <div class="stage-card-list">
+            <button class="stage-code-card stage-card-keyword" type="button" data-code="public">public</button>
+            <button class="stage-code-card stage-card-keyword" type="button" data-code="static">static</button>
+            <button class="stage-code-card stage-card-keyword" type="button" data-code="void">void</button>
+            <button class="stage-code-card stage-card-class-name" type="button" data-code="main">main</button>
+            <button class="stage-code-card stage-card-class-name" type="button" data-code="(String[] args)">(String[] args)</button>
+            <button class="stage-code-card stage-card-symbol" type="button" data-code="{">{</button>
+            <button class="stage-code-card stage-card-symbol" type="button" data-code="}">}</button>
+        </div>
+
+        <div class="stage-action-list">
+            <button id="stage-reset-button" class="stage-reset-button" type="button">やり直す</button>
+        </div>
+
+        <div id="stage-result" class="stage-result" aria-live="polite"></div>
+            <a id="stage3-button" class="stage-run-button stage-next-button" href="/stage3" hidden>
+                Stage3へ進む
+            </a>
+    </section>
+</main>
+
+<script>
+    // 正解と、利用者が選んだカードを順番に管理します。
+    const correctOrder = ["public", "static", "void", "main", "(String[] args)", "{", "}"];
+    const selectedCodes = [];
+    const cards = document.querySelectorAll(".stage-code-card");
+    const cardList = document.querySelector(".stage-card-list");
+    const methodCardLine = document.getElementById("method-card-line");
+    const methodCards = document.getElementById("method-cards");
+    const methodBodyLine = document.getElementById("method-body-line");
+    const methodClosingLine = document.getElementById("method-closing-line");
+    const closingCards = document.getElementById("closing-cards");
+    const codeCursor = document.getElementById("code-cursor");
+    const codeBlock = document.getElementById("stage2-code-block");
+    const resetButton = document.getElementById("stage-reset-button");
+    const resultArea = document.getElementById("stage-result");
+    const stage3Button = document.getElementById("stage3-button");
+    let animationId = 0;
+    let isAnimating = false;
+    let errorTimerId;
+
+    // カードをランダムな順番に並べ替えます。
+    function shuffleCards() {
+        const shuffledCards = Array.from(cards);
+
+        for (let index = shuffledCards.length - 1; index > 0; index--) {
+            const randomIndex = Math.floor(Math.random() * (index + 1));
+            [shuffledCards[index], shuffledCards[randomIndex]] =
+                [shuffledCards[randomIndex], shuffledCards[index]];
+        }
+
+        shuffledCards.forEach((card) => cardList.appendChild(card));
+    }
+
+    function wait(milliseconds) {
+        return new Promise((resolve) => setTimeout(resolve, milliseconds));
+    }
+
+    // 到着したカードは、飛行用とは別の固定要素としてコード欄へ残します。
+    function addFixedCard(sourceCard) {
+        const fixedCard = document.createElement("span");
+        fixedCard.className = sourceCard.className;
+        fixedCard.classList.remove("stage-card-selected", "stage-card-incorrect");
+        fixedCard.classList.add("stage2-fixed-card");
+        fixedCard.textContent = sourceCard.dataset.code;
+        fixedCard.dataset.code = sourceCard.dataset.code;
+
+        if (sourceCard.dataset.code === "}") {
+            closingCards.appendChild(fixedCard);
+        } else {
+            methodCards.appendChild(fixedCard);
+        }
+    }
+
+    // 選んだ1枚を、現在位置からカーソルまで移動させます。
+    async function animateCard(card) {
+        const currentAnimationId = ++animationId;
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+        isAnimating = true;
+        cards.forEach((item) => {
+            item.disabled = true;
+        });
+        resetButton.disabled = true;
+
+        if (card.dataset.code === "}") {
+            methodClosingLine.hidden = false;
+            methodClosingLine.appendChild(codeCursor);
+        }
+
+        if (!reducedMotion) {
+            const start = card.getBoundingClientRect();
+            const destination = codeCursor.getBoundingClientRect();
+            const flyingCard = card.cloneNode(true);
+            flyingCard.disabled = false;
+            flyingCard.classList.add("stage-flying-card");
+            flyingCard.style.left = `${start.left}px`;
+            flyingCard.style.top = `${start.top}px`;
+            flyingCard.style.width = `${start.width}px`;
+            flyingCard.style.height = `${start.height}px`;
+            document.body.appendChild(flyingCard);
+
+            requestAnimationFrame(() => {
+                flyingCard.style.transform = `translate(${destination.left - start.left}px, ${destination.top - start.top}px)`;
+                flyingCard.style.opacity = "0";
+            });
+
+            await wait(300);
+            flyingCard.remove();
+        }
+
+        if (currentAnimationId !== animationId) {
+            return;
+        }
+
+        selectedCodes.push(card.dataset.code);
+        card.classList.add("stage-card-selected");
+        addFixedCard(card);
+
+        if (card.dataset.code === "{") {
+            methodBodyLine.hidden = false;
+            methodBodyLine.appendChild(codeCursor);
+        } else if (card.dataset.code === "}") {
+            methodBodyLine.appendChild(codeCursor);
+        }
+
+        if (selectedCodes.length === correctOrder.length) {
+            completeStage();
+            return;
+        }
+
+        cards.forEach((item) => {
+            item.disabled = item.classList.contains("stage-card-selected");
+        });
+        resetButton.disabled = false;
+        isAnimating = false;
+    }
+
+    // 7枚すべて正しく選べたとき、自動でStage2を完成させます。
+    async function completeStage() {
+        codeBlock.classList.add("stage2-code-complete");
+        resultArea.innerHTML = "<strong>正解！</strong><br>プログラムのスタート地点ができました。<br>Welcome Signに電気を流す準備が整いました。";
+        resultArea.className = "stage-result stage-result--success";
+        stage3Button.hidden = false;
+        resetButton.disabled = false;
+        isAnimating = false;
+
+        const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        await wait(reducedMotion ? 1 : 500);
+        codeBlock.classList.remove("stage2-code-complete");
+    }
+
+    // 今の順番ではないカードを一時的に示します。
+    function showIncorrectCard(card) {
+        clearTimeout(errorTimerId);
+        cards.forEach((card) => card.classList.remove("stage-card-incorrect"));
+        card.classList.add("stage-card-incorrect");
+        resultArea.textContent = "そのカードではありません。もう一度選んでみよう！";
+        resultArea.className = "stage-result stage-result--error";
+
+        errorTimerId = setTimeout(() => {
+            card.classList.remove("stage-card-incorrect");
+        }, 800);
+    }
+
+    // 回答を消して、もう一度挑戦できる状態へ戻します。
+    function resetStage() {
+        animationId++;
+        isAnimating = false;
+        clearTimeout(errorTimerId);
+        selectedCodes.length = 0;
+        cards.forEach((card) => {
+            card.disabled = false;
+            card.classList.remove("stage-card-selected", "stage-card-incorrect");
+        });
+        document.querySelectorAll(".stage-flying-card").forEach((card) => card.remove());
+        methodCards.replaceChildren();
+        closingCards.replaceChildren();
+        methodCardLine.appendChild(codeCursor);
+        methodBodyLine.hidden = true;
+        methodClosingLine.hidden = true;
+        codeBlock.classList.remove("stage2-code-complete");
+        resultArea.textContent = "";
+        resultArea.className = "stage-result";
+        stage3Button.hidden = true;
+        resetButton.disabled = false;
+        shuffleCards();
+    }
+
+    cards.forEach((card) => {
+        card.addEventListener("click", async () => {
+            if (isAnimating) {
+                return;
+            }
+
+            cards.forEach((item) => item.classList.remove("stage-card-incorrect"));
+            resultArea.textContent = "";
+            resultArea.className = "stage-result";
+
+            const expectedCode = correctOrder[selectedCodes.length];
+            if (card.dataset.code !== expectedCode) {
+                showIncorrectCard(card);
+                return;
+            }
+
+            await animateCard(card);
+        });
+    });
+
+    resetButton.addEventListener("click", () => {
+        if (isAnimating) {
+            return;
+        }
+        resetStage();
+    });
+
+    // ページを開いたときにカードを並べ替えます。
+    shuffleCards();
+</script>
+<div th:replace="~{fragments/java-glossary :: glossary}"></div>
+</body>
+</html>

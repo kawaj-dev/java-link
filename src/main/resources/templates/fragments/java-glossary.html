@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<body>
+<div th:fragment="glossary" class="java-glossary">
+    <button id="java-glossary-open"
+            class="java-glossary-open"
+            type="button"
+            aria-controls="java-glossary-panel"
+            aria-expanded="false">
+        📖 Javaことば図鑑
+    </button>
+
+    <div id="java-glossary-overlay" class="java-glossary-overlay" hidden></div>
+
+    <aside id="java-glossary-panel"
+           class="java-glossary-panel"
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="java-glossary-title"
+           hidden>
+        <header class="java-glossary-header">
+            <h2 id="java-glossary-title">📖 Javaことば図鑑</h2>
+            <button id="java-glossary-close"
+                    class="java-glossary-close"
+                    type="button"
+                    aria-label="Javaことば図鑑を閉じる">×</button>
+        </header>
+
+        <div class="java-glossary-search">
+            <span class="java-glossary-search-icon" aria-hidden="true">🔍</span>
+            <label class="visually-hidden" for="java-glossary-search">用語を検索</label>
+            <input id="java-glossary-search"
+                   class="java-glossary-search-input"
+                   type="search"
+                   placeholder="用語を検索"
+                   autocomplete="off">
+        </div>
+
+        <div class="java-glossary-list">
+            <article class="java-glossary-card" data-glossary-card-term="クラス">
+                <h3>📐 クラス</h3>
+                <p>設計図</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="フィールド">
+                <h3>🏷 フィールド</h3>
+                <p>情報を保存する場所</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="メソッド">
+                <h3>⚙ メソッド</h3>
+                <p>できること</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="public">
+                <h3>🌍 public</h3>
+                <p>外から使える</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="static">
+                <h3>📌 static</h3>
+                <p>実物を作らなくても使える</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="void">
+                <h3>📭 void</h3>
+                <p>戻り値を返さない</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="main">
+                <h3>🚪 main</h3>
+                <p>プログラムのスタート地点</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="String[]">
+                <h3>🧺 String[]</h3>
+                <p>文字列を複数まとめて受け取る型</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="args">
+                <h3>🏷 args</h3>
+                <p>mainメソッドが受け取る値につけた名前</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="private">
+                <h3>🔒 private</h3>
+                <p>自分だけ使える</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="getter">
+                <h3>📥 getter</h3>
+                <p>情報を教えてもらう窓口</p>
+            </article>
+            <article class="java-glossary-card" data-glossary-card-term="setter">
+                <h3>✏ setter</h3>
+                <p>変更をお願いする窓口</p>
+            </article>
+            <p id="java-glossary-no-results"
+               class="java-glossary-no-results"
+               role="status"
+               hidden>
+                該当する用語がありません
+            </p>
+        </div>
+    </aside>
+
+    <script>
+        (() => {
+            const openButton = document.getElementById("java-glossary-open");
+            const closeButton = document.getElementById("java-glossary-close");
+            const panel = document.getElementById("java-glossary-panel");
+            const overlay = document.getElementById("java-glossary-overlay");
+            const searchInput = document.getElementById("java-glossary-search");
+            const cards = Array.from(panel.querySelectorAll(".java-glossary-card"));
+            const noResults = document.getElementById("java-glossary-no-results");
+            let returnFocusElement = openButton;
+
+            cards.forEach(card => card.setAttribute("tabindex", "-1"));
+
+            function updateSearchResults(exactTerm = "") {
+                const keyword = searchInput.value.trim().toLocaleLowerCase();
+                let visibleCount = 0;
+
+                cards.forEach(card => {
+                    const cardText = card.textContent.toLocaleLowerCase();
+                    const cardTerm = card.dataset.glossaryCardTerm.toLocaleLowerCase();
+                    const matched = exactTerm !== ""
+                            ? cardTerm === exactTerm.toLocaleLowerCase()
+                            : keyword === "" || cardText.includes(keyword);
+                    card.hidden = !matched;
+                    if (matched) {
+                        visibleCount += 1;
+                    }
+                });
+
+                noResults.hidden = visibleCount !== 0;
+            }
+
+            function resetSearch() {
+                searchInput.value = "";
+                updateSearchResults();
+            }
+
+            function openGlossary(term = "", trigger = openButton) {
+                resetSearch();
+                returnFocusElement = trigger;
+                panel.hidden = false;
+                overlay.hidden = false;
+                document.body.classList.add("java-glossary-visible");
+                openButton.setAttribute("aria-expanded", "true");
+
+                if (term !== "") {
+                    searchInput.value = term;
+                    updateSearchResults(term);
+                    const matchedCard = cards.find(card => !card.hidden);
+                    if (matchedCard) {
+                        matchedCard.focus();
+                    }
+                } else {
+                    searchInput.focus();
+                }
+            }
+
+            function closeGlossary() {
+                resetSearch();
+                panel.hidden = true;
+                overlay.hidden = true;
+                document.body.classList.remove("java-glossary-visible");
+                openButton.setAttribute("aria-expanded", "false");
+                returnFocusElement.focus();
+                returnFocusElement = openButton;
+            }
+
+            openButton.addEventListener("click", () => openGlossary());
+            searchInput.addEventListener("input", () => updateSearchResults());
+            closeButton.addEventListener("click", closeGlossary);
+            overlay.addEventListener("click", closeGlossary);
+            document.addEventListener("click", event => {
+                const termElement = event.target.closest("[data-glossary-term]");
+                if (termElement) {
+                    openGlossary(termElement.dataset.glossaryTerm, termElement);
+                }
+            });
+            document.addEventListener("keydown", event => {
+                const termElement = event.target.closest?.("[data-glossary-term]");
+                if (termElement && (event.key === "Enter" || event.key === " ")) {
+                    event.preventDefault();
+                    openGlossary(termElement.dataset.glossaryTerm, termElement);
+                    return;
+                }
+                if (event.key === "Escape" && !panel.hidden) {
+                    closeGlossary();
+                }
+            });
+        })();
+    </script>
+</div>
+</body>
+</html>

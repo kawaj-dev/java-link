@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stage 1 | Java Link</title>
+    <link rel="stylesheet" href="/css/style.css?v=stage1-instant-cards-1">
+</head>
+<body>
+<main class="stage-page stage1-page">
+    <nav class="page-home-navigation stage-page-navigation" aria-label="ページ案内">
+        <a href="/">← Java Linkトップへ</a>
+    </nav>
+
+    <header class="stage-header">
+        <p class="stage-label">BEGINNER JAVA LESSON</p>
+        <h1>Java Link</h1>
+        <p class="stage-number">Stage 1</p>
+        <h2>WelcomeSignクラスを作ろう</h2>
+        <p>正しいカードを1枚ずつ選んで、WelcomeSignクラスを作ってください。</p>
+    </header>
+
+    <section class="stage2-code-preview" aria-labelledby="stage1-code-heading">
+        <h3 id="stage1-code-heading">WelcomeSignクラス</h3>
+        <div id="stage1-code-block" class="stage2-code-editor" aria-live="polite">
+            <div id="stage1-card-code" class="stage2-code-line">
+                <span id="stage1-fixed-cards" class="stage2-fixed-card-list"></span>
+                <span id="stage1-code-cursor" class="stage2-code-cursor" aria-label="入力位置">│</span>
+            </div>
+            <pre id="stage1-java-code" class="stage1-java-code" hidden><code><span class="stage3-syntax-keyword">public class</span> WelcomeSign {
+
+}</code></pre>
+        </div>
+        <p id="stage1-code-complete-message" class="stage3-code-complete-message"
+           role="status" aria-live="polite" hidden>✨ クラス完成！</p>
+    </section>
+
+    <section class="stage-card-area" aria-labelledby="stage1-card-heading">
+        <h3 id="stage1-card-heading">コードカード</h3>
+        <div id="stage1-card-list" class="stage-card-list">
+            <button class="stage-code-card stage-card-keyword" type="button" data-code="public">public</button>
+            <button class="stage-code-card stage-card-keyword" type="button" data-code="class">class</button>
+            <button class="stage-code-card stage-card-class-name" type="button"
+                    data-code="WelcomeSign">WelcomeSign</button>
+            <button class="stage-code-card stage-card-symbol" type="button" data-code="{">{</button>
+            <button class="stage-code-card stage-card-symbol" type="button" data-code="}">}</button>
+        </div>
+    </section>
+
+    <p id="stage1-result" class="stage-result" role="status" aria-live="polite"></p>
+
+    <div class="stage-actions">
+        <button id="stage1-reset" class="stage-reset-button" type="button">やり直す</button>
+        <a id="stage2-link" class="stage-run-button stage-next-button" href="/stage2" hidden>
+            ▶ Stage2へ進む
+        </a>
+    </div>
+</main>
+
+<script>
+    // Stage1で選ぶ正しい順番です。
+    const stage1CorrectOrder = ["public", "class", "WelcomeSign", "{", "}"];
+    const stage1CardList = document.getElementById("stage1-card-list");
+    const stage1Cards = Array.from(stage1CardList.querySelectorAll(".stage-code-card"));
+    const stage1FixedCards = document.getElementById("stage1-fixed-cards");
+    const stage1Cursor = document.getElementById("stage1-code-cursor");
+    const stage1CardCode = document.getElementById("stage1-card-code");
+    const stage1JavaCode = document.getElementById("stage1-java-code");
+    const stage1CodeCompleteMessage = document.getElementById("stage1-code-complete-message");
+    const stage1Result = document.getElementById("stage1-result");
+    const stage1Reset = document.getElementById("stage1-reset");
+    const stage2Link = document.getElementById("stage2-link");
+    const stage1ReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let stage1SelectedCodes = [];
+    let stage1Animating = false;
+    let stage1ErrorTimer;
+    let stage1AnimationVersion = 0;
+
+    function shuffleStage1Cards() {
+        const shuffled = [...stage1Cards].sort(() => Math.random() - 0.5);
+        shuffled.forEach(card => stage1CardList.appendChild(card));
+    }
+
+    function waitStage1(milliseconds) {
+        return new Promise(resolve => window.setTimeout(resolve, milliseconds));
+    }
+
+    function setStage1CardsDisabled(disabled) {
+        stage1Cards.forEach(card => {
+            card.disabled = disabled || card.classList.contains("stage-card-selected");
+        });
+    }
+
+    function createStage1FixedCard(sourceCard) {
+        const fixedCard = document.createElement("span");
+        fixedCard.className = sourceCard.className;
+        fixedCard.classList.remove("stage-card-selected", "stage-card-incorrect");
+        fixedCard.classList.add("stage2-fixed-card", "stage1-fixed-card");
+        fixedCard.textContent = sourceCard.dataset.code;
+        return fixedCard;
+    }
+
+    async function flyStage1Card(sourceCard) {
+        const version = stage1AnimationVersion;
+        stage1Animating = true;
+        setStage1CardsDisabled(true);
+        stage1Reset.disabled = true;
+
+        const start = sourceCard.getBoundingClientRect();
+        const destination = stage1Cursor.getBoundingClientRect();
+        const flyingCard = sourceCard.cloneNode(true);
+        flyingCard.classList.add("stage-flying-card");
+        flyingCard.style.left = `${start.left}px`;
+        flyingCard.style.top = `${start.top}px`;
+        flyingCard.style.width = `${start.width}px`;
+        flyingCard.style.height = `${start.height}px`;
+        document.body.appendChild(flyingCard);
+        flyingCard.getBoundingClientRect();
+        flyingCard.style.transform =
+            `translate(${destination.left - start.left}px, ${destination.top - start.top}px)`;
+        flyingCard.style.opacity = "0.92";
+
+        await waitStage1(stage1ReducedMotion ? 1 : 300);
+        if (version !== stage1AnimationVersion) {
+            flyingCard.remove();
+            return;
+        }
+
+        flyingCard.remove();
+        stage1FixedCards.appendChild(createStage1FixedCard(sourceCard));
+        sourceCard.classList.add("stage-card-selected");
+        sourceCard.textContent = `✓ ${sourceCard.dataset.code}`;
+        stage1SelectedCodes.push(sourceCard.dataset.code);
+
+        if (stage1SelectedCodes.length === stage1CorrectOrder.length) {
+            await completeStage1(version);
+        } else {
+            stage1Animating = false;
+            stage1Reset.disabled = false;
+            setStage1CardsDisabled(false);
+        }
+    }
+
+    async function completeStage1(version) {
+        stage1CodeCompleteMessage.hidden = false;
+        stage1FixedCards.classList.add("stage1-cards-complete");
+        await waitStage1(stage1ReducedMotion ? 20 : 650);
+        if (version !== stage1AnimationVersion) {
+            return;
+        }
+
+        stage1CardCode.classList.add("stage1-fade-out");
+        await waitStage1(stage1ReducedMotion ? 20 : 350);
+        if (version !== stage1AnimationVersion) {
+            return;
+        }
+
+        stage1CardCode.hidden = true;
+        stage1JavaCode.hidden = false;
+        stage1JavaCode.classList.add("stage1-fade-in");
+        stage1Result.innerHTML =
+            "WelcomeSignクラスができました。<br><br>"
+            + "次は、このクラスの中に<br>mainメソッドを作っていきます。";
+        stage2Link.hidden = false;
+        stage1Animating = false;
+        stage1Reset.disabled = false;
+    }
+
+    function showStage1Error(card) {
+        window.clearTimeout(stage1ErrorTimer);
+        card.classList.add("stage-card-incorrect");
+        stage1Result.textContent = "× そのカードではありません。もう一度選んでみよう！";
+        stage1ErrorTimer = window.setTimeout(() => {
+            card.classList.remove("stage-card-incorrect");
+        }, stage1ReducedMotion ? 80 : 800);
+    }
+
+    stage1Cards.forEach(card => {
+        card.addEventListener("click", () => {
+            if (stage1Animating || card.classList.contains("stage-card-selected")) {
+                return;
+            }
+
+            const expectedCode = stage1CorrectOrder[stage1SelectedCodes.length];
+            if (card.dataset.code !== expectedCode) {
+                showStage1Error(card);
+                return;
+            }
+
+            stage1Result.textContent = "";
+            flyStage1Card(card);
+        });
+    });
+
+    stage1Reset.addEventListener("click", () => {
+        stage1AnimationVersion += 1;
+        stage1Animating = false;
+        stage1SelectedCodes = [];
+        window.clearTimeout(stage1ErrorTimer);
+        document.querySelectorAll(".stage-flying-card").forEach(card => card.remove());
+        stage1FixedCards.replaceChildren();
+        stage1FixedCards.classList.remove("stage1-cards-complete");
+        stage1Cards.forEach(card => {
+            card.classList.remove("stage-card-selected", "stage-card-incorrect");
+            card.disabled = false;
+            card.textContent = card.dataset.code;
+        });
+        stage1CardCode.hidden = false;
+        stage1CardCode.classList.remove("stage1-fade-out");
+        stage1JavaCode.hidden = true;
+        stage1JavaCode.classList.remove("stage1-fade-in");
+        stage1CodeCompleteMessage.hidden = true;
+        stage1Result.textContent = "";
+        stage2Link.hidden = true;
+        stage1Reset.disabled = false;
+        shuffleStage1Cards();
+    });
+
+    shuffleStage1Cards();
+</script>
+<div th:replace="~{fragments/java-glossary :: glossary}"></div>
+</body>
+</html>

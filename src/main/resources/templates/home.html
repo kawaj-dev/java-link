@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Java Link</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<main class="home-page">
+    <header class="home-header">
+        <p class="home-label">BEGINNER JAVA LESSON</p>
+        <h1>Java Link</h1>
+        <p class="home-subtitle">Javaを読んで、つなげて、動かそう</p>
+    </header>
+
+    <section class="home-menu" aria-label="学習メニュー">
+        <article class="home-menu-card home-menu-card--reading">
+            <div class="home-menu-icon" aria-hidden="true">💡</div>
+            <h2>コードを左から読む</h2>
+            <p>
+                Javaコードを左から順番に読み、<br>
+                一つひとつの意味を日本語で確認します。
+            </p>
+            <a class="home-menu-button home-menu-button--reading" href="/quiz">学習をはじめる</a>
+        </article>
+
+        <article class="home-menu-card home-menu-card--town">
+            <div class="home-menu-icon" aria-hidden="true">🏘</div>
+            <h2>Javaタウンをつくろう</h2>
+            <p>
+                コードカードを正しく並べて、<br>
+                Java Townに建物や明かりを増やします。
+            </p>
+            <a class="home-menu-button home-menu-button--town" href="/stage1">タウンをつくる</a>
+        </article>
+    </section>
+
+    <p class="home-guide">どちらの学習からでも自由に始められます。</p>
+</main>
+<div th:replace="~{fragments/java-glossary :: glossary}"></div>
+</body>
+</html>
