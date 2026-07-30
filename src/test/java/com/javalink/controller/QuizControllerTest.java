@@ -78,8 +78,14 @@ class QuizControllerTest {
                 .andExpect(content().string(containsString("quiz-workspace")))
                 .andExpect(content().string(containsString("quiz-program-pane")))
                 .andExpect(content().string(containsString("quiz-learning-pane")))
-                .andExpect(content().string(containsString("public class")))
-                .andExpect(content().string(containsString("System.out.println")))
+                .andExpect(content().string(containsString("Hello.java")))
+                .andExpect(content().string(containsString(
+                        "class=\"quiz-ide-line-numbers\"")))
+                .andExpect(content().string(containsString(
+                        "class=\"quiz-console-panel quiz-terminal-panel\"")))
+                .andExpect(content().string(containsString(">TERMINAL<")))
+                .andExpect(content().string(containsString(
+                        "class=\"quiz-syntax-method\">println</span>")))
                 .andExpect(content().string(containsString("Stage 1 / 3")))
                 .andExpect(content().string(containsString("Mainクラスを作る")));
     }

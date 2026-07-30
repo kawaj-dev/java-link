@@ -2751,3 +2751,159 @@ h1 {
         animation: none;
     }
 }
+
+/* ==================================================
+   「コードを左から読む」左ペイン：オリジナルIDE風表示
+   右側の学習UIには適用しません。
+   ================================================== */
+
+.quiz-program-pane .quiz-ide-window {
+    overflow: hidden;
+    border: 1px solid #34414d;
+    border-radius: 14px;
+    background: #171b22;
+    box-shadow: 0 14px 34px rgba(15, 24, 33, 0.18);
+}
+
+.quiz-program-pane .quiz-ide-tabbar {
+    display: flex;
+    min-height: 43px;
+    padding-left: 10px;
+    border-bottom: 1px solid #303944;
+    background: #20262e;
+}
+
+.quiz-program-pane .quiz-ide-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 150px;
+    padding: 0 16px;
+    border-right: 1px solid #303944;
+    color: #b8c2cc;
+    font: 500 0.84rem Consolas, "Cascadia Mono", "Courier New", monospace;
+}
+
+.quiz-program-pane .quiz-ide-tab--active {
+    border-top: 2px solid #4ca6d8;
+    color: #f2f6f8;
+    background: #171b22;
+}
+
+.quiz-program-pane .quiz-java-file-icon {
+    display: inline-grid;
+    width: 18px;
+    height: 18px;
+    place-items: center;
+    border-radius: 3px;
+    color: #ffffff;
+    background: #c65d32;
+    font: 800 0.68rem Arial, sans-serif;
+}
+
+.quiz-program-pane .quiz-ide-editor {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    min-height: 250px;
+    background: #171b22;
+}
+
+.quiz-program-pane .quiz-ide-line-numbers {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding: 28px 12px 28px 6px;
+    border-right: 1px solid #252d36;
+    color: #66717d;
+    background: #151920;
+    font: 400 clamp(0.9rem, 1.25vw, 1.08rem)/2.05 Consolas,
+        "Cascadia Mono", "Courier New", monospace;
+    user-select: none;
+}
+
+.quiz-program-pane .quiz-full-code {
+    min-height: 250px;
+    margin: 0;
+    padding: 28px 20px;
+    border-radius: 0;
+    color: #d8dee9;
+    background: #171b22;
+    font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+    box-sizing: border-box;
+}
+
+.quiz-program-pane .quiz-syntax-keyword {
+    color: #c792ea;
+}
+
+.quiz-program-pane .quiz-syntax-type {
+    color: #82d2ce;
+}
+
+.quiz-program-pane .quiz-syntax-method {
+    color: #82aaff;
+}
+
+.quiz-program-pane .quiz-syntax-property,
+.quiz-program-pane .quiz-syntax-variable {
+    color: #f3c86b;
+}
+
+.quiz-program-pane .syntax-string {
+    color: #c3e88d;
+}
+
+.quiz-program-pane .quiz-terminal-panel {
+    overflow: hidden;
+    padding: 0;
+    border-color: #2b343e;
+    border-radius: 12px;
+    background: #080a0d;
+}
+
+.quiz-program-pane .quiz-terminal-header {
+    min-height: 39px;
+    padding: 0 16px;
+    border-bottom: 1px solid #262d35;
+    background: #171b22;
+}
+
+.quiz-program-pane .quiz-terminal-header h2 {
+    display: inline-flex;
+    min-height: 39px;
+    align-items: center;
+    margin: 0;
+    border-bottom: 2px solid #4ca6d8;
+    color: #d7dde3;
+    font: 700 0.75rem Consolas, "Cascadia Mono", "Courier New", monospace;
+    letter-spacing: 0.08em;
+}
+
+.quiz-program-pane .quiz-terminal-panel .console-output {
+    min-height: 88px;
+    margin: 0;
+    padding: 17px 18px;
+    border: 0;
+    border-radius: 0;
+    color: #d7e2dc;
+    background: #080a0d;
+    box-sizing: border-box;
+    font: 400 0.9rem/1.6 Consolas, "Cascadia Mono", "Courier New", monospace;
+}
+
+@media (max-width: 520px) {
+    .quiz-program-pane .quiz-ide-editor {
+        grid-template-columns: 36px minmax(0, 1fr);
+    }
+
+    .quiz-program-pane .quiz-ide-line-numbers {
+        padding-right: 8px;
+        padding-left: 3px;
+        font-size: 0.8rem;
+    }
+
+    .quiz-program-pane .quiz-full-code {
+        padding-right: 12px;
+        padding-left: 12px;
+    }
+}

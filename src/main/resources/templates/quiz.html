@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
     <link rel="stylesheet"
-          th:href="@{/css/style.css(v='quiz-three-stage-2')}"
-          href="/css/style.css?v=quiz-three-stage-2">
+          th:href="@{/css/style.css(v='quiz-ide-left-1')}"
+          href="/css/style.css?v=quiz-ide-left-1">
 </head>
 <body>
 <main class="quiz-page quiz-course-page">
@@ -26,34 +26,62 @@
                 <h2 id="program-overview-title">「Hello」と表示するプログラム</h2>
             </div>
 
-            <div class="quiz-full-code" aria-label="完成するJavaコード">
-                <div class="quiz-full-code-line"
-                     th:classappend="|${stageStates[0].current ? ' quiz-full-code-line--current' : ''}${stageStates[0].completed ? ' quiz-full-code-line--completed' : ''}|">
-                    <span class="syntax-keyword">public class</span> Main {
-                    <span class="quiz-stage-check"
-                          th:if="${stageStates[0].completed == true}"
-                          aria-label="Stage 1 理解済み">✓</span>
+            <div class="quiz-ide-window">
+                <div class="quiz-ide-tabbar" aria-label="開いているファイル">
+                    <span class="quiz-ide-tab quiz-ide-tab--active">
+                        <span class="quiz-java-file-icon" aria-hidden="true">J</span>
+                        Hello.java
+                    </span>
                 </div>
-                <div class="quiz-full-code-line quiz-full-code-indent-one"
-                     th:classappend="|${stageStates[1].current ? ' quiz-full-code-line--current' : ''}${stageStates[1].completed ? ' quiz-full-code-line--completed' : ''}|">
-                    <span class="syntax-keyword">public static void</span> main(String[] args) {
-                    <span class="quiz-stage-check"
-                          th:if="${stageStates[1].completed == true}"
-                          aria-label="Stage 2 理解済み">✓</span>
+
+                <div class="quiz-ide-editor">
+                    <div class="quiz-ide-line-numbers" aria-hidden="true">
+                        <span>1</span>
+                        <span>2</span>
+                        <span>3</span>
+                        <span>4</span>
+                        <span>5</span>
+                    </div>
+                    <div class="quiz-full-code" aria-label="完成するJavaコード">
+                        <div class="quiz-full-code-line"
+                             th:classappend="|${stageStates[0].current ? ' quiz-full-code-line--current' : ''}${stageStates[0].completed ? ' quiz-full-code-line--completed' : ''}|">
+                            <span class="quiz-syntax-keyword">public</span>
+                            <span class="quiz-syntax-keyword">class</span>
+                            <span class="quiz-syntax-type">Main</span> {
+                            <span class="quiz-stage-check"
+                                  th:if="${stageStates[0].completed == true}"
+                                  aria-label="Stage 1 理解済み">✓</span>
+                        </div>
+                        <div class="quiz-full-code-line quiz-full-code-indent-one"
+                             th:classappend="|${stageStates[1].current ? ' quiz-full-code-line--current' : ''}${stageStates[1].completed ? ' quiz-full-code-line--completed' : ''}|">
+                            <span class="quiz-syntax-keyword">public</span>
+                            <span class="quiz-syntax-keyword">static</span>
+                            <span class="quiz-syntax-keyword">void</span>
+                            <span class="quiz-syntax-method">main</span>(<span class="quiz-syntax-type">String[]</span>
+                            <span class="quiz-syntax-variable">args</span>) {
+                            <span class="quiz-stage-check"
+                                  th:if="${stageStates[1].completed == true}"
+                                  aria-label="Stage 2 理解済み">✓</span>
+                        </div>
+                        <div class="quiz-full-code-line quiz-full-code-indent-two"
+                             th:classappend="|${stageStates[2].current ? ' quiz-full-code-line--current' : ''}${stageStates[2].completed ? ' quiz-full-code-line--completed' : ''}|">
+                            <span class="quiz-syntax-type">System</span>.<span class="quiz-syntax-property">out</span>.<span class="quiz-syntax-method">println</span>(<span class="syntax-string">"Hello"</span>);
+                            <span class="quiz-stage-check"
+                                  th:if="${stageStates[2].completed == true}"
+                                  aria-label="Stage 3 理解済み">✓</span>
+                        </div>
+                        <div class="quiz-full-code-line quiz-full-code-indent-one">}</div>
+                        <div class="quiz-full-code-line">}</div>
+                    </div>
                 </div>
-                <div class="quiz-full-code-line quiz-full-code-indent-two"
-                     th:classappend="|${stageStates[2].current ? ' quiz-full-code-line--current' : ''}${stageStates[2].completed ? ' quiz-full-code-line--completed' : ''}|">
-                    System.out.println(<span class="syntax-string">"Hello"</span>);
-                    <span class="quiz-stage-check"
-                          th:if="${stageStates[2].completed == true}"
-                          aria-label="Stage 3 理解済み">✓</span>
-                </div>
-                <div class="quiz-full-code-line quiz-full-code-indent-one">}</div>
-                <div class="quiz-full-code-line">}</div>
             </div>
 
-            <section class="quiz-console-panel" aria-labelledby="console-title" aria-live="polite">
-                <h2 id="console-title">Console</h2>
+            <section class="quiz-console-panel quiz-terminal-panel"
+                     aria-labelledby="console-title"
+                     aria-live="polite">
+                <div class="quiz-terminal-header">
+                    <h2 id="console-title">TERMINAL</h2>
+                </div>
                 <pre class="console-output"><code
                         th:text="${programRunResult != null and programRunResult.success
                             ? programRunResult.consoleOutput
