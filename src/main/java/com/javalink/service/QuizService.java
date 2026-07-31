@@ -221,6 +221,51 @@ public class QuizService {
                             new QuizOption("block-start", "ここから始まる")
                     ),
                     "command-end"
+            ),
+            new QuizQuestion(
+                    "print-command",
+                    "",
+                    "System.out.println",
+                    "(\"Hello\");",
+                    "System.out.println の意味",
+                    List.of(
+                            new QuizOption(
+                                    "display-and-newline",
+                                    "画面に表示して改行する"
+                            ),
+                            new QuizOption("declare-class", "クラスを作る"),
+                            new QuizOption("program-entry", "プログラムを始める"),
+                            new QuizOption("receive-values", "値を受け取る")
+                    ),
+                    "display-and-newline"
+            ),
+            new QuizQuestion(
+                    "main-close",
+                    "",
+                    "}",
+                    "",
+                    "最初の } の意味",
+                    List.of(
+                            new QuizOption("close-main", "mainメソッド終了"),
+                            new QuizOption("close-class", "Mainクラス終了"),
+                            new QuizOption("block-start", "ここから始まる"),
+                            new QuizOption("command-end", "命令の終わり")
+                    ),
+                    "close-main"
+            ),
+            new QuizQuestion(
+                    "class-close",
+                    "",
+                    "}",
+                    "",
+                    "最後の } の意味",
+                    List.of(
+                            new QuizOption("close-class", "Mainクラス終了"),
+                            new QuizOption("close-main", "mainメソッド終了"),
+                            new QuizOption("block-start", "ここから始まる"),
+                            new QuizOption("command-end", "命令の終わり")
+                    ),
+                    "close-class"
             )
     );
 

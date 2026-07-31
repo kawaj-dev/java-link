@@ -45,7 +45,7 @@ public class LessonService {
         Lesson helloProgramLesson = new Lesson(
                 HELLO_PROGRAM_LESSON_ID,
                 "「Hello」と表示するプログラム",
-                "完成プログラムを3つのステージに分け、コードを左から読みます。",
+                "完成プログラムを5つのPartに分け、意味のまとまりで読みます。",
                 """
                         public class Main {
                             public static void main(String[] args) {
@@ -99,32 +99,24 @@ public class LessonService {
                                 11, "{"
                         ),
                         createStep(
-                                quizService, "system", "system",
-                                12, "System"
-                        ),
-                        createStep(
-                                quizService, "system-dot", "system-dot",
-                                13, "."
-                        ),
-                        createStep(
-                                quizService, "out", "out",
-                                14, "out"
-                        ),
-                        createStep(
-                                quizService, "out-dot", "out-dot",
-                                15, "."
-                        ),
-                        createStep(
-                                quizService, "println", "println",
-                                16, "println"
+                                quizService, "print-command", "print-command",
+                                12, "System.out.println"
                         ),
                         createStep(
                                 quizService, "hello-string", "hello-string",
-                                17, "\"Hello\""
+                                13, "\"Hello\""
                         ),
                         createStep(
                                 quizService, "semicolon", "semicolon",
-                                18, ";"
+                                14, ";"
+                        ),
+                        createStep(
+                                quizService, "main-close", "main-close",
+                                15, "}"
+                        ),
+                        createStep(
+                                quizService, "class-close", "class-close",
+                                16, "}"
                         )
                 )
         );

@@ -106,7 +106,7 @@ class CodeReadingServiceTest {
     }
 
     @Test
-    void 選択場所には現在の正解と別の未完了カードを返す() {
+    void 現在の正解を含む四択を返す() {
         LessonProgress progress = new LessonProgress(
                 LESSON_ID,
                 "public"
@@ -118,7 +118,7 @@ class CodeReadingServiceTest {
                         progress
                 );
 
-        assertEquals(2, options.size());
+        assertEquals(4, options.size());
         assertTrue(options.stream().anyMatch(option ->
                 option.id().equals("accessible")
         ));
@@ -140,16 +140,17 @@ class CodeReadingServiceTest {
                         progress
                 );
 
-        assertEquals(
-                java.util.Set.of("accessible", "without-instance"),
-                options.stream()
-                        .map(QuizOption::id)
-                        .collect(java.util.stream.Collectors.toSet())
-        );
+        assertEquals(4, options.size());
+        assertTrue(options.stream().anyMatch(option ->
+                option.id().equals("accessible")
+        ));
+        assertTrue(options.stream().anyMatch(option ->
+                option.id().equals("without-instance")
+        ));
     }
 
     @Test
-    void 最後の未完了カードだけなら一択で返す() {
+    void 最終問題でも四択を返す() {
         LessonProgress progress = new LessonProgress(
                 LESSON_ID,
                 "public"
@@ -171,7 +172,9 @@ class CodeReadingServiceTest {
                         progress
                 );
 
-        assertEquals(1, options.size());
-        assertEquals("argument-variable", options.get(0).id());
+        assertEquals(4, options.size());
+        assertTrue(options.stream().anyMatch(option ->
+                option.id().equals("argument-variable")
+        ));
     }
 }

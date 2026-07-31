@@ -1,32 +1,47 @@
 package com.javalink.service;
 
-import com.javalink.model.CodeReadingStage;
+import com.javalink.model.CodeReadingPart;
+import com.javalink.model.CodeReadingPhase;
 import com.javalink.model.LessonProgress;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
 /**
- * 回答後の自動進行を、現在ステージの中だけに限定します。
+ * 回答後の自動進行とPart間の遷移を管理します。
  */
 @Service
 public class CodeReadingCourseService {
 
     private final LessonEngine lessonEngine;
     private final LessonProgressService lessonProgressService;
-    private final CodeReadingService codeReadingService;
+    private final CodeReadingPartService partService;
+    private final CodeReadingFlowService flowService;
 
     public CodeReadingCourseService(
             LessonEngine lessonEngine,
             LessonProgressService lessonProgressService,
-            CodeReadingService codeReadingService
+            CodeReadingPartService partService,
+            CodeReadingFlowService flowService
     ) {
         this.lessonEngine = lessonEngine;
         this.lessonProgressService = lessonProgressService;
-        this.codeReadingService = codeReadingService;
+        this.partService = partService;
+        this.flowService = flowService;
+    }
+
+    /** 導入画面からPart 1の先頭へ移ります。 */
+    public LessonProgress startLearning(
+            HttpSession session,
+            String lessonId
+    ) {
+        LessonProgress progress =
+                lessonProgressService.resetProgress(session, lessonId);
+        flowService.startLearning(session, lessonId);
+        return progress;
     }
 
     /**
-     * 正解時は同じステージ内だけ自動で次へ進みます。
+     * 正解時は同じPart内だけ自動で次へ進みます。
      */
     public LessonEngine.AnswerResult answerCurrentItem(
             HttpSession session,
@@ -35,8 +50,8 @@ public class CodeReadingCourseService {
     ) {
         LessonProgress before =
                 lessonProgressService.getProgress(session, lessonId);
-        CodeReadingStage answeredStage =
-                codeReadingService.getStageForStep(before.getCurrentStepId());
+        CodeReadingPart answeredPart =
+                partService.getPartForStep(before.getCurrentStepId());
         LessonEngine.AnswerResult result =
                 lessonEngine.answerCurrentStep(
                         session,
@@ -46,7 +61,7 @@ public class CodeReadingCourseService {
 
         if (result.correct()
                 && result.nextStep().isPresent()
-                && answeredStage.stepIds().contains(
+                && answeredPart.stepIds().contains(
                         result.nextStep().get().id()
                 )) {
             lessonEngine.moveToNextStep(session, lessonId);
@@ -55,23 +70,49 @@ public class CodeReadingCourseService {
     }
 
     /**
-     * ステージを読み終えた場合だけ、次のステージ先頭へ進めます。
+     * 現在Partが完了している場合だけ次のPartへ進みます。
+     * 最終Partでは現在位置を保ったままSUMMARYへ切り替えます。
      */
-    public LessonProgress moveToNextStage(
+    public PartTransitionResult moveToNextPart(
             HttpSession session,
             String lessonId
     ) {
         LessonProgress progress =
                 lessonProgressService.getProgress(session, lessonId);
-        CodeReadingStage stage =
-                codeReadingService.getStageForStep(
-                        progress.getCurrentStepId()
-                );
+        CodeReadingPart part =
+                partService.getPartForStep(progress.getCurrentStepId());
+        boolean completed = part.stepIds().stream()
+                .allMatch(progress.getCompletedStepIds()::contains);
 
-        if (!codeReadingService.isStageCompleted(stage, progress)
-                || codeReadingService.isLastStage(stage)) {
-            return progress;
+        if (flowService.getState(session, lessonId).phase()
+                != CodeReadingPhase.LEARNING || !completed) {
+            return new PartTransitionResult(progress, false, false);
         }
-        return lessonEngine.moveToNextStep(session, lessonId);
+
+        if (partService.isLastPart(part)) {
+            flowService.showSummary(session, lessonId);
+            return new PartTransitionResult(progress, true, true);
+        }
+
+        LessonProgress moved = lessonEngine.moveToNextStep(session, lessonId);
+        return new PartTransitionResult(moved, true, false);
+    }
+
+    /** 問題進捗と画面フェーズを両方とも初期状態へ戻します。 */
+    public LessonProgress reset(
+            HttpSession session,
+            String lessonId
+    ) {
+        LessonProgress progress =
+                lessonProgressService.resetProgress(session, lessonId);
+        flowService.reset(session, lessonId);
+        return progress;
+    }
+
+    public record PartTransitionResult(
+            LessonProgress progress,
+            boolean moved,
+            boolean summary
+    ) {
     }
 }

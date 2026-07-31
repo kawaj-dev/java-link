@@ -1,8 +1,7 @@
 package com.javalink.service;
 
 import com.javalink.model.CodeReadingItem;
-import com.javalink.model.CodeReadingStage;
-import com.javalink.model.CodeReadingStageState;
+import com.javalink.model.CodeReadingPart;
 import com.javalink.model.Lesson;
 import com.javalink.model.LessonProgress;
 import com.javalink.model.LessonStep;
@@ -20,54 +19,6 @@ import java.util.Set;
  */
 @Service
 public class CodeReadingService {
-
-    private static final List<CodeReadingStage> HELLO_STAGES = List.of(
-            new CodeReadingStage(
-                    "stage-1",
-                    1,
-                    "Mainクラスを作る",
-                    "public class Main {",
-                    List.of(
-                            "class-public",
-                            "class-keyword",
-                            "class-name",
-                            "class-open"
-                    ),
-                    "外から使えるMainというクラスを作り、ここからクラスの中身を始めます。"
-            ),
-            new CodeReadingStage(
-                    "stage-2",
-                    2,
-                    "プログラムの開始地点を作る",
-                    "public static void main(String[] args) {",
-                    List.of(
-                            "main-public",
-                            "static",
-                            "void",
-                            "main",
-                            "string-array",
-                            "args",
-                            "main-open"
-                    ),
-                    "Javaが最初に実行するmainメソッドを作り、文字列の配列をargsという名前で受け取ります。"
-            ),
-            new CodeReadingStage(
-                    "stage-3",
-                    3,
-                    "「Hello」を表示する",
-                    "System.out.println(\"Hello\");",
-                    List.of(
-                            "system",
-                            "system-dot",
-                            "out",
-                            "out-dot",
-                            "println",
-                            "hello-string",
-                            "semicolon"
-                    ),
-                    "Javaの出力機能を使って、「Hello」と表示して改行します。"
-            )
-    );
 
     private static final Map<String, ReadingNote> READING_NOTES =
             Map.ofEntries(
@@ -125,6 +76,13 @@ public class CodeReadingService {
                     "開始波かっこ",
                     List.of("mainメソッドの中身がここから始まります。")
             )),
+            Map.entry("print-command", new ReadingNote(
+                    "画面へ表示する命令",
+                    List.of(
+                            "かっこの中の内容を画面へ表示して改行します。",
+                            "ドットは左側のものが持つ機能へ順番につなぎます。"
+                    )
+            )),
             Map.entry("system", new ReadingNote(
                     "クラス名",
                     List.of("Javaが最初から用意している機能をまとめたクラスです。")
@@ -152,6 +110,14 @@ public class CodeReadingService {
             Map.entry("semicolon", new ReadingNote(
                     "セミコロン",
                     List.of("この命令がここで終わることを表します。")
+            )),
+            Map.entry("main-close", new ReadingNote(
+                    "終了波かっこ",
+                    List.of("mainメソッドの中身がここで終わります。")
+            )),
+            Map.entry("class-close", new ReadingNote(
+                    "終了波かっこ",
+                    List.of("Mainクラスの中身がここで終わります。")
             ))
     );
 
@@ -182,18 +148,15 @@ public class CodeReadingService {
     }
 
     /**
-     * 現在の正解カードと、未完了カードから選んだ1枚を返します。
-     * 不正解直後は、選ばれた誤答カードを残して同じ2択を作ります。
+     * 現在の正解1枚と、意味が重複しない誤答3枚を返します。
+     * 不正解直後は選んだ誤答を残して同じ問題を考え直せます。
      */
     public List<QuizOption> createSelectionOptions(
             String lessonId,
             LessonProgress progress
     ) {
-        List<CodeReadingItem> incompleteItems =
-                itemsForSelection(lessonId, progress).stream()
-                        .filter(item -> !item.completed())
-                        .toList();
-        CodeReadingItem currentItem = incompleteItems.stream()
+        List<CodeReadingItem> readingItems = createItems(lessonId, progress);
+        CodeReadingItem currentItem = readingItems.stream()
                 .filter(CodeReadingItem::current)
                 .findFirst()
                 .orElse(null);
@@ -202,89 +165,42 @@ public class CodeReadingService {
             return List.of();
         }
 
-        List<CodeReadingItem> otherItems = incompleteItems.stream()
+        List<CodeReadingItem> otherItems = readingItems.stream()
                 .filter(item -> !item.stepId().equals(currentItem.stepId()))
                 .filter(item -> !item.meaning().equals(currentItem.meaning()))
                 .toList();
-        CodeReadingItem otherItem = findPreviousIncorrectItem(
+        CodeReadingItem previousIncorrectItem = findPreviousIncorrectItem(
                 otherItems,
                 progress
         );
-        if (otherItem == null && !otherItems.isEmpty()) {
-            List<CodeReadingItem> candidates =
-                    new ArrayList<>(otherItems);
-            Collections.shuffle(candidates);
-            otherItem = candidates.get(0);
-        }
-
         List<QuizOption> options = new ArrayList<>();
         options.add(toOption(currentItem));
-        if (otherItem != null) {
-            options.add(toOption(otherItem));
+        if (previousIncorrectItem != null) {
+            options.add(toOption(previousIncorrectItem));
         }
+        List<CodeReadingItem> candidates = new ArrayList<>(otherItems);
+        candidates.remove(previousIncorrectItem);
+        Collections.shuffle(candidates);
+        candidates.stream()
+                .limit(4 - options.size())
+                .map(this::toOption)
+                .forEach(options::add);
         Collections.shuffle(options);
         return List.copyOf(options);
     }
 
-    public List<CodeReadingStage> getStages() {
-        return HELLO_STAGES;
-    }
-
-    public CodeReadingStage getStageForStep(String stepId) {
-        return HELLO_STAGES.stream()
-                .filter(stage -> stage.stepIds().contains(stepId))
-                .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "ステージが見つかりません。stepId: " + stepId
-                ));
-    }
-
-    public List<CodeReadingItem> createCurrentStageItems(
+    /**
+     * 指定したPartに含まれる項目だけを教材の登録順で返します。
+     */
+    public List<CodeReadingItem> createPartItems(
             String lessonId,
-            LessonProgress progress
+            LessonProgress progress,
+            CodeReadingPart part
     ) {
-        CodeReadingStage stage =
-                getStageForStep(progress.getCurrentStepId());
-        Set<String> stepIds = Set.copyOf(stage.stepIds());
+        Set<String> stepIds = Set.copyOf(part.stepIds());
         return createItems(lessonId, progress).stream()
                 .filter(item -> stepIds.contains(item.stepId()))
                 .toList();
-    }
-
-    public boolean isStageCompleted(
-            CodeReadingStage stage,
-            LessonProgress progress
-    ) {
-        return stage.stepIds().stream()
-                .allMatch(progress.getCompletedStepIds()::contains);
-    }
-
-    public boolean isLastStage(CodeReadingStage stage) {
-        return stage.order() == HELLO_STAGES.size();
-    }
-
-    public List<CodeReadingStageState> createStageStates(
-            LessonProgress progress
-    ) {
-        CodeReadingStage current =
-                getStageForStep(progress.getCurrentStepId());
-        return HELLO_STAGES.stream()
-                .map(stage -> new CodeReadingStageState(
-                        stage,
-                        stage.id().equals(current.id()),
-                        isStageCompleted(stage, progress)
-                ))
-                .toList();
-    }
-
-    private List<CodeReadingItem> itemsForSelection(
-            String lessonId,
-            LessonProgress progress
-    ) {
-        if (LessonService.HELLO_PROGRAM_LESSON_ID.equals(lessonId)) {
-            return createCurrentStageItems(lessonId, progress);
-        }
-        return createItems(lessonId, progress);
     }
 
     private CodeReadingItem findPreviousIncorrectItem(
