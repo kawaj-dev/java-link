@@ -12,6 +12,7 @@ public record CodeReadingPart(
         String title,
         String targetCode,
         List<String> stepIds,
+        List<String> displayTokens,
         List<String> completionNotes,
         String reviewSummary
 ) {
@@ -23,6 +24,7 @@ public record CodeReadingPart(
         Objects.requireNonNull(title, "title must not be null");
         Objects.requireNonNull(targetCode, "targetCode must not be null");
         Objects.requireNonNull(stepIds, "stepIds must not be null");
+        Objects.requireNonNull(displayTokens, "displayTokens must not be null");
         Objects.requireNonNull(
                 completionNotes,
                 "completionNotes must not be null"
@@ -32,6 +34,7 @@ public record CodeReadingPart(
                 "reviewSummary must not be null"
         );
         stepIds = List.copyOf(stepIds);
+        displayTokens = List.copyOf(displayTokens);
         completionNotes = List.copyOf(completionNotes);
 
         if (order < 1) {
@@ -45,5 +48,20 @@ public record CodeReadingPart(
                     "1つのPartに登録できる項目は4つまでです。"
             );
         }
+        if (displayTokens.size() != stepIds.size()) {
+            throw new IllegalArgumentException(
+                    "displayTokens must correspond to every stepId"
+            );
+        }
+    }
+
+    public String displayTokenFor(String stepId) {
+        int index = stepIds.indexOf(stepId);
+        if (index < 0) {
+            throw new IllegalArgumentException(
+                    "Partにステップがありません。stepId: " + stepId
+            );
+        }
+        return displayTokens.get(index);
     }
 }

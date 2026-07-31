@@ -2,6 +2,7 @@ package com.javalink.service;
 
 import com.javalink.model.CodeReadingPart;
 import com.javalink.model.CodeReadingPhase;
+import com.javalink.model.CodeReadingAnswerResponse;
 import com.javalink.model.LessonProgress;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
@@ -40,10 +41,49 @@ public class CodeReadingCourseService {
         return progress;
     }
 
-    /**
-     * 正解時は同じPart内だけ自動で次へ進みます。
-     */
+    /** 回答状態を保存し、正解後も確認のため現在stepに留まります。 */
     public LessonEngine.AnswerResult answerCurrentItem(
+            HttpSession session,
+            String lessonId,
+            String selectedOptionId
+    ) {
+        return lessonEngine.answerCurrentStep(
+                session,
+                lessonId,
+                selectedOptionId
+        );
+    }
+
+    /** 正解確認後、同じPart内に次項目がある場合だけ移ります。 */
+    public LessonProgress moveToNextItem(
+            HttpSession session,
+            String lessonId
+    ) {
+        LessonProgress progress =
+                lessonProgressService.getProgress(session, lessonId);
+        CodeReadingPart part =
+                partService.getPartForStep(progress.getCurrentStepId());
+
+        if (!progress.isAnswered()
+                || !progress.isCorrect()
+                || !progress.isStepCompleted(progress.getCurrentStepId())) {
+            return progress;
+        }
+
+        boolean partCompleted = part.stepIds().stream()
+                .allMatch(progress.getCompletedStepIds()::contains);
+        if (partCompleted) {
+            return progress;
+        }
+
+        return lessonEngine.moveToNextStep(session, lessonId);
+    }
+
+    /**
+     * 画面演出用に、サーバーで判定・保存した結果を返します。
+     * 正解判定そのものは既存のLessonEngineへ任せます。
+     */
+    public CodeReadingAnswerResponse answerCurrentItemForAnimation(
             HttpSession session,
             String lessonId,
             String selectedOptionId
@@ -52,21 +92,24 @@ public class CodeReadingCourseService {
                 lessonProgressService.getProgress(session, lessonId);
         CodeReadingPart answeredPart =
                 partService.getPartForStep(before.getCurrentStepId());
-        LessonEngine.AnswerResult result =
-                lessonEngine.answerCurrentStep(
-                        session,
-                        lessonId,
-                        selectedOptionId
-                );
+        LessonEngine.AnswerResult result = answerCurrentItem(
+                session,
+                lessonId,
+                selectedOptionId
+        );
+        int completedCount = (int) answeredPart.stepIds().stream()
+                .filter(result.progress().getCompletedStepIds()::contains)
+                .count();
+        boolean partCompleted =
+                completedCount == answeredPart.stepIds().size();
 
-        if (result.correct()
-                && result.nextStep().isPresent()
-                && answeredPart.stepIds().contains(
-                        result.nextStep().get().id()
-                )) {
-            lessonEngine.moveToNextStep(session, lessonId);
-        }
-        return result;
+        return new CodeReadingAnswerResponse(
+                result.correct(),
+                result.answeredStep().id(),
+                result.correctOption().text(),
+                completedCount,
+                partCompleted
+        );
     }
 
     /**

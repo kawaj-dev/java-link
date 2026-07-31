@@ -55,6 +55,9 @@ class CodeReadingPartServiceTest {
                 .anyMatch(note -> note.contains("画面へ表示して改行")));
         assertTrue(part4.completionNotes().stream()
                 .anyMatch(note -> note.contains(". は")));
+        assertEquals("(String[]", part3.displayTokenFor("string-array"));
+        assertEquals("args)", part3.displayTokenFor("args"));
+        assertEquals("(\"Hello\")", part4.displayTokenFor("hello-string"));
     }
 
     @Test

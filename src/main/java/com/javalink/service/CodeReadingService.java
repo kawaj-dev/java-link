@@ -200,6 +200,17 @@ public class CodeReadingService {
         Set<String> stepIds = Set.copyOf(part.stepIds());
         return createItems(lessonId, progress).stream()
                 .filter(item -> stepIds.contains(item.stepId()))
+                .map(item -> new CodeReadingItem(
+                        item.stepId(),
+                        part.displayTokenFor(item.stepId()),
+                        item.optionId(),
+                        item.meaning(),
+                        item.roleLabel(),
+                        item.explanations(),
+                        item.order(),
+                        item.completed(),
+                        item.current()
+                ))
                 .toList();
     }
 

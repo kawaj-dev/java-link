@@ -1573,6 +1573,202 @@ h1 {
     }
 }
 
+/* 全Part共通の視線順：コード → 回路 → 問題 → 正解確認 */
+.quiz-reading-stage {
+    display: grid;
+    gap: 22px;
+}
+
+.quiz-reading-part-title {
+    margin: 6px 0 0;
+    text-align: center;
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+}
+
+.quiz-reading-code-label {
+    margin: 0 0 -14px;
+    color: #526577;
+    text-align: center;
+    font-weight: 700;
+}
+
+.quiz-reading-code-panel {
+    padding: 18px clamp(12px, 3vw, 28px) 12px;
+    border-radius: 14px;
+    background: #102f3b;
+    box-shadow: 0 12px 28px rgba(16, 47, 59, 0.18);
+    overflow-x: auto;
+}
+
+.quiz-reading-code-panel .quiz-reading-code-map {
+    width: max-content;
+    min-width: 100%;
+    margin: 0;
+    overflow: visible;
+}
+
+.quiz-reading-code-panel .quiz-reading-keyword {
+    color: #f4f8fa;
+    font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+    font-size: clamp(1.3rem, 3.2vw, 2rem);
+}
+
+.quiz-reading-code-panel .quiz-reading-code-unit--current .quiz-reading-keyword {
+    color: #123b37;
+    background: #8ee6c8;
+    box-shadow: 0 0 0 3px rgba(142, 230, 200, 0.2);
+}
+
+.quiz-reading-code-panel .quiz-reading-meaning-slot {
+    min-height: 50px;
+}
+
+.quiz-reading-code-panel .quiz-reading-fixed-card {
+    border-color: #72c9ad;
+    background: #ecfaf5;
+}
+
+.quiz-reading-circuit-panel {
+    padding: 18px 16px 14px;
+    border: 1px solid #dce6e9;
+    border-radius: 14px;
+    background: #fff;
+}
+
+.quiz-reading-circuit-panel h3 {
+    margin: 0 0 12px;
+    text-align: center;
+}
+
+.quiz-reading-circuit-panel .quiz-part-circuit {
+    margin: 0;
+    align-items: flex-start;
+}
+
+.quiz-part-circuit-node {
+    display: grid;
+    justify-items: center;
+    gap: 5px;
+    width: clamp(74px, 12vw, 120px);
+}
+
+.quiz-part-circuit-node code {
+    font-weight: 800;
+}
+
+.quiz-part-circuit-node small {
+    color: #527068;
+    font-size: 0.68rem;
+    line-height: 1.25;
+    text-align: center;
+}
+
+.quiz-reading-circuit-panel .quiz-part-circuit-line {
+    margin-top: 10px;
+}
+
+.quiz-reading-question-panel {
+    text-align: center;
+}
+
+.quiz-reading-question-number {
+    margin: 0 0 8px;
+    color: #138b69;
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.quiz-reading-current-term {
+    margin: 0 0 8px;
+    color: #176c57;
+    font-size: 1.05rem;
+}
+
+.quiz-reading-question-panel > h3 {
+    margin: 0 0 20px;
+    color: #17324d;
+    font-size: clamp(1.45rem, 3vw, 2rem);
+}
+
+.quiz-reading-question-panel .quiz-focus-options {
+    margin-inline: auto;
+}
+
+.quiz-reading-answer-confirmation,
+.quiz-reading-part-complete {
+    padding: 22px clamp(16px, 4vw, 34px);
+    border: 1px solid #b8e1d4;
+    border-radius: 14px;
+    background: #edf9f5;
+}
+
+.quiz-reading-answer-confirmation h3,
+.quiz-reading-part-complete h3 {
+    margin: 0 0 16px;
+    color: #087a5a;
+    text-align: center;
+}
+
+.quiz-reading-answer-confirmation > div {
+    display: grid;
+    gap: 7px;
+    width: min(100%, 480px);
+    margin: 0 auto 18px;
+    padding: 16px;
+    border: 1px solid #c6ddd6;
+    border-radius: 10px;
+    background: #fff;
+    text-align: center;
+}
+
+.quiz-reading-answer-confirmation code {
+    font-size: 1.1rem;
+    font-weight: 800;
+}
+
+.quiz-reading-part-complete dl {
+    display: grid;
+    gap: 8px;
+    width: min(100%, 560px);
+    margin: 0 auto 18px;
+}
+
+.quiz-reading-part-complete dl > div {
+    display: grid;
+    grid-template-columns: minmax(90px, 0.7fr) minmax(0, 1.3fr);
+    gap: 14px;
+    padding: 9px 12px;
+    border-bottom: 1px solid #d6e8e2;
+}
+
+.quiz-reading-part-complete dt {
+    font-weight: 800;
+}
+
+.quiz-reading-part-complete dd {
+    margin: 0;
+}
+
+@media (max-width: 620px) {
+    .quiz-reading-code-panel .quiz-reading-code-map {
+        justify-content: flex-start;
+    }
+
+    .quiz-reading-circuit-panel {
+        padding-inline: 6px;
+        overflow-x: auto;
+    }
+
+    .quiz-part-circuit-node {
+        width: 72px;
+    }
+
+    .quiz-reading-circuit-panel .quiz-part-circuit-line {
+        width: 16px;
+    }
+}
+
 /* ==================================================
    コードを左から読む：3ステージ学習画面
    Stage画面と共有しないquiz専用クラスだけで構成します。
@@ -2061,6 +2257,170 @@ h1 {
     overflow-x: hidden;
     white-space: pre;
     font-size: clamp(0.62rem, 2.4vw, 1rem);
+}
+
+/* 各Partで、コードの長さを保ちながら意味カードを対応させます。 */
+.quiz-reading-code-map {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: clamp(6px, 1.5vw, 16px);
+    margin: 20px auto 16px;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 2px 4px 8px;
+}
+
+.quiz-reading-code-unit {
+    flex: 0 0 auto;
+    min-width: max-content;
+    max-width: 190px;
+    text-align: center;
+}
+
+.quiz-reading-keyword {
+    display: inline-block;
+    padding: 5px 8px;
+    border-radius: 7px;
+    color: #17324d;
+    font-size: clamp(1rem, 2.2vw, 1.35rem);
+    font-weight: 800;
+}
+
+.quiz-reading-code-unit--current .quiz-reading-keyword {
+    background: #c9f4e6;
+    box-shadow: 0 0 0 2px #138b69;
+}
+
+.quiz-reading-meaning-slot {
+    display: grid;
+    place-items: center;
+    min-height: 58px;
+    margin-top: 8px;
+}
+
+/* 同じ記号でもstepIdごとの要素に固定し、2つの閉じ括弧を縦に示します。 */
+.quiz-reading-code-map--part-5 {
+    flex-direction: column;
+    align-items: center;
+}
+
+.quiz-reading-code-map--part-5 .quiz-reading-code-unit {
+    width: min(100%, 260px);
+}
+
+.quiz-reading-fixed-card {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 36px;
+    width: min(100%, 150px);
+    padding: 6px 8px;
+    border: 1px solid #9bd7c4;
+    border-radius: 8px;
+    color: #176c57;
+    background: #f4fcf9;
+    font-size: 0.78rem;
+    line-height: 1.35;
+    box-sizing: border-box;
+}
+
+.quiz-reading-fixed-card--arrived {
+    animation: quiz-reading-arrived 240ms ease-out;
+}
+
+.quiz-part-circuit {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 12px auto 22px;
+}
+
+.quiz-part-circuit-step {
+    display: flex;
+    align-items: center;
+}
+
+.quiz-part-circuit-line {
+    width: clamp(28px, 7vw, 72px);
+    height: 3px;
+    background: #cbd4d8;
+    transition: background-color 240ms ease;
+}
+
+.quiz-part-bulb {
+    width: 22px;
+    height: 22px;
+    border: 3px solid #aeb9bf;
+    border-radius: 50%;
+    background: #f7fafb;
+    box-sizing: border-box;
+    transition: background-color 240ms ease, border-color 240ms ease,
+        box-shadow 240ms ease;
+}
+
+.quiz-part-circuit-step--completed .quiz-part-bulb {
+    border-color: #138b69;
+    background: #f4c542;
+    box-shadow: 0 0 0 4px rgba(244, 197, 66, 0.18),
+        0 0 12px rgba(244, 197, 66, 0.7);
+}
+
+.quiz-part-circuit-step--completed .quiz-part-circuit-line {
+    background: #36af89;
+}
+
+.quiz-reading-flying-card {
+    position: fixed;
+    z-index: 10000;
+    margin: 0;
+    pointer-events: none;
+    box-sizing: border-box;
+    transform-origin: center;
+}
+
+.quiz-answer-shake {
+    animation: quiz-reading-shake 300ms ease-in-out;
+}
+
+@keyframes quiz-reading-arrived {
+    from { transform: scale(0.9); opacity: 0.65; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes quiz-reading-shake {
+    0%, 100% { transform: translateX(0); }
+    30% { transform: translateX(-6px); }
+    70% { transform: translateX(6px); }
+}
+
+@media (max-width: 620px) {
+    .quiz-reading-code-map {
+        gap: 4px;
+        justify-content: flex-start;
+    }
+
+    .quiz-reading-code-unit {
+        max-width: 145px;
+    }
+
+    .quiz-reading-fixed-card {
+        padding: 5px 3px;
+        font-size: 0.66rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quiz-reading-fixed-card--arrived,
+    .quiz-answer-shake {
+        animation: none;
+    }
+
+    .quiz-part-bulb,
+    .quiz-part-circuit-line {
+        transition: none;
+    }
 }
 
 .quiz-focus-program .quiz-full-code-line {

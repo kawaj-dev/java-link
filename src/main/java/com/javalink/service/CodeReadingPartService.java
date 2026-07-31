@@ -23,6 +23,7 @@ public class CodeReadingPartService {
                             "class-name",
                             "class-open"
                     ),
+                    List.of("public", "class", "Main", "{"),
                     List.of(
                             "{ は、Mainクラスの中身がここから始まることを表します。"
                     ),
@@ -34,6 +35,7 @@ public class CodeReadingPartService {
                     "mainメソッドを作る",
                     "public static void main",
                     List.of("main-public", "static", "void", "main"),
+                    List.of("public", "static", "void", "main"),
                     List.of(
                             "public static void mainを、Javaが最初に実行する入口として読みます。"
                     ),
@@ -45,6 +47,7 @@ public class CodeReadingPartService {
                     "mainメソッドが受け取る情報",
                     "(String[] args) {",
                     List.of("string-array", "args", "main-open"),
+                    List.of("(String[]", "args)", "{"),
                     List.of(
                             "( ) は、mainメソッドが受け取る情報を書く場所です。",
                             "String[] は文字列の配列です。",
@@ -59,6 +62,7 @@ public class CodeReadingPartService {
                     "「Hello」を表示する",
                     "System.out.println(\"Hello\");",
                     List.of("print-command", "hello-string", "semicolon"),
+                    List.of("System.out.println", "(\"Hello\")", ";"),
                     List.of(
                             "System.out.println(...) は、かっこの中の内容を画面へ表示して改行します。",
                             ". は、左側のものが持つ機能へ順番につなぐ記号です。",
@@ -72,6 +76,7 @@ public class CodeReadingPartService {
                     "コードのまとまりを閉じる",
                     "}\n}",
                     List.of("main-close", "class-close"),
+                    List.of("}", "}"),
                     List.of(
                             "最初の } でmainメソッドを閉じます。",
                             "最後の } でMainクラスを閉じます。"

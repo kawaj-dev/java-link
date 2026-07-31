@@ -2,6 +2,7 @@ package com.javalink.controller;
 
 import com.javalink.model.CodeReadingPageViewModel;
 import com.javalink.model.CodeReadingPhase;
+import com.javalink.model.CodeReadingAnswerResponse;
 import com.javalink.model.LessonViewModel;
 import com.javalink.model.ProgramRunResult;
 import com.javalink.model.QuizOption;
@@ -17,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
 
@@ -74,7 +76,7 @@ public class QuizController {
         return "redirect:/quiz";
     }
 
-    /** 現在の項目へ回答し、正解時は同じPart内だけ自動進行します。 */
+    /** 現在の項目へ回答し、正解後も確認のため同じ項目に留まります。 */
     @PostMapping("/quiz/answer")
     public String answer(
             @RequestParam("selectedOption") String selectedOption,
@@ -86,6 +88,27 @@ public class QuizController {
                 selectedOption
         );
         return "redirect:/quiz";
+    }
+
+    /** 正解内容を確認してから、同じPart内の次の用語へ進みます。 */
+    @PostMapping("/quiz/item/next")
+    public String moveToNextItem(HttpSession session) {
+        courseService.moveToNextItem(session, LESSON_ID);
+        return "redirect:/quiz";
+    }
+
+    /** JavaScript演出用に、Serviceが判定・保存した回答結果を返します。 */
+    @PostMapping("/quiz/answer/interactive")
+    @ResponseBody
+    public CodeReadingAnswerResponse answerInteractive(
+            @RequestParam("selectedOption") String selectedOption,
+            HttpSession session
+    ) {
+        return courseService.answerCurrentItemForAnimation(
+                session,
+                LESSON_ID,
+                selectedOption
+        );
     }
 
     /** 完了したPartから次のPart、またはまとめ画面へ進みます。 */
