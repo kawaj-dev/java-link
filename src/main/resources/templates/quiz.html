@@ -71,13 +71,8 @@
         <div class="quiz-reading-stage">
             <h2 id="part-title" class="quiz-reading-part-title"
                 th:text="${codeReadingPage.currentPart.title}">クラスを作る</h2>
-            <div class="quiz-reading-part-introduction">
-                <p th:each="line : ${codeReadingPage.currentPart.introduction}"
-                   th:text="${line}">初心者向けの説明</p>
-            </div>
 
-            <section class="quiz-reading-circuit-panel" aria-labelledby="circuit-title">
-                <h3 id="circuit-title">コード回路</h3>
+            <section class="quiz-reading-circuit-panel" aria-label="コード回路">
                 <div class="quiz-code-circuit"
                      th:attr="aria-label=|コード全体の進捗|">
                     <article class="quiz-code-circuit-group"
@@ -85,8 +80,8 @@
                              th:if="${group.current}"
                              th:classappend="${group.current ? ' quiz-code-circuit-group--current' : ''}"
                              th:attr="data-circuit-group=${group.id}">
-                        <code th:text="${group.codeLabel}">public class Main { }</code>
-                        <div class="quiz-code-circuit-bulbs">
+                        <div class="quiz-code-circuit-bulbs"
+                             th:style="|--circuit-count:${#lists.size(group.bulbs)}|">
                             <span class="quiz-part-circuit-step"
                                   th:each="bulb, status : ${group.bulbs}"
                                   th:attr="data-bulb-step=${bulb.stepId}"
@@ -121,12 +116,11 @@
                                         <span class="quiz-reading-fixed-card" th:if="${item.completed}" th:text="${item.meaning}">意味</span>
                                     </div>
                                 </div>
+                                <code class="quiz-reading-code-tail">}</code>
                             </div>
-                            <div class="quiz-reading-code-line"><code>}</code></div>
                         </th:block>
                         <th:block th:case="'part-2'">
-                            <div class="quiz-reading-code-line"><code>public class Main {</code></div>
-                            <div class="quiz-reading-code-line quiz-reading-code-line--indent quiz-reading-code-line--part-2">
+                            <div class="quiz-reading-code-line quiz-reading-code-line--part-2">
                                 <div class="quiz-reading-code-unit" th:each="item : ${readingItems}"
                                      th:attr="data-step-id=${item.stepId}"
                                      th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
@@ -135,14 +129,11 @@
                                         <span class="quiz-reading-fixed-card" th:if="${item.completed}" th:text="${item.meaning}">意味</span>
                                     </div>
                                 </div>
+                                <code class="quiz-reading-code-tail">}</code>
                             </div>
-                            <div class="quiz-reading-code-line quiz-reading-code-line--indent"><code>}</code></div>
-                            <div class="quiz-reading-code-line"><code>}</code></div>
                         </th:block>
                         <th:block th:case="'part-3'">
-                            <div class="quiz-reading-code-line"><code>public class Main {</code></div>
-                            <div class="quiz-reading-code-line quiz-reading-code-line--indent"><code>public static void main(String[] args) {</code></div>
-                            <div class="quiz-reading-code-line quiz-reading-code-line--double-indent">
+                            <div class="quiz-reading-code-line">
                                 <div class="quiz-reading-code-unit" th:each="item : ${readingItems}"
                                      th:attr="data-step-id=${item.stepId}"
                                      th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
@@ -152,17 +143,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="quiz-reading-code-line quiz-reading-code-line--indent"><code>}</code></div>
-                            <div class="quiz-reading-code-line"><code>}</code></div>
                         </th:block>
                         <th:block th:case="'part-4'">
-                            <div class="quiz-reading-code-line"><code>public class Main {</code></div>
-                            <div class="quiz-reading-code-line quiz-reading-code-line--indent"><code>public static void main(String[] args) {</code></div>
-                            <div class="quiz-reading-code-line quiz-reading-code-line--double-indent"><code>System.out.println("Hello");</code></div>
-                            <div class="quiz-reading-code-line"
-                                 th:each="item, status : ${readingItems}"
-                                 th:classappend="${status.index == 0 ? ' quiz-reading-code-line--indent' : ''}">
+                            <div class="quiz-reading-code-line">
                                 <div class="quiz-reading-code-unit"
+                                     th:each="item : ${readingItems}"
                                      th:attr="data-step-id=${item.stepId}"
                                      th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
                                     <code class="quiz-reading-keyword" th:text="${item.keyword}">}</code>
@@ -178,14 +163,6 @@
 
             <section class="quiz-reading-question-panel"
                      th:if="${codeReadingPage.partCompleted == false}">
-                <p class="quiz-reading-question-number"
-                   th:text="|QUESTION ${codeReadingPage.partCompletedCount + (answered == true and correct == true ? 0 : 1)} / ${codeReadingPage.partStepIds.size()}|">
-                    QUESTION 1 / 4
-                </p>
-                <p class="quiz-reading-current-term">
-                    <span>現在の用語：</span>
-                    <strong><code th:text="${codeReadingPage.currentStep.displayLabel}">public</code></strong>
-                </p>
                 <h3 th:text="|${codeReadingPage.currentStep.displayLabel} の意味はどれですか？|">
                     public の意味はどれですか？
                 </h3>
@@ -221,6 +198,10 @@
                         <code th:text="${item.keyword}">public</code>
                         <strong th:text="${item.meaning}">外から使える</strong>
                     </div>
+                    <div class="quiz-reading-part-introduction quiz-reading-answer-explanation">
+                        <p th:each="line : ${codeReadingPage.currentPart.introduction}"
+                           th:text="${line}">初心者向けの説明</p>
+                    </div>
                     <form th:action="@{/quiz/item/next}" method="post">
                         <button class="next-button" type="submit">次の問題へ</button>
                     </form>
@@ -236,6 +217,10 @@
                         <dd th:text="${item.meaning}">外から使える</dd>
                     </div>
                 </dl>
+                <div class="quiz-reading-part-introduction quiz-reading-answer-explanation">
+                    <p th:each="line : ${codeReadingPage.currentPart.introduction}"
+                       th:text="${line}">初心者向けの説明</p>
+                </div>
                 <ul>
                     <li th:each="note : ${codeReadingPage.completionNotes}"
                         th:text="${note}">補足説明</li>
@@ -284,7 +269,9 @@
             </div>
         </dl>
 
-        <section class="quiz-run-panel" aria-labelledby="run-title">
+        <section class="quiz-run-panel"
+                 th:if="${programRunResult == null or programRunResult.success == false}"
+                 aria-labelledby="run-title">
             <h2 id="run-title">実行結果を見る</h2>
             <form th:action="@{/quiz/run}" method="post">
                 <button class="run-button" type="submit"

@@ -148,12 +148,14 @@ class QuizControllerTest {
                         "/js/quiz-reading.js"
                 )))
                 .andExpect(content().string(not(containsString("今回読むコード"))))
-                .andExpect(content().string(containsString("Mainという名前は自由に変更できます。")))
+                .andExpect(content().string(not(containsString("Mainという名前は自由に変更できます。"))))
                 .andExpect(content().string(containsString("data-circuit-group=\"class-declaration\"")))
                 .andExpect(content().string(not(containsString("data-circuit-group=\"main-method\""))))
                 .andExpect(content().string(containsString("quiz-code-circuit-connector")))
                 .andExpect(content().string(containsString("完了 0 / 4")))
-                .andExpect(content().string(containsString("QUESTION 1 / 4")));
+                .andExpect(content().string(not(containsString("QUESTION 1 / 4"))))
+                .andExpect(content().string(not(containsString("コード回路</h3>"))))
+                .andExpect(content().string(containsString("public の意味はどれですか？")));
     }
 
     @Test
@@ -325,13 +327,12 @@ class QuizControllerTest {
                         "data-quiz-answer-form=\"true\""
                 )))
                 .andExpect(content().string(not(containsString("今回読むコード"))))
-                .andExpect(content().string(containsString("コード回路")))
                 .andExpect(content().string(containsString("data-circuit-group=\"main-method\"")))
                 .andExpect(content().string(not(containsString("data-circuit-group=\"class-declaration\""))))
-                .andExpect(content().string(containsString("QUESTION 1 / 7")))
+                .andExpect(content().string(not(containsString("QUESTION 1 / 7"))))
                 .andExpect(content().string(containsString("public の意味はどれですか？")))
-                .andExpect(content().string(containsString("現在の用語：")))
-                .andExpect(content().string(containsString("Javaはこのmainメソッドから実行を始めます。")));
+                .andExpect(content().string(not(containsString("現在の用語："))))
+                .andExpect(content().string(not(containsString("Javaはこのmainメソッドから実行を始めます。"))));
 
         courseService.answerCurrentItem(session, LESSON_ID, "accessible");
         LessonProgress progress = progressService.getProgress(session, LESSON_ID);
@@ -343,7 +344,8 @@ class QuizControllerTest {
                 .andExpect(content().string(containsString("正解です！")))
                 .andExpect(content().string(containsString("次の問題へ")))
                 .andExpect(content().string(containsString("quiz-part-circuit-step--completed")))
-                .andExpect(content().string(containsString("外から使える")));
+                .andExpect(content().string(containsString("外から使える")))
+                .andExpect(content().string(containsString("Javaはこのmainメソッドから実行を始めます。")));
     }
 
     @Test
@@ -363,6 +365,12 @@ class QuizControllerTest {
         LessonProgress afterIncorrect =
                 progressService.getProgress(session, LESSON_ID);
         assertFalse(afterIncorrect.isStepCompleted("main-public"));
+
+        mockMvc.perform(get("/quiz").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString(
+                        "Javaはこのmainメソッドから実行を始めます。"
+                ))));
 
         mockMvc.perform(post("/quiz/answer/interactive")
                         .session(session)

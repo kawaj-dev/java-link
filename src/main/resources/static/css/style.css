@@ -2137,6 +2137,180 @@ h1 {
     }
 }
 
+/* Stage 1 LEARNING: 左から右へつながるシンプルな電球回路 */
+.quiz-code-circuit-bulbs {
+    display: grid;
+    grid-template-columns: repeat(var(--circuit-count), minmax(0, 1fr));
+    align-items: start;
+    width: min(100%, 900px);
+    max-width: 100%;
+    margin-inline: auto;
+    padding: 8px 4px 12px;
+    overflow: visible;
+}
+
+.quiz-code-circuit-bulbs .quiz-part-circuit-step {
+    position: relative;
+    display: block;
+    min-width: 0;
+}
+
+.quiz-code-circuit-node {
+    display: grid;
+    grid-template-rows: 36px auto;
+    justify-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.quiz-code-circuit-node code {
+    grid-row: 2;
+    max-width: 100%;
+    padding: 3px 4px;
+    white-space: nowrap;
+}
+
+.quiz-code-circuit-connector {
+    position: absolute;
+    z-index: 0;
+    top: 13px;
+    left: -50%;
+    width: 100%;
+    height: 3px;
+    margin: 0;
+    background: #cbd4d8;
+    transition: background-color 240ms ease, box-shadow 240ms ease;
+}
+
+/* 点灯済みの電球から、次の電球までを通電させます。 */
+.quiz-part-circuit-step--completed + .quiz-part-circuit-step .quiz-code-circuit-connector {
+    background: #dfad22;
+    box-shadow: 0 0 6px rgba(223, 173, 34, 0.42);
+}
+
+.quiz-code-circuit-bulbs .quiz-part-bulb {
+    position: relative;
+    z-index: 1;
+    grid-row: 1;
+    width: 27px;
+    height: 27px;
+    border: 2px solid #9faeb5;
+    border-radius: 50%;
+    background: #f5f7f8;
+    box-sizing: border-box;
+}
+
+/* 丸いガラス部に口金を加え、CSSだけで電球の形を作ります。 */
+.quiz-code-circuit-bulbs .quiz-part-bulb::before {
+    content: "";
+    position: absolute;
+    left: 7px;
+    bottom: -7px;
+    width: 9px;
+    height: 7px;
+    border: 2px solid #9faeb5;
+    border-top: 0;
+    border-radius: 0 0 3px 3px;
+    background: #e7ecee;
+}
+
+.quiz-code-circuit-bulbs .quiz-part-bulb::after {
+    content: "";
+    position: absolute;
+    left: 9px;
+    bottom: -10px;
+    width: 7px;
+    height: 2px;
+    border-radius: 2px;
+    background: #9faeb5;
+}
+
+.quiz-code-circuit-bulbs .quiz-part-circuit-step--completed .quiz-part-bulb {
+    border-color: #e2a912;
+    background: #ffd84d;
+    box-shadow: 0 0 0 4px rgba(255, 216, 77, 0.18),
+        0 0 14px rgba(255, 200, 35, 0.68);
+    animation: quiz-circuit-light-on 300ms ease-out;
+}
+
+.quiz-code-circuit-bulbs .quiz-part-circuit-step--completed .quiz-part-bulb::before {
+    border-color: #c98f0c;
+    background: #e8aa1c;
+}
+
+.quiz-code-circuit-bulbs .quiz-part-circuit-step--completed .quiz-part-bulb::after {
+    background: #a8750b;
+}
+
+.quiz-code-circuit-bulbs .quiz-part-circuit-step--current .quiz-part-bulb {
+    outline: 3px solid rgba(19, 139, 105, 0.24);
+    outline-offset: 4px;
+}
+
+@keyframes quiz-circuit-light-on {
+    0% { transform: scale(0.82); }
+    65% { transform: scale(1.12); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 780px) {
+    .quiz-reading-circuit-panel {
+        overflow: visible;
+    }
+
+    .quiz-code-circuit-bulbs {
+        justify-content: initial;
+    }
+}
+
+/* 狭い画面では同じstep順のまま縦回路に切り替えます。 */
+@media (max-width: 620px) {
+    .quiz-code-circuit-bulbs {
+        grid-template-columns: 1fr;
+        width: min(100%, 230px);
+        gap: 12px;
+        padding-block: 8px 4px;
+    }
+
+    .quiz-code-circuit-node {
+        grid-template-columns: 38px minmax(0, 1fr);
+        grid-template-rows: auto;
+        align-items: center;
+        justify-items: start;
+        gap: 10px;
+    }
+
+    .quiz-code-circuit-node code {
+        grid-row: 1;
+        grid-column: 2;
+        font-size: 0.82rem;
+    }
+
+    .quiz-code-circuit-bulbs .quiz-part-bulb {
+        grid-row: 1;
+        grid-column: 1;
+        justify-self: center;
+    }
+
+    .quiz-code-circuit-connector {
+        top: -20px;
+        left: 18px;
+        width: 3px;
+        height: 28px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quiz-code-circuit-bulbs .quiz-part-bulb {
+        animation: none !important;
+        transition: none;
+    }
+
+    .quiz-code-circuit-connector {
+        transition: none;
+    }
+}
+
 /* ==================================================
    コードを左から読む：集中できる1カラム画面
    ================================================== */
@@ -2452,6 +2626,27 @@ h1 {
     margin: 0;
 }
 
+.quiz-reading-answer-explanation {
+    margin: 14px auto 16px;
+    color: #3f5969;
+    font-size: 0.9rem;
+}
+
+/* 回路は内側カードを持たず、電球・配線・ラベルだけを表示します。 */
+.quiz-reading-circuit-panel {
+    padding: 4px 0 8px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.quiz-reading-circuit-panel .quiz-code-circuit-group {
+    gap: 0;
+    min-width: 0;
+    padding: 0;
+}
+
 .quiz-code-circuit {
     width: 100%;
 }
@@ -2535,7 +2730,8 @@ h1 {
 }
 
 .quiz-reading-code-structure {
-    min-width: max-content;
+    width: 100%;
+    min-width: 0;
     color: #f4f8fa;
     font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
 }
@@ -2546,6 +2742,8 @@ h1 {
     gap: clamp(4px, 0.8vw, 10px);
     min-height: 2.6em;
     white-space: nowrap;
+    justify-content: center;
+    max-width: 100%;
 }
 
 .quiz-reading-code-line--indent {
@@ -2571,6 +2769,21 @@ h1 {
     font-size: clamp(1rem, 2.1vw, 1.45rem);
 }
 
+.quiz-reading-code-tail {
+    flex: 0 0 auto;
+    align-self: start;
+    padding-top: 5px;
+}
+
+/* 丸括弧は問題stepにせず、mainメソッドのコード表記として補います。 */
+.quiz-reading-code-line--part-2 [data-step-id="string-array"] .quiz-reading-keyword::before {
+    content: "(";
+}
+
+.quiz-reading-code-line--part-2 [data-step-id="args"] .quiz-reading-keyword::after {
+    content: ")";
+}
+
 /* Part 2は7つのコードと意味を、濃紺のコード欄内で対応させます。 */
 .quiz-reading-code-structure--part-2 {
     width: 100%;
@@ -2583,7 +2796,7 @@ h1 {
 
 .quiz-reading-code-line--part-2 {
     display: grid;
-    grid-template-columns: repeat(7, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr)) min-content;
     width: 100%;
     gap: clamp(2px, 0.45vw, 6px);
     padding-left: clamp(0.45rem, 1.4vw, 1.2rem);
@@ -2652,6 +2865,10 @@ h1 {
 
     .quiz-reading-code-line--part-2 .quiz-reading-fixed-card {
         font-size: clamp(0.56rem, 2.45vw, 0.67rem);
+    }
+
+    .quiz-reading-code-line:not(.quiz-reading-code-line--part-2) {
+        flex-wrap: wrap;
     }
 }
 
@@ -3785,6 +4002,20 @@ h1 {
     font: 400 0.9rem/1.6 Consolas, "Cascadia Mono", "Courier New", monospace;
 }
 
+/* SUMMARYの実行結果を、1行でも明瞭に読める大きさとコントラストにします。 */
+.quiz-final-review .quiz-terminal-panel .console-output {
+    min-height: 88px;
+    padding: 24px 20px;
+    color: #f4f7f8;
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    line-height: 1.6;
+}
+
+.quiz-final-review .quiz-terminal-panel .console-output code {
+    color: inherit;
+    font-size: inherit;
+}
+
 @media (max-width: 520px) {
     .quiz-program-pane .quiz-ide-editor {
         grid-template-columns: 36px minmax(0, 1fr);
@@ -3799,5 +4030,80 @@ h1 {
     .quiz-program-pane .quiz-full-code {
         padding-right: 12px;
         padding-left: 12px;
+    }
+}
+
+/* 後方にある旧回路指定より優先し、LEARNING回路だけへ適用します。 */
+.quiz-reading-circuit-panel .quiz-code-circuit-bulbs {
+    display: grid;
+    grid-template-columns: repeat(var(--circuit-count), minmax(0, 1fr));
+    align-items: start;
+    width: min(100%, 900px);
+    max-width: 100%;
+    margin-inline: auto;
+    padding: 8px 4px 12px;
+    overflow: visible;
+}
+
+.quiz-reading-circuit-panel .quiz-code-circuit-bulbs .quiz-part-circuit-step {
+    position: relative;
+    display: block;
+    min-width: 0;
+}
+
+.quiz-reading-circuit-panel .quiz-code-circuit-node {
+    display: grid;
+    grid-template-rows: 36px auto;
+    justify-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.quiz-reading-circuit-panel .quiz-code-circuit-node code {
+    grid-row: 2;
+    max-width: 100%;
+    padding: 3px 4px;
+}
+
+.quiz-reading-circuit-panel .quiz-code-circuit-connector {
+    position: absolute;
+    top: 13px;
+    left: -50%;
+    width: 100%;
+    height: 3px;
+    margin: 0;
+}
+
+@media (max-width: 620px) {
+    .quiz-reading-circuit-panel .quiz-code-circuit-bulbs {
+        grid-template-columns: 1fr;
+        width: min(100%, 230px);
+        gap: 12px;
+    }
+
+    .quiz-reading-circuit-panel .quiz-code-circuit-node {
+        grid-template-columns: 38px minmax(0, 1fr);
+        grid-template-rows: auto;
+        align-items: center;
+        justify-items: start;
+        gap: 10px;
+    }
+
+    .quiz-reading-circuit-panel .quiz-code-circuit-node code {
+        grid-row: 1;
+        grid-column: 2;
+    }
+
+    .quiz-reading-circuit-panel .quiz-code-circuit-bulbs .quiz-part-bulb {
+        grid-row: 1;
+        grid-column: 1;
+        justify-self: center;
+    }
+
+    .quiz-reading-circuit-panel .quiz-code-circuit-connector {
+        top: -20px;
+        left: 18px;
+        width: 3px;
+        height: 28px;
     }
 }
