@@ -21,6 +21,7 @@ public record CodeReadingPageViewModel(
         boolean lastPart,
         List<String> completionNotes,
         List<CodeReadingCircuitGroup> circuitGroups,
+        List<CodeReadingCodeLine> codeLines,
         List<CodeReadingPart> summaryParts,
         boolean runEnabled
 ) {
@@ -33,6 +34,7 @@ public record CodeReadingPageViewModel(
         partStepIds = List.copyOf(partStepIds);
         completionNotes = List.copyOf(completionNotes);
         circuitGroups = List.copyOf(circuitGroups);
+        codeLines = List.copyOf(codeLines);
         summaryParts = List.copyOf(summaryParts);
     }
 }

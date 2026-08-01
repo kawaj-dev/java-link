@@ -8,9 +8,9 @@ import com.javalink.model.ProgramRunResult;
 import com.javalink.model.QuizOption;
 import com.javalink.service.CodeReadingCourseService;
 import com.javalink.service.CodeReadingPageViewModelService;
+import com.javalink.service.CodeReadingLessonCatalog;
 import com.javalink.service.CodeReadingService;
 import com.javalink.service.LessonRunService;
-import com.javalink.service.LessonService;
 import com.javalink.service.LessonViewModelService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
@@ -39,9 +39,7 @@ public class QuizController {
             "shuffledOptions";
     public static final String READING_ITEMS_ATTRIBUTE = "readingItems";
 
-    private static final String LESSON_ID =
-            LessonService.HELLO_PROGRAM_LESSON_ID;
-
+    private final String lessonId;
     private final CodeReadingCourseService courseService;
     private final CodeReadingPageViewModelService pageViewModelService;
     private final CodeReadingService codeReadingService;
@@ -53,13 +51,15 @@ public class QuizController {
             CodeReadingPageViewModelService pageViewModelService,
             CodeReadingService codeReadingService,
             LessonViewModelService lessonViewModelService,
-            LessonRunService lessonRunService
+            LessonRunService lessonRunService,
+            CodeReadingLessonCatalog lessonCatalog
     ) {
         this.courseService = courseService;
         this.pageViewModelService = pageViewModelService;
         this.codeReadingService = codeReadingService;
         this.lessonViewModelService = lessonViewModelService;
         this.lessonRunService = lessonRunService;
+        this.lessonId = lessonCatalog.getDefaultDefinition().lessonId();
     }
 
     /** 現在のセッション状態に対応する画面を表示します。 */
@@ -72,7 +72,7 @@ public class QuizController {
     /** 導入画面からPart 1の学習を開始します。 */
     @PostMapping("/quiz/start")
     public String start(HttpSession session) {
-        courseService.startLearning(session, LESSON_ID);
+        courseService.startLearning(session, lessonId);
         return "redirect:/quiz";
     }
 
@@ -84,7 +84,7 @@ public class QuizController {
     ) {
         courseService.answerCurrentItem(
                 session,
-                LESSON_ID,
+                lessonId,
                 selectedOption
         );
         return "redirect:/quiz";
@@ -93,7 +93,7 @@ public class QuizController {
     /** 正解内容を確認してから、同じPart内の次の用語へ進みます。 */
     @PostMapping("/quiz/item/next")
     public String moveToNextItem(HttpSession session) {
-        courseService.moveToNextItem(session, LESSON_ID);
+        courseService.moveToNextItem(session, lessonId);
         return "redirect:/quiz";
     }
 
@@ -106,7 +106,7 @@ public class QuizController {
     ) {
         return courseService.answerCurrentItemForAnimation(
                 session,
-                LESSON_ID,
+                lessonId,
                 selectedOption
         );
     }
@@ -114,7 +114,7 @@ public class QuizController {
     /** 完了したPartから次のPart、またはまとめ画面へ進みます。 */
     @PostMapping("/quiz/part/next")
     public String moveToNextPart(HttpSession session) {
-        courseService.moveToNextPart(session, LESSON_ID);
+        courseService.moveToNextPart(session, lessonId);
         return "redirect:/quiz";
     }
 
@@ -123,7 +123,7 @@ public class QuizController {
     public String run(Model model, HttpSession session) {
         ProgramRunResult result = lessonRunService.runLesson(
                 session,
-                LESSON_ID
+                lessonId
         );
         addPageModel(model, session);
         model.addAttribute(PROGRAM_RUN_RESULT_ATTRIBUTE, result);
@@ -133,13 +133,13 @@ public class QuizController {
     /** 問題進捗と画面フェーズを初期化して導入へ戻します。 */
     @PostMapping("/quiz/reset")
     public String reset(HttpSession session) {
-        courseService.reset(session, LESSON_ID);
+        courseService.reset(session, lessonId);
         return "redirect:/quiz";
     }
 
     private void addPageModel(Model model, HttpSession session) {
         CodeReadingPageViewModel page =
-                pageViewModelService.create(session, LESSON_ID);
+                pageViewModelService.create(session, lessonId);
         model.addAttribute(PAGE_VIEW_MODEL_ATTRIBUTE, page);
         model.addAttribute("phase", page.phase());
 
@@ -148,7 +148,7 @@ public class QuizController {
         }
         if (page.phase() == CodeReadingPhase.SUMMARY) {
             LessonViewModel lessonViewModel =
-                    lessonViewModelService.createViewModel(session, LESSON_ID);
+                    lessonViewModelService.createViewModel(session, lessonId);
             model.addAttribute(
                     LESSON_VIEW_MODEL_ATTRIBUTE,
                     lessonViewModel
@@ -162,9 +162,9 @@ public class QuizController {
             CodeReadingPageViewModel page
     ) {
         LessonViewModel lessonViewModel =
-                lessonViewModelService.createViewModel(session, LESSON_ID);
+                lessonViewModelService.createViewModel(session, lessonId);
         List<QuizOption> options = codeReadingService.createSelectionOptions(
-                LESSON_ID,
+                lessonId,
                 lessonViewModel.progress()
         );
 
@@ -173,7 +173,7 @@ public class QuizController {
         model.addAttribute(
                 READING_ITEMS_ATTRIBUTE,
                 codeReadingService.createPartItems(
-                        LESSON_ID,
+                        lessonId,
                         lessonViewModel.progress(),
                         page.currentPart()
                 )

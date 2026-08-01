@@ -100,63 +100,27 @@
                 </div>
             </section>
 
-            <div class="quiz-reading-code-panel"
-                 th:classappend="${codeReadingPage.currentPart.id == 'part-2'} ? ' quiz-reading-code-panel--part-2' : ''">
+            <div class="quiz-reading-code-panel">
                 <div class="quiz-reading-code-structure"
-                     th:classappend="${codeReadingPage.currentPart.id == 'part-2'} ? ' quiz-reading-code-structure--part-2' : ''"
                      th:attr="aria-label=|Part ${codeReadingPage.partNumber}のコードと意味|">
-                    <div th:switch="${codeReadingPage.currentPart.id}">
-                        <th:block th:case="'part-1'">
-                            <div class="quiz-reading-code-line">
-                                <div class="quiz-reading-code-unit" th:each="item : ${readingItems}"
-                                     th:attr="data-step-id=${item.stepId}"
-                                     th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
-                                    <code class="quiz-reading-keyword" th:text="${item.keyword}">public</code>
-                                    <div class="quiz-reading-meaning-slot" th:attr="data-meaning-slot=${item.stepId}">
-                                        <span class="quiz-reading-fixed-card" th:if="${item.completed}" th:text="${item.meaning}">意味</span>
-                                    </div>
-                                </div>
-                                <code class="quiz-reading-code-tail">}</code>
+                    <div class="quiz-reading-code-line"
+                         th:each="line : ${codeReadingPage.codeLines}"
+                         th:classappend="${line.cssClass}">
+                        <div class="quiz-reading-code-unit"
+                             th:each="token : ${line.tokens}"
+                             th:attr="data-step-id=${token.item.stepId}"
+                             th:classappend="|${token.item.completed ? ' quiz-reading-code-unit--completed' : ''}${token.item.current ? ' quiz-reading-code-unit--current' : ''}|">
+                            <code class="quiz-reading-keyword"><span th:text="${token.prefix}"></span><span th:text="${token.item.keyword}">public</span><span th:text="${token.suffix}"></span></code>
+                            <div class="quiz-reading-meaning-slot"
+                                 th:attr="data-meaning-slot=${token.item.stepId}">
+                                <span class="quiz-reading-fixed-card"
+                                      th:if="${token.item.completed}"
+                                      th:text="${token.item.meaning}">意味</span>
                             </div>
-                        </th:block>
-                        <th:block th:case="'part-2'">
-                            <div class="quiz-reading-code-line quiz-reading-code-line--part-2">
-                                <div class="quiz-reading-code-unit" th:each="item : ${readingItems}"
-                                     th:attr="data-step-id=${item.stepId}"
-                                     th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
-                                    <code class="quiz-reading-keyword" th:text="${item.keyword}">public</code>
-                                    <div class="quiz-reading-meaning-slot" th:attr="data-meaning-slot=${item.stepId}">
-                                        <span class="quiz-reading-fixed-card" th:if="${item.completed}" th:text="${item.meaning}">意味</span>
-                                    </div>
-                                </div>
-                                <code class="quiz-reading-code-tail">}</code>
-                            </div>
-                        </th:block>
-                        <th:block th:case="'part-3'">
-                            <div class="quiz-reading-code-line">
-                                <div class="quiz-reading-code-unit" th:each="item : ${readingItems}"
-                                     th:attr="data-step-id=${item.stepId}"
-                                     th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
-                                    <code class="quiz-reading-keyword" th:text="${item.keyword}">System.out.println</code>
-                                    <div class="quiz-reading-meaning-slot" th:attr="data-meaning-slot=${item.stepId}">
-                                        <span class="quiz-reading-fixed-card" th:if="${item.completed}" th:text="${item.meaning}">意味</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </th:block>
-                        <th:block th:case="'part-4'">
-                            <div class="quiz-reading-code-line">
-                                <div class="quiz-reading-code-unit"
-                                     th:each="item : ${readingItems}"
-                                     th:attr="data-step-id=${item.stepId}"
-                                     th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
-                                    <code class="quiz-reading-keyword" th:text="${item.keyword}">}</code>
-                                    <div class="quiz-reading-meaning-slot" th:attr="data-meaning-slot=${item.stepId}">
-                                        <span class="quiz-reading-fixed-card" th:if="${item.completed}" th:text="${item.meaning}">意味</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </th:block>
+                        </div>
+                        <code class="quiz-reading-code-tail"
+                              th:if="${line.trailingCode.isEmpty() == false}"
+                              th:text="${line.trailingCode}">}</code>
                     </div>
                 </div>
             </div>

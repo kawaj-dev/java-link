@@ -62,7 +62,10 @@ public class CodeReadingCourseService {
         LessonProgress progress =
                 lessonProgressService.getProgress(session, lessonId);
         CodeReadingPart part =
-                partService.getPartForStep(progress.getCurrentStepId());
+                partService.getPartForStep(
+                        lessonId,
+                        progress.getCurrentStepId()
+                );
 
         if (!progress.isAnswered()
                 || !progress.isCorrect()
@@ -91,7 +94,10 @@ public class CodeReadingCourseService {
         LessonProgress before =
                 lessonProgressService.getProgress(session, lessonId);
         CodeReadingPart answeredPart =
-                partService.getPartForStep(before.getCurrentStepId());
+                partService.getPartForStep(
+                        lessonId,
+                        before.getCurrentStepId()
+                );
         LessonEngine.AnswerResult result = answerCurrentItem(
                 session,
                 lessonId,
@@ -123,7 +129,10 @@ public class CodeReadingCourseService {
         LessonProgress progress =
                 lessonProgressService.getProgress(session, lessonId);
         CodeReadingPart part =
-                partService.getPartForStep(progress.getCurrentStepId());
+                partService.getPartForStep(
+                        lessonId,
+                        progress.getCurrentStepId()
+                );
         boolean completed = part.stepIds().stream()
                 .allMatch(progress.getCompletedStepIds()::contains);
 
@@ -132,7 +141,7 @@ public class CodeReadingCourseService {
             return new PartTransitionResult(progress, false, false);
         }
 
-        if (partService.isLastPart(part)) {
+        if (partService.isLastPart(lessonId, part)) {
             flowService.showSummary(session, lessonId);
             return new PartTransitionResult(progress, true, true);
         }

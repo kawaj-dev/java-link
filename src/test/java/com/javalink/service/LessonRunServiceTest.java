@@ -24,11 +24,14 @@ class LessonRunServiceTest {
     @BeforeEach
     void setUp() {
         QuizService quizService = new QuizService();
-        lessonService = new LessonService(quizService);
+        CodeReadingLessonCatalog lessonCatalog =
+                new CodeReadingLessonCatalog();
+        lessonService = new LessonService(quizService, lessonCatalog);
         lessonProgressService = new LessonProgressService(lessonService);
         lessonRunService = new LessonRunService(
                 lessonService,
-                lessonProgressService
+                lessonProgressService,
+                lessonCatalog
         );
     }
 

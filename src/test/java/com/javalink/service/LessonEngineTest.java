@@ -29,7 +29,10 @@ class LessonEngineTest {
     @BeforeEach
     void setUp() {
         QuizService quizService = new QuizService();
-        lessonService = new LessonService(quizService);
+        lessonService = new LessonService(
+                quizService,
+                new CodeReadingLessonCatalog()
+        );
         progressService = new LessonProgressService(lessonService);
         lessonEngine = new LessonEngine(
                 lessonService,

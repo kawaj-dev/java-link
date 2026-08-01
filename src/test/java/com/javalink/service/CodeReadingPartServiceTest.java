@@ -14,12 +14,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class CodeReadingPartServiceTest {
 
+    private static final String LESSON_ID =
+            LessonService.HELLO_PROGRAM_LESSON_ID;
     private final CodeReadingPartService service =
-            new CodeReadingPartService();
+            new CodeReadingPartService(new CodeReadingLessonCatalog());
 
     @Test
     void 四つのPartを学習順に返す() {
-        List<CodeReadingPart> parts = service.getParts();
+        List<CodeReadingPart> parts = service.getParts(LESSON_ID);
 
         assertEquals(4, parts.size());
         assertEquals(
@@ -39,15 +41,15 @@ class CodeReadingPartServiceTest {
 
     @Test
     void Part2は七項目で他Partは四項目以内に収まる() {
-        assertEquals(7, service.getPart("part-2").stepIds().size());
-        assertTrue(service.getParts().stream()
+        assertEquals(7, service.getPart(LESSON_ID, "part-2").stepIds().size());
+        assertTrue(service.getParts(LESSON_ID).stream()
                 .filter(part -> !part.id().equals("part-2"))
                 .allMatch(part -> part.stepIds().size() <= 4));
     }
 
     @Test
     void 括弧とドットをPart完了時の説明で補足する() {
-        CodeReadingPart part3 = service.getPart("part-3");
+        CodeReadingPart part3 = service.getPart(LESSON_ID, "part-3");
 
         assertTrue(part3.completionNotes().stream()
                 .anyMatch(note -> note.contains("( )")));
@@ -55,18 +57,27 @@ class CodeReadingPartServiceTest {
                 .anyMatch(note -> note.contains("画面へ表示して改行")));
         assertTrue(part3.completionNotes().stream()
                 .anyMatch(note -> note.contains(". は")));
-        assertEquals("(\"Hello\")", part3.displayTokenFor("hello-string"));
+        assertEquals("\"Hello\"", part3.displayTokenFor("hello-string"));
+        var helloToken = new CodeReadingLessonCatalog()
+                .getDefinition(LESSON_ID)
+                .codeLinesByPart()
+                .get("part-3")
+                .get(0)
+                .tokens()
+                .get(1);
+        assertEquals("(", helloToken.prefix());
+        assertEquals(")", helloToken.suffix());
     }
 
     @Test
     void 各Partに初心者向けの導入説明がある() {
-        assertTrue(service.getPart("part-1").introduction().stream()
+        assertTrue(service.getPart(LESSON_ID, "part-1").introduction().stream()
                 .anyMatch(line -> line.contains("自由に変更")));
         assertEquals(
                 "public static void main(String[] args) は、Javaでプログラムを始めるための決まり文句です。",
-                service.getPart("part-2").introduction().get(0)
+                service.getPart(LESSON_ID, "part-2").introduction().get(0)
         );
-        assertTrue(service.getParts().stream()
+        assertTrue(service.getParts(LESSON_ID).stream()
                 .allMatch(part -> !part.introduction().isEmpty()));
     }
 
@@ -78,7 +89,8 @@ class CodeReadingPartServiceTest {
         progress.completeStep("void");
         progress.completeStep("main");
 
-        List<CodeReadingCircuitGroup> groups = service.createCircuitGroups(progress);
+        List<CodeReadingCircuitGroup> groups =
+                service.createCircuitGroups(LESSON_ID, progress);
 
         assertEquals(4, groups.size());
         assertEquals(
@@ -101,25 +113,31 @@ class CodeReadingPartServiceTest {
     void ステップから所属Partを取得できる() {
         assertEquals(
                 "part-2",
-                service.getPartForStep("string-array").id()
+                service.getPartForStep(LESSON_ID, "string-array").id()
         );
         assertEquals(
                 "part-4",
-                service.getPartForStep("class-close").id()
+                service.getPartForStep(LESSON_ID, "class-close").id()
         );
     }
 
     @Test
     void 最後のPartを判定できる() {
-        assertFalse(service.isLastPart(service.getPart("part-1")));
-        assertTrue(service.isLastPart(service.getPart("part-4")));
+        assertFalse(service.isLastPart(
+                LESSON_ID,
+                service.getPart(LESSON_ID, "part-1")
+        ));
+        assertTrue(service.isLastPart(
+                LESSON_ID,
+                service.getPart(LESSON_ID, "part-4")
+        ));
     }
 
     @Test
     void 存在しないPartでは分かりやすい例外になる() {
         IllegalArgumentException exception = assertThrows(
                 IllegalArgumentException.class,
-                () -> service.getPart("missing-part")
+                () -> service.getPart(LESSON_ID, "missing-part")
         );
 
         assertTrue(exception.getMessage().contains("missing-part"));

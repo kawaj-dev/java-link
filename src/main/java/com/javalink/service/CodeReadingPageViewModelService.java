@@ -1,6 +1,7 @@
 package com.javalink.service;
 
 import com.javalink.model.CodeReadingFlowState;
+import com.javalink.model.CodeReadingLessonDefinition;
 import com.javalink.model.CodeReadingPageViewModel;
 import com.javalink.model.CodeReadingPart;
 import com.javalink.model.CodeReadingPhase;
@@ -20,25 +21,27 @@ import java.util.stream.Collectors;
 @Service
 public class CodeReadingPageViewModelService {
 
-    private static final String STAGE_NAME = "Stage 1";
-    private static final String LEARNING_GOAL =
-            "「Hello」と表示するプログラムを読めるようになろう";
-
     private final LessonService lessonService;
     private final LessonProgressService lessonProgressService;
     private final CodeReadingFlowService flowService;
     private final CodeReadingPartService partService;
+    private final CodeReadingLessonCatalog lessonCatalog;
+    private final CodeReadingService codeReadingService;
 
     public CodeReadingPageViewModelService(
             LessonService lessonService,
             LessonProgressService lessonProgressService,
             CodeReadingFlowService flowService,
-            CodeReadingPartService partService
+            CodeReadingPartService partService,
+            CodeReadingLessonCatalog lessonCatalog,
+            CodeReadingService codeReadingService
     ) {
         this.lessonService = lessonService;
         this.lessonProgressService = lessonProgressService;
         this.flowService = flowService;
         this.partService = partService;
+        this.lessonCatalog = lessonCatalog;
+        this.codeReadingService = codeReadingService;
     }
 
     public CodeReadingPageViewModel create(
@@ -46,10 +49,15 @@ public class CodeReadingPageViewModelService {
             String lessonId
     ) {
         Lesson lesson = lessonService.getLesson(lessonId);
+        CodeReadingLessonDefinition definition =
+                lessonCatalog.getDefinition(lessonId);
         CodeReadingFlowState flow = flowService.getState(session, lessonId);
 
         if (flow.phase() == CodeReadingPhase.INTRO) {
-            return base(flow.phase(), lesson, null, null, 0, false, false);
+            return base(
+                    flow.phase(), lesson, definition,
+                    null, null, 0, false, false
+            );
         }
 
         LessonProgress progress =
@@ -61,6 +69,7 @@ public class CodeReadingPageViewModelService {
             return base(
                     CodeReadingPhase.INTRO,
                     lesson,
+                    definition,
                     null,
                     null,
                     0,
@@ -71,7 +80,7 @@ public class CodeReadingPageViewModelService {
 
         if (flow.phase() == CodeReadingPhase.SUMMARY) {
             return base(
-                    flow.phase(), lesson, null, null, 0,
+                    flow.phase(), lesson, definition, null, null, 0,
                     false, progress.isCompleted()
             );
         }
@@ -81,7 +90,7 @@ public class CodeReadingPageViewModelService {
                 progress.getCurrentStepId()
         );
         CodeReadingPart currentPart =
-                partService.getPartForStep(currentStep.id());
+                partService.getPartForStep(lessonId, currentStep.id());
         int completedCount = (int) currentPart.stepIds().stream()
                 .filter(progress.getCompletedStepIds()::contains)
                 .count();
@@ -89,19 +98,24 @@ public class CodeReadingPageViewModelService {
 
         return new CodeReadingPageViewModel(
                 flow.phase(),
-                STAGE_NAME,
-                LEARNING_GOAL,
+                definition.stageName(),
+                definition.learningGoal(),
                 lesson.completeCode(),
                 currentPart,
                 currentPart.order(),
-                partService.getParts().size(),
+                partService.getParts(lessonId).size(),
                 currentStep,
                 currentPart.stepIds(),
                 completedCount,
                 partCompleted,
-                partService.isLastPart(currentPart),
+                partService.isLastPart(lessonId, currentPart),
                 currentPart.completionNotes(),
-                partService.createCircuitGroups(progress),
+                partService.createCircuitGroups(lessonId, progress),
+                codeReadingService.createCodeLines(
+                        lessonId,
+                        progress,
+                        currentPart
+                ),
                 List.of(),
                 false
         );
@@ -110,6 +124,7 @@ public class CodeReadingPageViewModelService {
     private CodeReadingPageViewModel base(
             CodeReadingPhase phase,
             Lesson lesson,
+            CodeReadingLessonDefinition definition,
             CodeReadingPart currentPart,
             LessonStep currentStep,
             int completedCount,
@@ -118,12 +133,12 @@ public class CodeReadingPageViewModelService {
     ) {
         return new CodeReadingPageViewModel(
                 phase,
-                STAGE_NAME,
-                LEARNING_GOAL,
+                definition.stageName(),
+                definition.learningGoal(),
                 lesson.completeCode(),
                 currentPart,
                 0,
-                partService.getParts().size(),
+                partService.getParts(lesson.id()).size(),
                 currentStep,
                 List.of(),
                 completedCount,
@@ -131,8 +146,9 @@ public class CodeReadingPageViewModelService {
                 false,
                 List.of(),
                 List.of(),
+                List.of(),
                 phase == CodeReadingPhase.SUMMARY
-                        ? partService.getParts()
+                        ? partService.getParts(lesson.id())
                         : List.of(),
                 runEnabled
         );

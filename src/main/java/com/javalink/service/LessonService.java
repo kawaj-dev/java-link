@@ -6,6 +6,7 @@ import com.javalink.model.QuizQuestion;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -17,7 +18,7 @@ public class LessonService {
 
     private static final String MAIN_METHOD_LESSON_ID = "main-method-basic";
     public static final String HELLO_PROGRAM_LESSON_ID =
-            "hello-program-reading";
+            CodeReadingLessonCatalog.STAGE1_LESSON_ID;
 
     private final Map<String, Lesson> lessons;
 
@@ -26,7 +27,10 @@ public class LessonService {
      *
      * @param quizService 既存問題を管理するService
      */
-    public LessonService(QuizService quizService) {
+    public LessonService(
+            QuizService quizService,
+            CodeReadingLessonCatalog lessonCatalog
+    ) {
         Lesson mainMethodLesson = new Lesson(
                 MAIN_METHOD_LESSON_ID,
                 "mainメソッドを完成させよう",
@@ -42,89 +46,12 @@ public class LessonService {
                 )
         );
 
-        Lesson helloProgramLesson = new Lesson(
-                HELLO_PROGRAM_LESSON_ID,
-                "「Hello」と表示するプログラム",
-                "完成プログラムを4つのPartに分け、意味のまとまりで読みます。",
-                """
-                        public class Main {
-                            public static void main(String[] args) {
-                                System.out.println("Hello");
-                            }
-                        }
-                        """,
-                List.of(
-                        createStep(
-                                quizService, "class-public", "public",
-                                1, "public"
-                        ),
-                        createStep(
-                                quizService, "class-keyword", "class-keyword",
-                                2, "class"
-                        ),
-                        createStep(
-                                quizService, "class-name", "class-name",
-                                3, "Main"
-                        ),
-                        createStep(
-                                quizService, "class-open", "open-brace",
-                                4, "{"
-                        ),
-                        createStep(
-                                quizService, "main-public", "public",
-                                5, "public"
-                        ),
-                        createStep(
-                                quizService, "static", "static",
-                                6, "static"
-                        ),
-                        createStep(
-                                quizService, "void", "void",
-                                7, "void"
-                        ),
-                        createStep(
-                                quizService, "main", "main",
-                                8, "main"
-                        ),
-                        createStep(
-                                quizService, "string-array", "string-array",
-                                9, "String[]"
-                        ),
-                        createStep(
-                                quizService, "args", "args",
-                                10, "args"
-                        ),
-                        createStep(
-                                quizService, "main-open", "open-brace",
-                                11, "{"
-                        ),
-                        createStep(
-                                quizService, "print-command", "print-command",
-                                12, "System.out.println"
-                        ),
-                        createStep(
-                                quizService, "hello-string", "hello-string",
-                                13, "\"Hello\""
-                        ),
-                        createStep(
-                                quizService, "semicolon", "semicolon",
-                                14, ";"
-                        ),
-                        createStep(
-                                quizService, "main-close", "main-close",
-                                15, "}"
-                        ),
-                        createStep(
-                                quizService, "class-close", "class-close",
-                                16, "}"
-                        )
-                )
+        Map<String, Lesson> registeredLessons = new HashMap<>();
+        registeredLessons.put(mainMethodLesson.id(), mainMethodLesson);
+        lessonCatalog.getLessons().forEach(lesson ->
+                registeredLessons.put(lesson.id(), lesson)
         );
-
-        lessons = Map.of(
-                mainMethodLesson.id(), mainMethodLesson,
-                helloProgramLesson.id(), helloProgramLesson
-        );
+        lessons = Map.copyOf(registeredLessons);
     }
 
     /**
@@ -230,32 +157,4 @@ public class LessonService {
         );
     }
 
-    /**
-     * 同じ問題データを別ステージの一意なstepIdで再利用します。
-     */
-    private LessonStep createStep(
-            QuizService quizService,
-            String stepId,
-            String questionId,
-            int order,
-            String displayLabel
-    ) {
-        QuizQuestion question = quizService.getQuestion(questionId);
-        if (!question.id().equals(questionId)) {
-            throw new IllegalStateException(
-                    "教材で使用する問題が見つかりません。questionId: "
-                            + questionId
-            );
-        }
-        return new LessonStep(
-                stepId,
-                order,
-                displayLabel,
-                question.codeBefore(),
-                question.targetCode(),
-                question.codeAfter(),
-                question,
-                true
-        );
-    }
 }

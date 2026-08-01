@@ -2775,15 +2775,6 @@ h1 {
     padding-top: 5px;
 }
 
-/* 丸括弧は問題stepにせず、mainメソッドのコード表記として補います。 */
-.quiz-reading-code-line--part-2 [data-step-id="string-array"] .quiz-reading-keyword::before {
-    content: "(";
-}
-
-.quiz-reading-code-line--part-2 [data-step-id="args"] .quiz-reading-keyword::after {
-    content: ")";
-}
-
 /* Part 2は7つのコードと意味を、濃紺のコード欄内で対応させます。 */
 .quiz-reading-code-structure--part-2 {
     width: 100%;
