@@ -10,6 +10,7 @@ public record CodeReadingPart(
         String id,
         int order,
         String title,
+        List<String> introduction,
         String targetCode,
         List<String> stepIds,
         List<String> displayTokens,
@@ -17,11 +18,12 @@ public record CodeReadingPart(
         String reviewSummary
 ) {
 
-    private static final int MAX_STEPS = 4;
+    private static final int MAX_STEPS = 7;
 
     public CodeReadingPart {
         Objects.requireNonNull(id, "id must not be null");
         Objects.requireNonNull(title, "title must not be null");
+        Objects.requireNonNull(introduction, "introduction must not be null");
         Objects.requireNonNull(targetCode, "targetCode must not be null");
         Objects.requireNonNull(stepIds, "stepIds must not be null");
         Objects.requireNonNull(displayTokens, "displayTokens must not be null");
@@ -33,6 +35,7 @@ public record CodeReadingPart(
                 reviewSummary,
                 "reviewSummary must not be null"
         );
+        introduction = List.copyOf(introduction);
         stepIds = List.copyOf(stepIds);
         displayTokens = List.copyOf(displayTokens);
         completionNotes = List.copyOf(completionNotes);
@@ -45,7 +48,7 @@ public record CodeReadingPart(
         }
         if (stepIds.size() > MAX_STEPS) {
             throw new IllegalArgumentException(
-                    "1つのPartに登録できる項目は4つまでです。"
+                    "1つのPartに登録できる項目は7つまでです。"
             );
         }
         if (displayTokens.size() != stepIds.size()) {

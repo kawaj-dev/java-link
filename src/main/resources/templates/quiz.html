@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='quiz-parts-step2')}"
-          href="/css/style.css?v=quiz-parts-step2">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='code-units-stage1')}"
+          href="/css/style.css?v=code-units-stage1">
     <script th:if="${phase.name() == 'LEARNING'}" defer
             th:src="@{/js/quiz-reading.js(v='all-parts-step3')}"
             src="/js/quiz-reading.js?v=all-parts-step3"></script>
@@ -71,47 +71,110 @@
         <div class="quiz-reading-stage">
             <h2 id="part-title" class="quiz-reading-part-title"
                 th:text="${codeReadingPage.currentPart.title}">クラスを作る</h2>
-
-            <p class="quiz-reading-code-label">今回読むコード</p>
-            <div class="quiz-reading-code-panel">
-                <div class="quiz-reading-code-map"
-                     th:classappend="| quiz-reading-code-map--${codeReadingPage.currentPart.id}|"
-                     th:attr="aria-label=|Part ${codeReadingPage.partNumber}のコードと意味|">
-                    <div class="quiz-reading-code-unit"
-                         th:each="item : ${readingItems}"
-                         th:attr="data-step-id=${item.stepId}"
-                         th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
-                        <code class="quiz-reading-keyword" th:text="${item.keyword}">public</code>
-                        <div class="quiz-reading-meaning-slot"
-                             th:attr="data-meaning-slot=${item.stepId}">
-                            <span class="quiz-reading-fixed-card"
-                                  th:if="${item.completed}"
-                                  th:text="${item.meaning}">外から使える</span>
-                        </div>
-                    </div>
-                </div>
+            <div class="quiz-reading-part-introduction">
+                <p th:each="line : ${codeReadingPage.currentPart.introduction}"
+                   th:text="${line}">初心者向けの説明</p>
             </div>
 
             <section class="quiz-reading-circuit-panel" aria-labelledby="circuit-title">
                 <h3 id="circuit-title">コード回路</h3>
-                <div class="quiz-part-circuit"
-                     th:attr="aria-label=|Part ${codeReadingPage.partNumber}の進捗 ${codeReadingPage.partCompletedCount}/${codeReadingPage.partStepIds.size()}|">
-                    <div class="quiz-part-circuit-step"
-                         th:each="item, status : ${readingItems}"
-                         th:attr="data-bulb-step=${item.stepId}"
-                         th:classappend="${item.completed ? ' quiz-part-circuit-step--completed' : ''}">
-                        <span class="quiz-part-circuit-line"
-                              th:if="${status.index > 0}" aria-hidden="true"></span>
-                        <div class="quiz-part-circuit-node">
-                            <span class="quiz-part-bulb" aria-hidden="true"></span>
-                            <code th:text="${item.keyword}">public</code>
-                            <small th:if="${item.completed}" th:text="${item.meaning}">外から使える</small>
-                            <span class="visually-hidden"
-                                  th:text="${item.completed ? item.keyword + ' 完了' : item.keyword + ' 未完了'}"></span>
+                <div class="quiz-code-circuit"
+                     th:attr="aria-label=|コード全体の進捗|">
+                    <article class="quiz-code-circuit-group"
+                             th:each="group : ${codeReadingPage.circuitGroups}"
+                             th:if="${group.current}"
+                             th:classappend="${group.current ? ' quiz-code-circuit-group--current' : ''}"
+                             th:attr="data-circuit-group=${group.id}">
+                        <code th:text="${group.codeLabel}">public class Main { }</code>
+                        <div class="quiz-code-circuit-bulbs">
+                            <span class="quiz-part-circuit-step"
+                                  th:each="bulb, status : ${group.bulbs}"
+                                  th:attr="data-bulb-step=${bulb.stepId}"
+                                  th:classappend="|${bulb.completed ? ' quiz-part-circuit-step--completed' : ''}${bulb.current ? ' quiz-part-circuit-step--current' : ''}|">
+                                <span class="quiz-code-circuit-connector"
+                                      th:if="${status.index > 0}" aria-hidden="true"></span>
+                                <span class="quiz-code-circuit-node">
+                                    <code th:text="${bulb.codeLabel}">public</code>
+                                    <span class="quiz-part-bulb" aria-hidden="true"></span>
+                                    <span class="visually-hidden"
+                                          th:text="${bulb.completed ? bulb.codeLabel + ' 完了' : bulb.codeLabel + ' 未完了'}"></span>
+                                </span>
+                            </span>
                         </div>
-                    </div>
+                    </article>
                 </div>
             </section>
+
+            <div class="quiz-reading-code-panel"
+                 th:classappend="${codeReadingPage.currentPart.id == 'part-2'} ? ' quiz-reading-code-panel--part-2' : ''">
+                <div class="quiz-reading-code-structure"
+                     th:classappend="${codeReadingPage.currentPart.id == 'part-2'} ? ' quiz-reading-code-structure--part-2' : ''"
+                     th:attr="aria-label=|Part ${codeReadingPage.partNumber}のコードと意味|">
+                    <div th:switch="${codeReadingPage.currentPart.id}">
+                        <th:block th:case="'part-1'">
+                            <div class="quiz-reading-code-line">
+                                <div class="quiz-reading-code-unit" th:each="item : ${readingItems}"
+                                     th:attr="data-step-id=${item.stepId}"
+                                     th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
+                                    <code class="quiz-reading-keyword" th:text="${item.keyword}">public</code>
+                                    <div class="quiz-reading-meaning-slot" th:attr="data-meaning-slot=${item.stepId}">
+                                        <span class="quiz-reading-fixed-card" th:if="${item.completed}" th:text="${item.meaning}">意味</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-reading-code-line"><code>}</code></div>
+                        </th:block>
+                        <th:block th:case="'part-2'">
+                            <div class="quiz-reading-code-line"><code>public class Main {</code></div>
+                            <div class="quiz-reading-code-line quiz-reading-code-line--indent quiz-reading-code-line--part-2">
+                                <div class="quiz-reading-code-unit" th:each="item : ${readingItems}"
+                                     th:attr="data-step-id=${item.stepId}"
+                                     th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
+                                    <code class="quiz-reading-keyword" th:text="${item.keyword}">public</code>
+                                    <div class="quiz-reading-meaning-slot" th:attr="data-meaning-slot=${item.stepId}">
+                                        <span class="quiz-reading-fixed-card" th:if="${item.completed}" th:text="${item.meaning}">意味</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-reading-code-line quiz-reading-code-line--indent"><code>}</code></div>
+                            <div class="quiz-reading-code-line"><code>}</code></div>
+                        </th:block>
+                        <th:block th:case="'part-3'">
+                            <div class="quiz-reading-code-line"><code>public class Main {</code></div>
+                            <div class="quiz-reading-code-line quiz-reading-code-line--indent"><code>public static void main(String[] args) {</code></div>
+                            <div class="quiz-reading-code-line quiz-reading-code-line--double-indent">
+                                <div class="quiz-reading-code-unit" th:each="item : ${readingItems}"
+                                     th:attr="data-step-id=${item.stepId}"
+                                     th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
+                                    <code class="quiz-reading-keyword" th:text="${item.keyword}">System.out.println</code>
+                                    <div class="quiz-reading-meaning-slot" th:attr="data-meaning-slot=${item.stepId}">
+                                        <span class="quiz-reading-fixed-card" th:if="${item.completed}" th:text="${item.meaning}">意味</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="quiz-reading-code-line quiz-reading-code-line--indent"><code>}</code></div>
+                            <div class="quiz-reading-code-line"><code>}</code></div>
+                        </th:block>
+                        <th:block th:case="'part-4'">
+                            <div class="quiz-reading-code-line"><code>public class Main {</code></div>
+                            <div class="quiz-reading-code-line quiz-reading-code-line--indent"><code>public static void main(String[] args) {</code></div>
+                            <div class="quiz-reading-code-line quiz-reading-code-line--double-indent"><code>System.out.println("Hello");</code></div>
+                            <div class="quiz-reading-code-line"
+                                 th:each="item, status : ${readingItems}"
+                                 th:classappend="${status.index == 0 ? ' quiz-reading-code-line--indent' : ''}">
+                                <div class="quiz-reading-code-unit"
+                                     th:attr="data-step-id=${item.stepId}"
+                                     th:classappend="|${item.completed ? ' quiz-reading-code-unit--completed' : ''}${item.current ? ' quiz-reading-code-unit--current' : ''}|">
+                                    <code class="quiz-reading-keyword" th:text="${item.keyword}">}</code>
+                                    <div class="quiz-reading-meaning-slot" th:attr="data-meaning-slot=${item.stepId}">
+                                        <span class="quiz-reading-fixed-card" th:if="${item.completed}" th:text="${item.meaning}">意味</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+                    </div>
+                </div>
+            </div>
 
             <section class="quiz-reading-question-panel"
                      th:if="${codeReadingPage.partCompleted == false}">
@@ -120,7 +183,8 @@
                     QUESTION 1 / 4
                 </p>
                 <p class="quiz-reading-current-term">
-                    現在の用語：<strong><code th:text="${codeReadingPage.currentStep.displayLabel}">public</code></strong>
+                    <span>現在の用語：</span>
+                    <strong><code th:text="${codeReadingPage.currentStep.displayLabel}">public</code></strong>
                 </p>
                 <h3 th:text="|${codeReadingPage.currentStep.displayLabel} の意味はどれですか？|">
                     public の意味はどれですか？
@@ -194,7 +258,24 @@
              aria-labelledby="summary-title">
         <p class="step-label">SUMMARY</p>
         <h2 id="summary-title">今日読めるようになったコード</h2>
-        <pre class="quiz-summary-code"><code th:text="${codeReadingPage.completedCode}">完成コード</code></pre>
+        <div class="quiz-ide-window">
+            <div class="quiz-ide-tabbar">
+                <span class="quiz-ide-tab quiz-ide-tab--active">
+                    <span class="quiz-java-file-icon" aria-hidden="true">J</span>
+                    Hello.java
+                </span>
+            </div>
+            <div class="quiz-ide-editor">
+                <div class="quiz-ide-line-numbers" aria-hidden="true">
+                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                </div>
+                <pre class="quiz-full-code quiz-intro-code"><code>public class Main {
+    public static void main(String[] args) {
+        System.out.println("Hello");
+    }
+}</code></pre>
+            </div>
+        </div>
 
         <dl class="quiz-focus-review-list">
             <div th:each="part : ${codeReadingPage.summaryParts}">

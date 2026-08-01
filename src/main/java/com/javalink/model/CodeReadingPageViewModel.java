@@ -20,6 +20,7 @@ public record CodeReadingPageViewModel(
         boolean partCompleted,
         boolean lastPart,
         List<String> completionNotes,
+        List<CodeReadingCircuitGroup> circuitGroups,
         List<CodeReadingPart> summaryParts,
         boolean runEnabled
 ) {
@@ -31,6 +32,7 @@ public record CodeReadingPageViewModel(
         Objects.requireNonNull(completedCode, "completedCode must not be null");
         partStepIds = List.copyOf(partStepIds);
         completionNotes = List.copyOf(completionNotes);
+        circuitGroups = List.copyOf(circuitGroups);
         summaryParts = List.copyOf(summaryParts);
     }
 }

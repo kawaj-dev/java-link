@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 画面フェーズと学習進捗から、Quiz画面専用ViewModelを作ります。
@@ -53,6 +55,20 @@ public class CodeReadingPageViewModelService {
         LessonProgress progress =
                 lessonProgressService.getProgress(session, lessonId);
 
+        if (!isCompatibleWithCurrentLesson(progress, lesson)) {
+            lessonProgressService.resetProgress(session, lessonId);
+            flowService.reset(session, lessonId);
+            return base(
+                    CodeReadingPhase.INTRO,
+                    lesson,
+                    null,
+                    null,
+                    0,
+                    false,
+                    false
+            );
+        }
+
         if (flow.phase() == CodeReadingPhase.SUMMARY) {
             return base(
                     flow.phase(), lesson, null, null, 0,
@@ -85,6 +101,7 @@ public class CodeReadingPageViewModelService {
                 partCompleted,
                 partService.isLastPart(currentPart),
                 currentPart.completionNotes(),
+                partService.createCircuitGroups(progress),
                 List.of(),
                 false
         );
@@ -113,10 +130,23 @@ public class CodeReadingPageViewModelService {
                 partCompleted,
                 false,
                 List.of(),
+                List.of(),
                 phase == CodeReadingPhase.SUMMARY
                         ? partService.getParts()
                         : List.of(),
                 runEnabled
         );
+    }
+
+    /** 開発中にstep構成が変わった旧セッションを安全に導入へ戻します。 */
+    private boolean isCompatibleWithCurrentLesson(
+            LessonProgress progress,
+            Lesson lesson
+    ) {
+        Set<String> validStepIds = lesson.steps().stream()
+                .map(LessonStep::id)
+                .collect(Collectors.toSet());
+        return validStepIds.contains(progress.getCurrentStepId())
+                && validStepIds.containsAll(progress.getCompletedStepIds());
     }
 }

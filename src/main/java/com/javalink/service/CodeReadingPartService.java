@@ -1,6 +1,9 @@
 package com.javalink.service;
 
+import com.javalink.model.CodeReadingCircuitBulb;
+import com.javalink.model.CodeReadingCircuitGroup;
 import com.javalink.model.CodeReadingPart;
+import com.javalink.model.LessonProgress;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,11 +14,43 @@ import java.util.List;
 @Service
 public class CodeReadingPartService {
 
+    private static final List<CircuitDefinition> CIRCUIT_DEFINITIONS = List.of(
+            new CircuitDefinition(
+                    "class-declaration",
+                    "public class Main { }",
+                    List.of("class-public", "class-keyword", "class-name", "class-open"),
+                    List.of("public", "class", "Main", "{ }")
+            ),
+            new CircuitDefinition(
+                    "main-method",
+                    "public static void main(String[] args) { }",
+                    List.of("main-public", "static", "void", "main", "string-array", "args", "main-open"),
+                    List.of("public", "static", "void", "main", "String[]", "args", "{ }")
+            ),
+            new CircuitDefinition(
+                    "print-statement",
+                    "System.out.println(\"Hello\");",
+                    List.of("print-command", "hello-string", "semicolon"),
+                    List.of("System.out.println", "\"Hello\"", ";")
+            ),
+            new CircuitDefinition(
+                    "block-closes",
+                    "mainメソッド終了 }　Mainクラス終了 }",
+                    List.of("main-close", "class-close"),
+                    List.of("mainメソッド終了 }", "Mainクラス終了 }")
+            )
+    );
+
     private static final List<CodeReadingPart> HELLO_PARTS = List.of(
             new CodeReadingPart(
                     "part-1",
                     1,
                     "クラスを作る",
+                    List.of(
+                            "Mainという名前のクラスを作ります。",
+                            "Mainという名前は自由に変更できます。",
+                            "今回は分かりやすくMainという名前を使います。"
+                    ),
                     "public class Main {",
                     List.of(
                             "class-public",
@@ -25,7 +60,8 @@ public class CodeReadingPartService {
                     ),
                     List.of("public", "class", "Main", "{"),
                     List.of(
-                            "{ は、Mainクラスの中身がここから始まることを表します。"
+                            "MainはJavaの固定名ではなく、自分で付けられるクラス名です。",
+                            "{ から } までがMainクラスのブロックです。"
                     ),
                     "外から使えるMainクラスを作る"
             ),
@@ -33,33 +69,26 @@ public class CodeReadingPartService {
                     "part-2",
                     2,
                     "mainメソッドを作る",
-                    "public static void main",
-                    List.of("main-public", "static", "void", "main"),
-                    List.of("public", "static", "void", "main"),
                     List.of(
-                            "public static void mainを、Javaが最初に実行する入口として読みます。"
+                            "public static void main(String[] args) は、Javaでプログラムを始めるための決まり文句です。",
+                            "Javaはこのmainメソッドから実行を始めます。"
+                    ),
+                    "public static void main(String[] args) {",
+                    List.of(
+                            "main-public", "static", "void", "main",
+                            "string-array", "args", "main-open"
+                    ),
+                    List.of("public", "static", "void", "main", "String[]", "args", "{"),
+                    List.of(
+                            "public static void main(String[] args) { は、mainメソッドを始める決まり文句です。"
                     ),
                     "Javaが最初に実行するmainメソッド"
             ),
             new CodeReadingPart(
                     "part-3",
                     3,
-                    "mainメソッドが受け取る情報",
-                    "(String[] args) {",
-                    List.of("string-array", "args", "main-open"),
-                    List.of("(String[]", "args)", "{"),
-                    List.of(
-                            "( ) は、mainメソッドが受け取る情報を書く場所です。",
-                            "String[] は文字列の配列です。",
-                            "args は受け取った値につける名前です。",
-                            "{ は、mainメソッドの中身がここから始まることを表します。"
-                    ),
-                    "文字列の配列をargsという名前で受け取る"
-            ),
-            new CodeReadingPart(
-                    "part-4",
-                    4,
                     "「Hello」を表示する",
+                    List.of("画面へ文字を表示する命令を書きます。"),
                     "System.out.println(\"Hello\");",
                     List.of("print-command", "hello-string", "semicolon"),
                     List.of("System.out.println", "(\"Hello\")", ";"),
@@ -71,9 +100,10 @@ public class CodeReadingPartService {
                     "Helloと表示して改行する"
             ),
             new CodeReadingPart(
-                    "part-5",
-                    5,
-                    "コードのまとまりを閉じる",
+                    "part-4",
+                    4,
+                    "ブロックの終わりを確認する",
+                    List.of("mainメソッドとMainクラスを順番に閉じます。"),
                     "}\n}",
                     List.of("main-close", "class-close"),
                     List.of("}", "}"),
@@ -110,5 +140,50 @@ public class CodeReadingPartService {
 
     public boolean isLastPart(CodeReadingPart part) {
         return part.order() == HELLO_PARTS.size();
+    }
+
+    /**
+     * 完了済みstepから、Javaコードの意味単位でまとめた回路を作ります。
+     */
+    public List<CodeReadingCircuitGroup> createCircuitGroups(
+            LessonProgress progress
+    ) {
+        return CIRCUIT_DEFINITIONS.stream()
+                .map(definition -> {
+                    List<CodeReadingCircuitBulb> bulbs = java.util.stream.IntStream
+                            .range(0, definition.stepIds().size())
+                            .mapToObj(index -> {
+                                String stepId = definition.stepIds().get(index);
+                                return new CodeReadingCircuitBulb(
+                                        stepId,
+                                        definition.codeLabels().get(index),
+                                        progress.getCompletedStepIds().contains(stepId),
+                                        stepId.equals(progress.getCurrentStepId())
+                                );
+                            })
+                            .toList();
+                    return new CodeReadingCircuitGroup(
+                            definition.id(),
+                            definition.codeLabel(),
+                            bulbs,
+                            bulbs.stream().anyMatch(CodeReadingCircuitBulb::current)
+                    );
+                })
+                .toList();
+    }
+
+    private record CircuitDefinition(
+            String id,
+            String codeLabel,
+            List<String> stepIds,
+            List<String> codeLabels
+    ) {
+        private CircuitDefinition {
+            if (stepIds.size() != codeLabels.size()) {
+                throw new IllegalArgumentException(
+                        "回路のstepIdとコード表示は同じ数が必要です。"
+                );
+            }
+        }
     }
 }

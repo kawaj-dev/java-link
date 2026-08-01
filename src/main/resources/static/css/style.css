@@ -2175,7 +2175,7 @@ h1 {
     box-shadow: 0 12px 34px rgba(23, 50, 77, 0.08);
 }
 
-.quiz-focus-program .quiz-ide-window {
+:is(.quiz-focus-program, .quiz-final-review) .quiz-ide-window {
     overflow: hidden;
     border: 1px solid #34414d;
     border-radius: 14px;
@@ -2183,7 +2183,7 @@ h1 {
     box-shadow: 0 14px 34px rgba(15, 24, 33, 0.18);
 }
 
-.quiz-focus-program .quiz-ide-tabbar {
+:is(.quiz-focus-program, .quiz-final-review) .quiz-ide-tabbar {
     display: flex;
     min-height: 43px;
     padding-left: 10px;
@@ -2191,7 +2191,7 @@ h1 {
     background: #20262e;
 }
 
-.quiz-focus-program .quiz-ide-tab {
+:is(.quiz-focus-program, .quiz-final-review) .quiz-ide-tab {
     display: inline-flex;
     align-items: center;
     gap: 8px;
@@ -2202,13 +2202,13 @@ h1 {
     font: 500 0.84rem Consolas, "Cascadia Mono", "Courier New", monospace;
 }
 
-.quiz-focus-program .quiz-ide-tab--active {
+:is(.quiz-focus-program, .quiz-final-review) .quiz-ide-tab--active {
     border-top: 2px solid #4ca6d8;
     color: #f2f6f8;
     background: #171b22;
 }
 
-.quiz-focus-program .quiz-java-file-icon {
+:is(.quiz-focus-program, .quiz-final-review) .quiz-java-file-icon {
     display: inline-grid;
     width: 18px;
     height: 18px;
@@ -2219,14 +2219,14 @@ h1 {
     font: 800 0.68rem Arial, sans-serif;
 }
 
-.quiz-focus-program .quiz-ide-editor {
+:is(.quiz-focus-program, .quiz-final-review) .quiz-ide-editor {
     display: grid;
     grid-template-columns: 48px minmax(0, 1fr);
     min-height: 250px;
     background: #171b22;
 }
 
-.quiz-focus-program .quiz-ide-line-numbers {
+:is(.quiz-focus-program, .quiz-final-review) .quiz-ide-line-numbers {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
@@ -2239,7 +2239,7 @@ h1 {
     user-select: none;
 }
 
-.quiz-focus-program .quiz-full-code {
+:is(.quiz-focus-program, .quiz-final-review) .quiz-full-code {
     min-height: 250px;
     margin: 0;
     padding: 28px 20px;
@@ -2251,7 +2251,7 @@ h1 {
 }
 
 /* INTROの完成コードは、問題用の横一列表示を引き継がず5行で表示します。 */
-.quiz-focus-program .quiz-intro-code {
+:is(.quiz-focus-program, .quiz-final-review) .quiz-intro-code {
     width: 100%;
     min-width: 0;
     overflow-x: hidden;
@@ -2437,6 +2437,222 @@ h1 {
     color: #102f35 !important;
     background: #91e9c9;
     box-shadow: 0 0 0 3px rgba(145, 233, 201, 0.16);
+}
+
+/* Stage 1：外側から内側へ読むためのコード構造と、全体を見渡す回路 */
+.quiz-reading-part-introduction {
+    width: min(100%, 720px);
+    margin: -12px auto 0;
+    color: #526577;
+    text-align: center;
+    line-height: 1.65;
+}
+
+.quiz-reading-part-introduction p {
+    margin: 0;
+}
+
+.quiz-code-circuit {
+    width: 100%;
+}
+
+.quiz-code-circuit-group {
+    display: grid;
+    gap: 16px;
+    width: 100%;
+    min-width: max-content;
+    padding: 4px 8px 8px;
+    text-align: center;
+}
+
+.quiz-code-circuit-group--current {
+    color: #17324d;
+}
+
+.quiz-code-circuit-group > code {
+    color: #17324d;
+    font-size: clamp(1rem, 2.1vw, 1.35rem);
+    font-weight: 800;
+    line-height: 1.4;
+}
+
+.quiz-code-circuit-bulbs {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 4px 4px 10px;
+}
+
+.quiz-code-circuit-bulbs .quiz-part-circuit-step {
+    display: flex;
+    align-items: flex-end;
+    flex: 0 0 auto;
+}
+
+.quiz-code-circuit-bulbs .quiz-part-bulb {
+    width: 22px;
+    height: 22px;
+}
+
+.quiz-code-circuit-node {
+    display: grid;
+    justify-items: center;
+    gap: 9px;
+    min-width: clamp(56px, 8vw, 100px);
+}
+
+.quiz-code-circuit-node code {
+    padding: 3px 6px;
+    border-radius: 6px;
+    color: #465b6d;
+    font-size: clamp(0.72rem, 1.4vw, 0.9rem);
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.quiz-part-circuit-step--current .quiz-code-circuit-node code {
+    color: #0d775a;
+    background: #e4f7f0;
+    box-shadow: 0 0 0 1px #8bd2bb;
+}
+
+.quiz-code-circuit-connector {
+    width: clamp(18px, 4vw, 54px);
+    height: 3px;
+    margin-bottom: 10px;
+    background: #cbd4d8;
+}
+
+.quiz-part-circuit-step--completed .quiz-code-circuit-connector {
+    background: #36af89;
+}
+
+.quiz-part-circuit-step--current:not(.quiz-part-circuit-step--completed) .quiz-part-bulb {
+    border-color: #138b69;
+    box-shadow: 0 0 0 3px rgba(19, 139, 105, 0.12);
+}
+
+.quiz-reading-code-structure {
+    min-width: max-content;
+    color: #f4f8fa;
+    font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+}
+
+.quiz-reading-code-line {
+    display: flex;
+    align-items: flex-start;
+    gap: clamp(4px, 0.8vw, 10px);
+    min-height: 2.6em;
+    white-space: nowrap;
+}
+
+.quiz-reading-code-line--indent {
+    padding-left: 2.2em;
+}
+
+.quiz-reading-code-line--double-indent {
+    padding-left: 4.4em;
+}
+
+.quiz-reading-code-line > code {
+    padding-top: 5px;
+    color: #f4f8fa;
+    font-size: clamp(1rem, 2.1vw, 1.45rem);
+    line-height: 1.45;
+}
+
+.quiz-reading-code-line .quiz-reading-code-unit {
+    max-width: 190px;
+}
+
+.quiz-reading-code-line .quiz-reading-keyword {
+    font-size: clamp(1rem, 2.1vw, 1.45rem);
+}
+
+/* Part 2は7つのコードと意味を、濃紺のコード欄内で対応させます。 */
+.quiz-reading-code-structure--part-2 {
+    width: 100%;
+    min-width: 0;
+}
+
+.quiz-reading-code-panel--part-2 {
+    overflow-x: hidden;
+}
+
+.quiz-reading-code-line--part-2 {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    width: 100%;
+    gap: clamp(2px, 0.45vw, 6px);
+    padding-left: clamp(0.45rem, 1.4vw, 1.2rem);
+    box-sizing: border-box;
+    white-space: normal;
+}
+
+.quiz-reading-code-line--part-2 .quiz-reading-code-unit {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+}
+
+.quiz-reading-code-line--part-2 .quiz-reading-keyword {
+    max-width: 100%;
+    padding-inline: 2px;
+    font-size: clamp(0.76rem, 1.45vw, 1.15rem);
+    white-space: nowrap;
+}
+
+.quiz-reading-code-line--part-2 .quiz-reading-meaning-slot {
+    min-height: 48px;
+    margin-top: 6px;
+}
+
+.quiz-reading-code-line--part-2 .quiz-reading-fixed-card {
+    width: 100%;
+    min-height: 34px;
+    padding: 5px 3px;
+    font-size: clamp(0.58rem, 0.85vw, 0.72rem);
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 780px) {
+    .quiz-reading-circuit-panel {
+        overflow-x: auto;
+    }
+
+    .quiz-code-circuit-bulbs {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 620px) {
+    .quiz-reading-code-panel {
+        padding-inline: 12px;
+    }
+
+    .quiz-reading-code-line--indent {
+        padding-left: 1.35em;
+    }
+
+    .quiz-reading-code-line--double-indent {
+        padding-left: 2.7em;
+    }
+
+    .quiz-reading-code-line--part-2 {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        row-gap: 8px;
+        padding-left: 0;
+    }
+
+    .quiz-reading-code-line--part-2 .quiz-reading-keyword {
+        font-size: clamp(0.72rem, 3.2vw, 0.9rem);
+    }
+
+    .quiz-reading-code-line--part-2 .quiz-reading-fixed-card {
+        font-size: clamp(0.56rem, 2.45vw, 0.67rem);
+    }
 }
 
 .quiz-focus-program .quiz-syntax-keyword { color: #c792ea; }

@@ -45,7 +45,7 @@ public class LessonService {
         Lesson helloProgramLesson = new Lesson(
                 HELLO_PROGRAM_LESSON_ID,
                 "「Hello」と表示するプログラム",
-                "完成プログラムを5つのPartに分け、意味のまとまりで読みます。",
+                "完成プログラムを4つのPartに分け、意味のまとまりで読みます。",
                 """
                         public class Main {
                             public static void main(String[] args) {
