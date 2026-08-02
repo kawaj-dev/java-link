@@ -27,6 +27,7 @@
             }
 
             answering = true;
+            optionArea.setAttribute("aria-busy", "true");
             setAnswerCardsDisabled(true);
 
             try {
@@ -34,6 +35,8 @@
                 // 実際に押されたカードの識別情報を明示して送ります。
                 const body = new URLSearchParams();
                 body.set(button.name, button.value);
+                const targetStep = form.querySelector("[name='targetStepId']");
+                body.set("targetStepId", targetStep ? targetStep.value : "");
                 const response = await fetch(
                     optionArea.dataset.interactiveAnswerUrl,
                     {
@@ -56,11 +59,22 @@
                     return;
                 }
 
-                await placeCorrectCard(button, result);
-                window.location.reload();
+                markAnsweredButton(button, result.answeredStepId);
+                await lightBulb(result.answeredStepId);
+                await revealCorrectMeaning(result);
+                showExplanation(result);
+                updateProgress(result.completedCount);
+                if (result.partCompleted) {
+                    showPartComplete();
+                } else {
+                    enableNextStep(result.nextStepId);
+                }
+                answering = false;
+                optionArea.setAttribute("aria-busy", "false");
             } catch (error) {
-                // 判定が届いた可能性もあるため、二重POSTせず再表示します。
-                window.location.reload();
+                answering = false;
+                optionArea.setAttribute("aria-busy", "false");
+                setAnswerCardsDisabled(false);
             }
         });
     });
@@ -69,76 +83,156 @@
         forms.forEach((form) => {
             const button = form.querySelector("button");
             if (button) {
-                button.disabled = disabled;
-                button.setAttribute("aria-disabled", String(disabled));
+                const canAnswer = button.dataset.answerEnabled === "true";
+                button.disabled = disabled || !canAnswer;
+                button.setAttribute("aria-disabled", String(button.disabled));
             }
         });
     }
 
-    async function placeCorrectCard(sourceButton, result) {
-        const target = document.querySelector(
-            `[data-meaning-slot="${CSS.escape(result.answeredStepId)}"]`
+    function markAnsweredButton(button, stepId) {
+        document.querySelectorAll(".quiz-circuit-code-button--explaining")
+            .forEach((item) => {
+                item.classList.remove("quiz-circuit-code-button--explaining");
+                item.removeAttribute("aria-current");
+                const code = item.querySelector(".quiz-circuit-code-text")
+                    ?.textContent?.trim();
+                if (code) {
+                    item.setAttribute("aria-label", `${code}は確認済み`);
+                }
+            });
+        document.querySelectorAll(".quiz-part-circuit-step--explaining")
+            .forEach((item) => item.classList.remove("quiz-part-circuit-step--explaining"));
+        document.querySelectorAll(".quiz-reading-code-unit--current")
+            .forEach((item) => item.classList.remove("quiz-reading-code-unit--current"));
+        button.classList.remove(
+            "quiz-circuit-code-button--next",
+            "quiz-circuit-code-button--locked"
         );
+        button.classList.add(
+            "quiz-circuit-code-button--completed",
+            "quiz-circuit-code-button--explaining"
+        );
+        button.dataset.answerEnabled = "false";
+        button.disabled = true;
+        button.setAttribute("aria-disabled", "true");
+        button.setAttribute("aria-pressed", "true");
+        button.setAttribute("aria-current", "step");
+        const circuitStep = button.closest(".quiz-part-circuit-step");
+        circuitStep?.classList.remove(
+            "quiz-part-circuit-step--next",
+            "quiz-part-circuit-step--locked"
+        );
+        circuitStep?.classList.add(
+            "quiz-part-circuit-step--completed",
+            "quiz-part-circuit-step--explaining"
+        );
+        const stateLabel = circuitStep?.querySelector(".visually-hidden");
+        if (stateLabel) {
+            const codeText = button.querySelector(".quiz-circuit-code-text")?.textContent.trim() || "";
+            stateLabel.textContent = `${codeText} 完了`;
+            button.setAttribute("aria-label", `${codeText}の説明を表示中`);
+        }
+        const codeUnit = document.querySelector(
+            `[data-step-id="${CSS.escape(stepId)}"]`
+        );
+        if (codeUnit) {
+            codeUnit.classList.add(
+                "quiz-reading-code-unit--completed",
+                "quiz-reading-code-unit--current"
+            );
+        }
+    }
+
+    function showExplanation(result) {
+        const panel = document.querySelector("[data-answer-explanation]");
+        if (!panel) {
+            return;
+        }
+        const term = panel.querySelector("[data-explanation-term]");
+        const technical = panel.querySelector("[data-explanation-technical]");
+        const beginner = panel.querySelector("[data-explanation-beginner]");
+        if (term) term.textContent = result.technicalTerm;
+        if (technical) technical.textContent = result.technicalExplanation;
+        if (beginner) {
+            beginner.replaceChildren(...result.beginnerExplanations.map((line) => {
+                const paragraph = document.createElement("p");
+                paragraph.textContent = line;
+                return paragraph;
+            }));
+        }
+        panel.hidden = false;
+    }
+
+    function enableNextStep(stepId) {
+        if (!stepId) return;
+        const nextButton = document.querySelector(
+            `.quiz-circuit-code-button[data-code-step="${CSS.escape(stepId)}"]`
+        );
+        if (!nextButton) return;
+        nextButton.dataset.answerEnabled = "true";
+        nextButton.disabled = false;
+        nextButton.setAttribute("aria-disabled", "false");
+        nextButton.setAttribute("aria-pressed", "false");
+        nextButton.classList.remove("quiz-circuit-code-button--locked");
+        nextButton.classList.add("quiz-circuit-code-button--next");
+        const nextCircuitStep = nextButton.closest(".quiz-part-circuit-step");
+        if (nextCircuitStep) {
+            nextCircuitStep.classList.remove("quiz-part-circuit-step--locked");
+            nextCircuitStep.classList.add("quiz-part-circuit-step--next");
+        }
+    }
+
+    function updateProgress(completedCount) {
+        const progress = document.querySelector("[data-part-progress]");
+        if (progress) {
+            progress.textContent = `完了 ${completedCount} / ${progress.dataset.partTotal}`;
+        }
+    }
+
+    function showPartComplete() {
+        const completion = document.querySelector("[data-part-complete]");
+        if (completion) completion.hidden = false;
+    }
+
+    async function revealCorrectMeaning(result) {
+        const target = document.querySelector("[data-current-meaning-slot]");
         if (!target) {
             return;
         }
 
-        if (!reduceMotion) {
-            await flyCard(sourceButton, target);
+        target.replaceChildren(createMeaning(result.meaning));
+        target.classList.add("quiz-reading-code-meaning--visible");
+        await wait(reduceMotion ? 20 : 190);
+    }
+
+    async function lightBulb(stepId) {
+        const step = document.querySelector(
+            `[data-bulb-step="${CSS.escape(stepId)}"]`
+        );
+        if (!step) {
+            return;
         }
 
-        target.replaceChildren(createFixedCard(result.meaning));
-        target.closest(".quiz-reading-code-unit")
-            ?.classList.add("quiz-reading-code-unit--completed");
-        lightBulb(result.answeredStepId);
+        step.classList.add(
+            "quiz-part-circuit-step--completed",
+            "quiz-part-circuit-step--lighting"
+        );
+        await wait(reduceMotion ? 20 : 120);
+        step.classList.remove("quiz-part-circuit-step--lighting");
     }
 
-    function flyCard(sourceButton, target) {
-        const sourceRect = sourceButton.getBoundingClientRect();
-        const targetRect = target.getBoundingClientRect();
-        const flyingCard = sourceButton.cloneNode(true);
+    function createMeaning(meaning) {
+        const label = document.createElement("span");
+        label.className = "quiz-reading-code-meaning-label quiz-reading-code-meaning-label--arrived";
+        label.textContent = meaning;
+        return label;
+    }
 
-        flyingCard.removeAttribute("name");
-        flyingCard.removeAttribute("value");
-        flyingCard.classList.add("quiz-reading-flying-card");
-        Object.assign(flyingCard.style, {
-            left: `${sourceRect.left}px`,
-            top: `${sourceRect.top}px`,
-            width: `${sourceRect.width}px`,
-            height: `${sourceRect.height}px`
+    function wait(milliseconds) {
+        return new Promise((resolve) => {
+            window.setTimeout(resolve, milliseconds);
         });
-        document.body.appendChild(flyingCard);
-
-        const targetX = targetRect.left
-            + (targetRect.width - sourceRect.width) / 2
-            - sourceRect.left;
-        const targetY = targetRect.top
-            + (targetRect.height - sourceRect.height) / 2
-            - sourceRect.top;
-
-        return flyingCard.animate(
-            [
-                { transform: "translate(0, 0) scale(0.9)", opacity: 1 },
-                { transform: `translate(${targetX}px, ${targetY}px) scale(0.78)`, opacity: 0.96 }
-            ],
-            {
-                duration: 650,
-                easing: "cubic-bezier(0.22, 0.8, 0.3, 1)",
-                fill: "forwards"
-            }
-        ).finished.finally(() => flyingCard.remove());
-    }
-
-    function createFixedCard(meaning) {
-        const card = document.createElement("span");
-        card.className = "quiz-reading-fixed-card quiz-reading-fixed-card--arrived";
-        card.textContent = meaning;
-        return card;
-    }
-
-    function lightBulb(stepId) {
-        document.querySelector(`[data-bulb-step="${CSS.escape(stepId)}"]`)
-            ?.classList.add("quiz-part-circuit-step--completed");
     }
 
     function showIncorrect(button) {
@@ -150,6 +244,7 @@
         window.setTimeout(() => {
             button.classList.remove("answer-option--incorrect", "quiz-answer-shake");
             answering = false;
+            optionArea.setAttribute("aria-busy", "false");
             setAnswerCardsDisabled(false);
         }, reduceMotion ? 100 : 800);
     }

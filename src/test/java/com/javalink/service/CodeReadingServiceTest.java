@@ -111,7 +111,7 @@ class CodeReadingServiceTest {
                         progress
                 );
 
-        assertEquals(4, options.size());
+        assertEquals(1, options.size());
         assertTrue(options.stream().anyMatch(option ->
                 option.id().equals("accessible")
         ));
@@ -133,11 +133,11 @@ class CodeReadingServiceTest {
                         progress
                 );
 
-        assertEquals(4, options.size());
+        assertEquals(1, options.size());
         assertTrue(options.stream().anyMatch(option ->
                 option.id().equals("accessible")
         ));
-        assertTrue(options.stream().anyMatch(option ->
+        assertFalse(options.stream().anyMatch(option ->
                 option.id().equals("without-instance")
         ));
     }
@@ -175,7 +175,7 @@ class CodeReadingServiceTest {
                         progress
                 );
 
-        assertEquals(4, options.size());
+        assertEquals(1, options.size());
         assertTrue(options.stream().anyMatch(option ->
                 option.id().equals("close-class")
         ));

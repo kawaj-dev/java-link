@@ -13,6 +13,7 @@ public record CodeReadingItem(
         String meaning,
         String roleLabel,
         List<String> explanations,
+        String technicalExplanation,
         int order,
         boolean completed,
         boolean current
@@ -25,5 +26,9 @@ public record CodeReadingItem(
         Objects.requireNonNull(meaning, "meaning must not be null");
         Objects.requireNonNull(roleLabel, "roleLabel must not be null");
         explanations = List.copyOf(explanations);
+        Objects.requireNonNull(
+                technicalExplanation,
+                "technicalExplanation must not be null"
+        );
     }
 }

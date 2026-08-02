@@ -106,8 +106,11 @@ class QuizControllerTest {
 
         mockMvc.perform(get("/quiz").session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("正解です！")))
-                .andExpect(content().string(containsString("次の問題へ")))
+                .andExpect(content().string(not(containsString("正解です！"))))
+                .andExpect(content().string(containsString("アクセス修飾子")))
+                .andExpect(content().string(not(containsString("quiz-reading-step-heading"))))
+                .andExpect(content().string(not(containsString("次の問題へ"))))
+                .andExpect(content().string(containsString("data-answer-enabled=\"true\"")))
                 .andExpect(content().string(containsString("外から使える")));
     }
 
@@ -139,7 +142,22 @@ class QuizControllerTest {
                         "data-interactive-answer-url=\"/quiz/answer/interactive\""
                 )))
                 .andExpect(content().string(containsString(
-                        "data-meaning-slot=\"class-public\""
+                        "quiz-circuit-code-button"
+                )))
+                .andExpect(content().string(containsString(
+                        "data-code-step=\"class-public\""
+                )))
+                .andExpect(content().string(containsString(
+                        "value=\"accessible\""
+                )))
+                .andExpect(content().string(not(containsString(
+                        "外から使える。知識スイッチを入れる"
+                ))))
+                .andExpect(content().string(containsString(
+                        "data-current-meaning-slot"
+                )))
+                .andExpect(content().string(containsString(
+                        "quiz-circuit-code-button--next"
                 )))
                 .andExpect(content().string(containsString(
                         "data-bulb-step=\"class-open\""
@@ -148,14 +166,15 @@ class QuizControllerTest {
                         "/js/quiz-reading.js"
                 )))
                 .andExpect(content().string(not(containsString("今回読むコード"))))
-                .andExpect(content().string(not(containsString("Mainという名前は自由に変更できます。"))))
+                .andExpect(content().string(containsString("data-part-complete")))
                 .andExpect(content().string(containsString("data-circuit-group=\"class-declaration\"")))
                 .andExpect(content().string(not(containsString("data-circuit-group=\"main-method\""))))
                 .andExpect(content().string(containsString("quiz-code-circuit-connector")))
                 .andExpect(content().string(containsString("完了 0 / 4")))
                 .andExpect(content().string(not(containsString("QUESTION 1 / 4"))))
                 .andExpect(content().string(not(containsString("コード回路</h3>"))))
-                .andExpect(content().string(containsString("public の意味はどれですか？")));
+                .andExpect(content().string(not(containsString("quiz-reading-step-heading"))))
+                .andExpect(content().string(not(containsString("public の意味はどれですか？"))));
     }
 
     @Test
@@ -165,13 +184,16 @@ class QuizControllerTest {
 
         mockMvc.perform(post("/quiz/answer/interactive")
                         .session(session)
+                        .param("targetStepId", "class-public")
                         .param("selectedOption", "accessible"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correct").value(true))
                 .andExpect(jsonPath("$.answeredStepId").value("class-public"))
                 .andExpect(jsonPath("$.meaning").value("外から使える"))
                 .andExpect(jsonPath("$.completedCount").value(1))
-                .andExpect(jsonPath("$.partCompleted").value(false));
+                .andExpect(jsonPath("$.partCompleted").value(false))
+                .andExpect(jsonPath("$.technicalTerm").value("アクセス修飾子"))
+                .andExpect(jsonPath("$.nextStepId").value("class-keyword"));
 
         assertEquals(
                 "class-public",
@@ -181,12 +203,116 @@ class QuizControllerTest {
     }
 
     @Test
+    void 直後のコードは一回のクリックで移動と回答を完了する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        courseService.startLearning(session, LESSON_ID);
+        courseService.answerCircuitStep(
+                session, LESSON_ID, "class-public", "accessible"
+        );
+
+        mockMvc.perform(post("/quiz/answer/interactive")
+                        .session(session)
+                        .param("targetStepId", "class-keyword")
+                        .param("selectedOption", "declare-class"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.correct").value(true))
+                .andExpect(jsonPath("$.answeredStepId").value("class-keyword"))
+                .andExpect(jsonPath("$.completedCount").value(2))
+                .andExpect(jsonPath("$.nextStepId").value("class-name"));
+
+        LessonProgress progress = progressService.getProgress(session, LESSON_ID);
+        assertEquals("class-keyword", progress.getCurrentStepId());
+        assertTrue(progress.isStepCompleted("class-public"));
+        assertTrue(progress.isStepCompleted("class-keyword"));
+    }
+
+    @Test
+    void step飛ばしと完了済みstepの再送信を拒否する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        courseService.startLearning(session, LESSON_ID);
+        courseService.answerCircuitStep(
+                session, LESSON_ID, "class-public", "accessible"
+        );
+
+        mockMvc.perform(post("/quiz/answer/interactive")
+                        .session(session)
+                        .param("targetStepId", "class-name")
+                        .param("selectedOption", "main-class-name"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.correct").value(false));
+        mockMvc.perform(post("/quiz/answer/interactive")
+                        .session(session)
+                        .param("targetStepId", "class-public")
+                        .param("selectedOption", "accessible"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.correct").value(false));
+
+        LessonProgress progress = progressService.getProgress(session, LESSON_ID);
+        assertEquals("class-public", progress.getCurrentStepId());
+        assertFalse(progress.isStepCompleted("class-name"));
+        assertEquals(1, progress.getCompletedStepIds().size());
+    }
+
+    @Test
+    void 次stepでも不正なcardIdは進捗を変更しない() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        courseService.startLearning(session, LESSON_ID);
+        courseService.answerCircuitStep(
+                session, LESSON_ID, "class-public", "accessible"
+        );
+
+        mockMvc.perform(post("/quiz/answer/interactive")
+                        .session(session)
+                        .param("targetStepId", "class-keyword")
+                        .param("selectedOption", "no-return"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.correct").value(false));
+
+        LessonProgress progress = progressService.getProgress(session, LESSON_ID);
+        assertEquals("class-public", progress.getCurrentStepId());
+        assertFalse(progress.isStepCompleted("class-keyword"));
+    }
+
+    @Test
+    void 未回答スイッチは各stepのコードを教材定義から表示する() throws Exception {
+        MockHttpSession classSession = new MockHttpSession();
+        courseService.startLearning(classSession, LESSON_ID);
+        courseService.answerCurrentItem(classSession, LESSON_ID, "accessible");
+        courseService.moveToNextItem(classSession, LESSON_ID);
+
+        mockMvc.perform(get("/quiz").session(classSession))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("data-code-step=\"class-keyword\"")))
+                .andExpect(content().string(not(containsString(
+                        "クラスを作る。知識スイッチを入れる"
+                ))));
+
+        courseService.answerCurrentItem(classSession, LESSON_ID, "declare-class");
+        courseService.moveToNextItem(classSession, LESSON_ID);
+        mockMvc.perform(get("/quiz").session(classSession))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("data-code-step=\"class-name\"")));
+
+        MockHttpSession printSession = new MockHttpSession();
+        completePart1(printSession);
+        courseService.moveToNextPart(printSession, LESSON_ID);
+        completePart2(printSession);
+        courseService.moveToNextPart(printSession, LESSON_ID);
+        mockMvc.perform(get("/quiz").session(printSession))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(
+                        "data-code-step=\"print-command\""
+                )));
+    }
+
+    @Test
     void 不正解の対話回答は進捗を増やさない() throws Exception {
         MockHttpSession session = new MockHttpSession();
         courseService.startLearning(session, LESSON_ID);
 
         mockMvc.perform(post("/quiz/answer/interactive")
                         .session(session)
+                        .param("targetStepId", "class-public")
                         .param("selectedOption", "no-return"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correct").value(false))
@@ -208,14 +334,51 @@ class QuizControllerTest {
         mockMvc.perform(get("/quiz").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(
-                        "quiz-reading-fixed-card"
+                        "quiz-reading-code-meaning--visible"
                 )))
                 .andExpect(content().string(containsString("外から使える")))
                 .andExpect(content().string(containsString(
                         "quiz-part-circuit-step--completed"
                 )))
-                .andExpect(content().string(containsString("正解です！")))
-                .andExpect(content().string(containsString("次の問題へ")));
+                .andExpect(content().string(not(containsString("正解です！"))))
+                .andExpect(content().string(containsString("アクセス修飾子")))
+                .andExpect(content().string(not(containsString("quiz-reading-step-heading"))))
+                .andExpect(content().string(not(containsString("次の問題へ"))))
+                .andExpect(content().string(containsString("data-answer-enabled=\"true\"")));
+    }
+
+    @Test
+    void 更新後は完了説明中次操作未到達の四状態を復元する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        courseService.startLearning(session, LESSON_ID);
+        courseService.answerCircuitStep(
+                session, LESSON_ID, "class-public", "accessible"
+        );
+        courseService.answerCircuitStep(
+                session, LESSON_ID, "class-keyword", "declare-class"
+        );
+
+        mockMvc.perform(get("/quiz").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(
+                        "quiz-circuit-code-button--completed"
+                )))
+                .andExpect(content().string(containsString(
+                        "quiz-circuit-code-button--explaining"
+                )))
+                .andExpect(content().string(containsString(
+                        "quiz-circuit-code-button--next"
+                )))
+                .andExpect(content().string(containsString(
+                        "quiz-circuit-code-button--locked"
+                )))
+                .andExpect(content().string(containsString(
+                        "aria-current=\"step\""
+                )))
+                .andExpect(content().string(containsString(
+                        "aria-pressed=\"true\""
+                )))
+                .andExpect(content().string(not(containsString("次の問題へ"))));
     }
 
     @Test
@@ -294,7 +457,8 @@ class QuizControllerTest {
         mockMvc.perform(get("/quiz").session(session))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("phase", CodeReadingPhase.SUMMARY))
-                .andExpect(content().string(containsString("今日読めるようになったコード")))
+                .andExpect(content().string(not(containsString(">SUMMARY<"))))
+                .andExpect(content().string(not(containsString("今日読めるようになったコード"))))
                 .andExpect(content().string(containsString("Helloと表示して改行する")));
     }
 
@@ -321,7 +485,7 @@ class QuizControllerTest {
                         "quiz-reading-code-structure"
                 )))
                 .andExpect(content().string(containsString(
-                        "data-meaning-slot=\"main-public\""
+                        "data-code-step=\"main-public\""
                 )))
                 .andExpect(content().string(containsString(
                         "data-quiz-answer-form=\"true\""
@@ -330,9 +494,10 @@ class QuizControllerTest {
                 .andExpect(content().string(containsString("data-circuit-group=\"main-method\"")))
                 .andExpect(content().string(not(containsString("data-circuit-group=\"class-declaration\""))))
                 .andExpect(content().string(not(containsString("QUESTION 1 / 7"))))
-                .andExpect(content().string(containsString("public の意味はどれですか？")))
+                .andExpect(content().string(not(containsString("quiz-reading-step-heading"))))
+                .andExpect(content().string(not(containsString("public の意味はどれですか？"))))
                 .andExpect(content().string(not(containsString("現在の用語："))))
-                .andExpect(content().string(not(containsString("Javaはこのmainメソッドから実行を始めます。"))));
+                .andExpect(content().string(containsString("data-part-complete")));
 
         courseService.answerCurrentItem(session, LESSON_ID, "accessible");
         LessonProgress progress = progressService.getProgress(session, LESSON_ID);
@@ -341,11 +506,13 @@ class QuizControllerTest {
         assertTrue(progress.isCorrect());
 
         mockMvc.perform(get("/quiz").session(session))
-                .andExpect(content().string(containsString("正解です！")))
-                .andExpect(content().string(containsString("次の問題へ")))
+                .andExpect(content().string(not(containsString("正解です！"))))
+                .andExpect(content().string(containsString("アクセス修飾子")))
+                .andExpect(content().string(not(containsString("quiz-reading-step-heading"))))
+                .andExpect(content().string(not(containsString("次の問題へ"))))
                 .andExpect(content().string(containsString("quiz-part-circuit-step--completed")))
                 .andExpect(content().string(containsString("外から使える")))
-                .andExpect(content().string(containsString("Javaはこのmainメソッドから実行を始めます。")));
+                .andExpect(content().string(containsString("data-part-complete")));
     }
 
     @Test
@@ -356,6 +523,7 @@ class QuizControllerTest {
 
         mockMvc.perform(post("/quiz/answer/interactive")
                         .session(session)
+                        .param("targetStepId", "main-public")
                         .param("selectedOption", "no-return"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correct").value(false))
@@ -368,12 +536,11 @@ class QuizControllerTest {
 
         mockMvc.perform(get("/quiz").session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string(not(containsString(
-                        "Javaはこのmainメソッドから実行を始めます。"
-                ))));
+                .andExpect(content().string(containsString("data-part-complete")));
 
         mockMvc.perform(post("/quiz/answer/interactive")
                         .session(session)
+                        .param("targetStepId", "main-public")
                         .param(
                                 "selectedOption",
                                 "accessible"
@@ -386,6 +553,7 @@ class QuizControllerTest {
         courseService.moveToNextItem(session, LESSON_ID);
         mockMvc.perform(post("/quiz/answer/interactive")
                         .session(session)
+                        .param("targetStepId", "static")
                         .param("selectedOption", "without-instance"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correct").value(true))
@@ -401,7 +569,7 @@ class QuizControllerTest {
                         "quiz-part-circuit-step--completed"
                 )))
                 .andExpect(content().string(containsString(
-                        "quiz-reading-fixed-card"
+                        "quiz-reading-code-meaning--visible"
                 )));
 
         courseService.moveToNextItem(session, LESSON_ID);
@@ -456,10 +624,10 @@ class QuizControllerTest {
                         "data-step-id=\"main-close\""
                 )))
                 .andExpect(content().string(containsString(
-                        "data-meaning-slot=\"main-close\""
+                        "data-code-step=\"main-close\""
                 )))
                 .andExpect(content().string(containsString(
-                        "data-meaning-slot=\"class-close\""
+                        "data-code-step=\"class-close\""
                 )))
                 .andExpect(content().string(containsString(
                         "mainメソッド終了"
@@ -479,7 +647,33 @@ class QuizControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("quiz-ide-window")))
                 .andExpect(content().string(containsString("Hello.java")))
-                .andExpect(content().string(containsString("System.out.println(\"Hello\");")));
+                .andExpect(content().string(containsString("System.out.println(\"Hello\");")))
+                .andExpect(content().string(not(containsString(">SUMMARY<"))))
+                .andExpect(content().string(not(containsString("今日読めるようになったコード"))))
+                .andExpect(content().string(containsString("quiz-summary-development-flow")))
+                .andExpect(content().string(containsString("▶ Run")))
+                .andExpect(content().string(containsString("プログラムを実行します")))
+                .andExpect(content().string(not(containsString("data-summary-terminal"))));
+    }
+
+    @Test
+    void Run成功後は段階表示用TERMINAL構造を表示する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        completeAllParts(session);
+        courseService.moveToNextPart(session, LESSON_ID);
+
+        mockMvc.perform(post("/quiz/run").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("data-summary-process")))
+                .andExpect(content().string(containsString("data-process-primary")))
+                .andExpect(content().string(containsString("data-summary-terminal")))
+                .andExpect(content().string(containsString("data-terminal-primary")))
+                .andExpect(content().string(not(containsString("data-terminal-explanation"))))
+                .andExpect(content().string(containsString("data-run-complete")))
+                .andExpect(content().string(containsString("data-console-output=\"Hello\"")))
+                .andExpect(content().string(containsString("プログラムが正常に実行されました")))
+                .andExpect(content().string(not(containsString("▶ Run"))))
+                .andExpect(content().string(containsString("/js/quiz-summary-run.js")));
     }
 
     @Test

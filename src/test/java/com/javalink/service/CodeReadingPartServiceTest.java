@@ -107,6 +107,18 @@ class CodeReadingPartServiceTest {
                 List.of("public", "static", "void", "main", "String[]", "args", "{ }"),
                 mainMethod.bulbs().stream().map(bulb -> bulb.codeLabel()).toList()
         );
+        assertEquals(
+                List.of(
+                        "外から使える",
+                        "インスタンスを作らなくても使える",
+                        "戻り値を返さない",
+                        "プログラム開始メソッド",
+                        "文字列の配列",
+                        "受け取った値の名前",
+                        "ここから始まる"
+                ),
+                mainMethod.bulbs().stream().map(bulb -> bulb.meaning()).toList()
+        );
     }
 
     @Test

@@ -3,6 +3,7 @@ package com.javalink.service;
 import com.javalink.model.CodeReadingPart;
 import com.javalink.model.CodeReadingPhase;
 import com.javalink.model.CodeReadingAnswerResponse;
+import com.javalink.model.CodeReadingStepDefinition;
 import com.javalink.model.LessonProgress;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Service;
@@ -17,17 +18,20 @@ public class CodeReadingCourseService {
     private final LessonProgressService lessonProgressService;
     private final CodeReadingPartService partService;
     private final CodeReadingFlowService flowService;
+    private final CodeReadingLessonCatalog lessonCatalog;
 
     public CodeReadingCourseService(
             LessonEngine lessonEngine,
             LessonProgressService lessonProgressService,
             CodeReadingPartService partService,
-            CodeReadingFlowService flowService
+            CodeReadingFlowService flowService,
+            CodeReadingLessonCatalog lessonCatalog
     ) {
         this.lessonEngine = lessonEngine;
         this.lessonProgressService = lessonProgressService;
         this.partService = partService;
         this.flowService = flowService;
+        this.lessonCatalog = lessonCatalog;
     }
 
     /** 導入画面からPart 1の先頭へ移ります。 */
@@ -103,18 +107,92 @@ public class CodeReadingCourseService {
                 lessonId,
                 selectedOptionId
         );
-        int completedCount = (int) answeredPart.stepIds().stream()
+        return createAnswerResponse(lessonId, answeredPart, result);
+    }
+
+    /** 現在、または正解直後の同一Part内の直後stepだけを回答します。 */
+    public CodeReadingAnswerResponse answerCircuitStep(
+            HttpSession session,
+            String lessonId,
+            String targetStepId,
+            String selectedOptionId
+    ) {
+        LessonProgress progress = lessonProgressService.getProgress(session, lessonId);
+        CodeReadingPart currentPart = partService.getPartForStep(
+                lessonId,
+                progress.getCurrentStepId()
+        );
+        String actionableStepId = partService.findActionableStepId(progress, currentPart);
+        CodeReadingStepDefinition requestedStep;
+        try {
+            requestedStep = lessonCatalog.getDefinition(lessonId).getStep(targetStepId);
+        } catch (IllegalArgumentException exception) {
+            requestedStep = lessonCatalog.getDefinition(lessonId)
+                    .getStep(progress.getCurrentStepId());
+            return rejectedResponse(currentPart, targetStepId, requestedStep, progress);
+        }
+        boolean validRequest = targetStepId.equals(actionableStepId)
+                && currentPart.stepIds().contains(targetStepId)
+                && !progress.isStepCompleted(targetStepId)
+                && requestedStep.correctCard().id().equals(selectedOptionId);
+        if (!validRequest) {
+            return rejectedResponse(currentPart, targetStepId, requestedStep, progress);
+        }
+
+        if (!targetStepId.equals(progress.getCurrentStepId())) {
+            lessonEngine.moveToNextStep(session, lessonId);
+        }
+        LessonEngine.AnswerResult result = answerCurrentItem(
+                session,
+                lessonId,
+                selectedOptionId
+        );
+        return createAnswerResponse(lessonId, currentPart, result);
+    }
+
+    private CodeReadingAnswerResponse createAnswerResponse(
+            String lessonId,
+            CodeReadingPart part,
+            LessonEngine.AnswerResult result
+    ) {
+        int completedCount = (int) part.stepIds().stream()
                 .filter(result.progress().getCompletedStepIds()::contains)
                 .count();
-        boolean partCompleted =
-                completedCount == answeredPart.stepIds().size();
-
+        boolean partCompleted = completedCount == part.stepIds().size();
+        CodeReadingStepDefinition step = lessonCatalog.getDefinition(lessonId)
+                .getStep(result.answeredStep().id());
         return new CodeReadingAnswerResponse(
                 result.correct(),
                 result.answeredStep().id(),
                 result.correctOption().text(),
                 completedCount,
-                partCompleted
+                partCompleted,
+                step.technicalTerm(),
+                step.technicalExplanation(),
+                step.beginnerExplanations(),
+                partCompleted ? null : partService.findActionableStepId(result.progress(), part)
+        );
+    }
+
+    private CodeReadingAnswerResponse rejectedResponse(
+            CodeReadingPart part,
+            String targetStepId,
+            CodeReadingStepDefinition step,
+            LessonProgress progress
+    ) {
+        int completedCount = (int) part.stepIds().stream()
+                .filter(progress.getCompletedStepIds()::contains)
+                .count();
+        return new CodeReadingAnswerResponse(
+                false,
+                targetStepId,
+                step.correctCard().text(),
+                completedCount,
+                completedCount == part.stepIds().size(),
+                step.technicalTerm(),
+                step.technicalExplanation(),
+                step.beginnerExplanations(),
+                partService.findActionableStepId(progress, part)
         );
     }
 

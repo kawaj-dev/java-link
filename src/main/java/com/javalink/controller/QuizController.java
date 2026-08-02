@@ -102,13 +102,31 @@ public class QuizController {
     @ResponseBody
     public CodeReadingAnswerResponse answerInteractive(
             @RequestParam("selectedOption") String selectedOption,
+            @RequestParam("targetStepId") String targetStepId,
             HttpSession session
     ) {
-        return courseService.answerCurrentItemForAnimation(
+        return courseService.answerCircuitStep(
                 session,
                 lessonId,
+                targetStepId,
                 selectedOption
         );
+    }
+
+    /** JavaScriptなしでも回路上の操作を同じ検証経路で処理します。 */
+    @PostMapping("/quiz/answer/circuit")
+    public String answerCircuit(
+            @RequestParam("selectedOption") String selectedOption,
+            @RequestParam("targetStepId") String targetStepId,
+            HttpSession session
+    ) {
+        courseService.answerCircuitStep(
+                session,
+                lessonId,
+                targetStepId,
+                selectedOption
+        );
+        return "redirect:/quiz";
     }
 
     /** 完了したPartから次のPart、またはまとめ画面へ進みます。 */

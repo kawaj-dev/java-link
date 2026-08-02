@@ -11,8 +11,6 @@ import com.javalink.model.LessonProgress;
 import com.javalink.model.QuizOption;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -57,28 +55,7 @@ public class CodeReadingService {
             return List.of();
         }
 
-        List<CodeReadingItem> otherItems = readingItems.stream()
-                .filter(item -> !item.stepId().equals(currentItem.stepId()))
-                .filter(item -> !item.meaning().equals(currentItem.meaning()))
-                .toList();
-        CodeReadingItem previousIncorrectItem = findPreviousIncorrectItem(
-                otherItems,
-                progress
-        );
-        List<QuizOption> options = new ArrayList<>();
-        options.add(toOption(currentItem));
-        if (previousIncorrectItem != null) {
-            options.add(toOption(previousIncorrectItem));
-        }
-        List<CodeReadingItem> candidates = new ArrayList<>(otherItems);
-        candidates.remove(previousIncorrectItem);
-        Collections.shuffle(candidates);
-        candidates.stream()
-                .limit(4 - options.size())
-                .map(this::toOption)
-                .forEach(options::add);
-        Collections.shuffle(options);
-        return List.copyOf(options);
+        return List.of(toOption(currentItem));
     }
 
     /** 指定したPartに含まれる項目だけを教材の登録順で返します。 */
@@ -97,6 +74,7 @@ public class CodeReadingService {
                         item.meaning(),
                         item.roleLabel(),
                         item.explanations(),
+                        item.technicalExplanation(),
                         item.order(),
                         item.completed(),
                         item.current()
@@ -136,21 +114,6 @@ public class CodeReadingService {
                 .toList();
     }
 
-    private CodeReadingItem findPreviousIncorrectItem(
-            List<CodeReadingItem> otherItems,
-            LessonProgress progress
-    ) {
-        if (!progress.isAnswered() || progress.isCorrect()) {
-            return null;
-        }
-        return otherItems.stream()
-                .filter(item -> item.optionId().equals(
-                        progress.getSelectedOptionId()
-                ))
-                .findFirst()
-                .orElse(null);
-    }
-
     private QuizOption toOption(CodeReadingItem item) {
         return new QuizOption(item.optionId(), item.meaning());
     }
@@ -166,6 +129,7 @@ public class CodeReadingService {
                 step.correctCard().text(),
                 step.technicalTerm(),
                 step.beginnerExplanations(),
+                step.technicalExplanation(),
                 step.order(),
                 progress.isStepCompleted(step.id()),
                 progress.getCurrentStepId().equals(step.id())
