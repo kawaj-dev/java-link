@@ -152,16 +152,145 @@
         const term = panel.querySelector("[data-explanation-term]");
         const technical = panel.querySelector("[data-explanation-technical]");
         const beginner = panel.querySelector("[data-explanation-beginner]");
-        if (term) term.textContent = result.technicalTerm;
-        if (technical) technical.textContent = result.technicalExplanation;
+        const sections = panel.querySelector("[data-explanation-sections]");
+        const hasSections = Array.isArray(result.explanationSections)
+            && result.explanationSections.length > 0;
+        if (term) {
+            term.textContent = result.technicalTerm;
+            term.hidden = hasSections;
+        }
+        if (technical) {
+            technical.textContent = result.technicalExplanation;
+            technical.hidden = hasSections;
+        }
         if (beginner) {
             beginner.replaceChildren(...result.beginnerExplanations.map((line) => {
                 const paragraph = document.createElement("p");
                 paragraph.textContent = line;
                 return paragraph;
             }));
+            beginner.hidden = hasSections;
+        }
+        if (sections) {
+            sections.replaceChildren(...(hasSections
+                ? result.explanationSections.map(createExplanationSection)
+                : []));
         }
         panel.hidden = false;
+    }
+
+    function createExplanationSection(section) {
+        const wrapper = document.createElement("section");
+        wrapper.className = `quiz-reading-learning-aid quiz-reading-learning-aid--${section.kind} quiz-reading-learning-aid-layout--${section.layout}`;
+        wrapper.dataset.sectionKind = section.kind;
+        wrapper.dataset.sectionLayout = section.layout;
+
+        const heading = document.createElement("h5");
+        heading.textContent = section.title;
+        wrapper.append(heading);
+
+        if (section.layout === "table") {
+            wrapper.append(createAccessTable(section.entries));
+        } else if (section.layout === "diagram") {
+            wrapper.append(createDiagram(section.entries));
+        } else if (section.layout === "examples") {
+            wrapper.append(createExamples(section.entries));
+        } else if (section.layout === "qa" || section.layout === "comparison") {
+            wrapper.append(createQa(section.entries));
+        } else if (section.layout === "list") {
+            wrapper.append(createExplanationList(section.entries));
+        } else {
+            wrapper.append(createExplanationText(section.entries));
+        }
+        return wrapper;
+    }
+
+    function createExplanationList(entries) {
+        const list = document.createElement("ul");
+        list.className = "quiz-reading-section-list";
+        entries.forEach((entry) => {
+            const item = document.createElement("li");
+            item.textContent = `${entry.before}${entry.emphasis}${entry.after}`;
+            list.append(item);
+        });
+        return list;
+    }
+
+    function createAccessTable(entries) {
+        const table = document.createElement("div");
+        table.className = "quiz-reading-access-table";
+        table.setAttribute("role", "table");
+        entries.forEach((entry) => {
+            const row = document.createElement("div");
+            row.setAttribute("role", "row");
+            if (entry.highlighted) row.classList.add("quiz-reading-access-row--focus");
+            row.append(
+                textElement("code", entry.label, "cell"),
+                textElement("span", entry.before, "cell")
+            );
+            table.append(row);
+        });
+        return table;
+    }
+
+    function createDiagram(entries) {
+        const diagram = document.createElement("div");
+        diagram.className = "quiz-reading-concept-flow";
+        entries.forEach((entry) => {
+            const row = document.createElement("div");
+            row.append(textElement("code", entry.label), textElement("span", "→"), textElement("span", entry.before));
+            diagram.append(row);
+        });
+        return diagram;
+    }
+
+    function createExamples(entries) {
+        const examples = document.createElement("div");
+        examples.className = "quiz-reading-name-examples";
+        entries.forEach((entry) => {
+            const row = document.createElement("div");
+            if (!entry.label) {
+                const note = textElement("p", entry.before);
+                note.className = "quiz-reading-examples-note";
+                row.append(note);
+            } else {
+                row.append(textElement("code", entry.label), textElement("span", "→"), textElement("code", entry.before));
+            }
+            examples.append(row);
+        });
+        return examples;
+    }
+
+    function createQa(entries) {
+        const qa = document.createElement("div");
+        qa.className = "quiz-reading-qa";
+        entries.forEach((entry) => {
+            const row = document.createElement("p");
+            row.append(textElement("strong", entry.label), document.createTextNode(` ${entry.before}`));
+            qa.append(row);
+        });
+        return qa;
+    }
+
+    function createExplanationText(entries) {
+        const text = document.createElement("div");
+        text.className = "quiz-reading-section-text";
+        entries.forEach((entry) => {
+            const paragraph = document.createElement("p");
+            if (entry.label) paragraph.append(textElement("strong", `${entry.label} `));
+            paragraph.append(document.createTextNode(entry.before));
+            if (entry.emphasis) paragraph.append(textElement("strong", entry.emphasis));
+            paragraph.append(document.createTextNode(entry.after));
+            text.append(paragraph);
+        });
+        return text;
+    }
+
+    function textElement(tagName, value, role) {
+        const element = document.createElement(tagName);
+        element.textContent = value;
+        if (role) element.setAttribute("role", role);
+        return element;
     }
 
     function enableNextStep(stepId) {

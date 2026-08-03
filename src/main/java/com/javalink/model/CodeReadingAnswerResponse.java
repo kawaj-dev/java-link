@@ -15,6 +15,7 @@ public record CodeReadingAnswerResponse(
         String technicalTerm,
         String technicalExplanation,
         List<String> beginnerExplanations,
+        List<CodeReadingExplanationSection> explanationSections,
         String nextStepId
 ) {
 
@@ -27,5 +28,6 @@ public record CodeReadingAnswerResponse(
         Objects.requireNonNull(technicalTerm, "technicalTerm must not be null");
         Objects.requireNonNull(technicalExplanation, "technicalExplanation must not be null");
         beginnerExplanations = List.copyOf(beginnerExplanations);
+        explanationSections = List.copyOf(explanationSections);
     }
 }

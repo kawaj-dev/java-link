@@ -472,6 +472,12 @@ h1 {
     text-decoration: none;
 }
 
+.quiz-intro-start .next-button {
+    width: 200px;
+    max-width: 100%;
+    margin: 16px auto 0;
+}
+
 .previous-button,
 .reset-button {
     padding: 11px 28px;
@@ -2170,6 +2176,8 @@ h1 {
     font-size: clamp(0.9rem, 1.25vw, 1.08rem);
     line-height: 2.05;
     white-space: nowrap;
+
+    text-align: left;
 }
 
 .quiz-full-code-line {
@@ -2226,6 +2234,8 @@ h1 {
     padding: 16px;
     border-radius: 10px;
     white-space: pre-wrap;
+
+    text-align: left;
 }
 
 .quiz-run-panel {
@@ -2727,7 +2737,7 @@ h1 {
 
 :is(.quiz-focus-program, .quiz-final-review) .quiz-ide-editor {
     display: grid;
-    grid-template-columns: 48px minmax(0, 1fr);
+    grid-template-columns: 36px minmax(0, 1fr);
     min-height: 250px;
     background: #171b22;
 }
@@ -2736,7 +2746,7 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    padding: 28px 12px 28px 6px;
+    padding: 28px 6px 28px 4px;
     border-right: 1px solid #252d36;
     color: #66717d;
     background: #151920;
@@ -2953,6 +2963,189 @@ h1 {
     margin: 14px auto 16px;
     color: #3f5969;
     font-size: 0.9rem;
+}
+
+.quiz-reading-learning-aid {
+    width: min(100%, 620px);
+    margin: 16px auto 0;
+    padding-top: 14px;
+    border-top: 1px solid #dbe7e8;
+    text-align: left;
+}
+
+.quiz-reading-answer-confirmation > div:has(
+    [data-explanation-sections]:not(:empty)
+) {
+    width: min(100%, 720px);
+    text-align: left;
+}
+
+.quiz-reading-learning-aid h5 {
+    margin: 0 0 11px;
+    color: #126348;
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+.quiz-reading-section-text {
+    display: grid;
+    gap: 8px;
+    line-height: 1.75;
+}
+
+.quiz-reading-section-text p {
+    margin: 0;
+}
+
+.quiz-reading-section-text strong {
+    color: #173f49;
+}
+
+.quiz-reading-access-table,
+.quiz-reading-name-examples {
+    display: grid;
+    gap: 6px;
+}
+
+.quiz-reading-access-table > div,
+.quiz-reading-name-examples > div {
+    display: grid;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 10px;
+    border-radius: 9px;
+    background: #f4f7f8;
+}
+
+.quiz-reading-access-table > div {
+    grid-template-columns: minmax(120px, 0.95fr) minmax(0, 1.7fr);
+}
+
+.quiz-reading-access-table > div.quiz-reading-access-row--no-label {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.quiz-reading-access-row--no-label > span {
+    grid-column: 1;
+    text-align: left;
+}
+
+.quiz-reading-name-examples > div {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.4fr);
+}
+
+.quiz-reading-name-examples > div:has(.quiz-reading-examples-note) {
+    display: block;
+    color: #3f5969;
+    background: transparent;
+}
+
+.quiz-reading-examples-note {
+    margin: 0;
+    line-height: 1.7;
+}
+
+.quiz-reading-access-table code,
+.quiz-reading-name-examples code {
+    color: #173f49;
+    font-weight: 700;
+}
+
+.quiz-reading-access-row--focus {
+    background: #dff6ec !important;
+    box-shadow: inset 3px 0 #38a97c;
+}
+
+.quiz-reading-concept-flow {
+    display: grid;
+    gap: 8px;
+    padding: 12px;
+    border-radius: 10px;
+    color: #264b55;
+    background: #eef5f6;
+}
+
+.quiz-reading-concept-flow > div {
+    display: grid;
+    grid-template-columns: minmax(110px, 0.8fr) auto minmax(0, 1.6fr);
+    gap: 10px;
+    align-items: center;
+}
+
+.quiz-reading-concept-flow code {
+    color: #126348;
+    font-weight: 750;
+}
+
+.quiz-reading-qa {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-left: 3px solid #69b99a;
+    border-radius: 0 10px 10px 0;
+    background: #f8fbfa;
+}
+
+.quiz-reading-qa p {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 8px;
+    margin: 0;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.quiz-reading-qa p + p {
+    margin-top: 6px;
+}
+
+.quiz-reading-qa p:first-child {
+    background: #edf3f7;
+}
+
+.quiz-reading-qa p:nth-child(2) {
+    background: #e9f8f1;
+}
+
+.quiz-reading-qa strong {
+    color: #126348;
+}
+
+.quiz-reading-section-list {
+    display: grid;
+    gap: 7px;
+    margin: 0;
+    padding-left: 1.25rem;
+    line-height: 1.7;
+}
+
+@media (max-width: 520px) {
+    .quiz-reading-learning-aid {
+        font-size: 0.86rem;
+    }
+
+    .quiz-reading-access-table > div {
+        grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+        gap: 8px;
+        padding: 8px;
+    }
+
+    .quiz-reading-name-examples > div {
+        grid-template-columns: 1fr;
+        gap: 3px;
+        font-size: 0.84rem;
+        text-align: center;
+    }
+
+    .quiz-reading-concept-flow > div {
+        grid-template-columns: 1fr;
+        gap: 3px;
+        text-align: center;
+    }
+
+    .quiz-reading-qa p {
+        grid-template-columns: 32px minmax(0, 1fr);
+    }
 }
 
 /* 回路は内側カードを持たず、電球・配線・ラベルだけを表示します。 */

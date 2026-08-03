@@ -14,6 +14,7 @@ public record CodeReadingItem(
         String roleLabel,
         List<String> explanations,
         String technicalExplanation,
+        List<CodeReadingExplanationSection> explanationSections,
         int order,
         boolean completed,
         boolean current
@@ -30,5 +31,9 @@ public record CodeReadingItem(
                 technicalExplanation,
                 "technicalExplanation must not be null"
         );
+        explanationSections = List.copyOf(Objects.requireNonNull(
+                explanationSections,
+                "explanationSections must not be null"
+        ));
     }
 }

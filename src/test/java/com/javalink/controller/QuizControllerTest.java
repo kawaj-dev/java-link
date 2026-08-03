@@ -111,7 +111,52 @@ class QuizControllerTest {
                 .andExpect(content().string(not(containsString("quiz-reading-step-heading"))))
                 .andExpect(content().string(not(containsString("次の問題へ"))))
                 .andExpect(content().string(containsString("data-answer-enabled=\"true\"")))
-                .andExpect(content().string(containsString("外から使える")));
+                .andExpect(content().string(containsString("外から使える")))
+                .andExpect(content().string(containsString("アクセスできる範囲")))
+                .andExpect(content().string(containsString("package-private（何も書かない）")))
+                .andExpect(content().string(containsString("quiz-reading-access-row--focus")))
+                .andExpect(content().string(containsString("どこからでも")))
+                .andExpect(content().string(not(containsString("今回はこれだけ"))));
+    }
+
+    @Test
+    void classとMainの正解後に図とQAndAを表示する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        courseService.startLearning(session, LESSON_ID);
+
+        courseService.answerCurrentItem(session, LESSON_ID, "accessible");
+        courseService.moveToNextItem(session, LESSON_ID);
+        courseService.answerCurrentItem(session, LESSON_ID, "declare-class");
+
+        mockMvc.perform(get("/quiz").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("設計図")))
+                .andExpect(content().string(containsString(
+                        "作るクラスにつけた名前"
+                )));
+
+        courseService.moveToNextItem(session, LESSON_ID);
+        courseService.answerCurrentItem(session, LESSON_ID, "main-class-name");
+
+        mockMvc.perform(get("/quiz").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Main.java")))
+                .andExpect(content().string(containsString("Hello.java")))
+                .andExpect(content().string(not(containsString("Calculator.java"))))
+                .andExpect(content().string(containsString(
+                        "Javaが開始時に探す特別なメソッド名"
+                )));
+
+        mockMvc.perform(post("/quiz/answer/interactive")
+                        .session(session)
+                        .param("targetStepId", "class-open")
+                        .param("selectedOption", "block-start"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.correct").value(true))
+                .andExpect(jsonPath("$.explanationSections[0].title").value("開始波かっこ"))
+                .andExpect(jsonPath("$.explanationSections[2].entries[0].before")
+                        .value("{ が書かれたら、あとで必ず対応する } で閉じます。"))
+                .andExpect(jsonPath("$.explanationSections.length()").value(3));
     }
 
     @Test
@@ -193,6 +238,10 @@ class QuizControllerTest {
                 .andExpect(jsonPath("$.completedCount").value(1))
                 .andExpect(jsonPath("$.partCompleted").value(false))
                 .andExpect(jsonPath("$.technicalTerm").value("アクセス修飾子"))
+                .andExpect(jsonPath("$.explanationSections[1].kind").value("rule"))
+                .andExpect(jsonPath("$.explanationSections[1].layout").value("table"))
+                .andExpect(jsonPath("$.explanationSections[1].entries[1].label")
+                        .value("package-private（何も書かない）"))
                 .andExpect(jsonPath("$.nextStepId").value("class-keyword"));
 
         assertEquals(
@@ -470,7 +519,15 @@ class QuizControllerTest {
         mockMvc.perform(get("/quiz").session(session))
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("phase", CodeReadingPhase.LEARNING))
-                .andExpect(content().string(containsString("次のコードへ")));
+                .andExpect(content().string(containsString("public</code>")))
+                .andExpect(content().string(containsString("外から使える")))
+                .andExpect(content().string(containsString("次のコードへ")))
+                .andExpect(content().string(not(containsString(
+                        "MainはJavaの固定名ではなく"
+                ))))
+                .andExpect(content().string(not(containsString(
+                        "今回は分かりやすくMain"
+                ))));
     }
 
     @Test

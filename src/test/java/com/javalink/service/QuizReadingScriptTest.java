@@ -41,6 +41,17 @@ class QuizReadingScriptTest {
         assertFalse(script.contains("energizeCircuit"));
     }
 
+    @Test
+    void 構造化された説明をサーバー応答から描画する() throws IOException {
+        String script = readScript();
+
+        assertTrue(script.contains("result.explanationSections"));
+        assertTrue(script.contains("createExplanationSection"));
+        assertTrue(script.contains("createAccessTable"));
+        assertTrue(script.contains("createDiagram"));
+        assertTrue(script.contains("createQa"));
+    }
+
     private String readScript() throws IOException {
         try (InputStream stream = getClass().getResourceAsStream(
                 "/static/js/quiz-reading.js"

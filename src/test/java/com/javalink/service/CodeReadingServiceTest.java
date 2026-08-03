@@ -91,11 +91,72 @@ class CodeReadingServiceTest {
                 codeReadingService.createItems(LESSON_ID, progress);
 
         assertEquals("アクセス修飾子", items.get(0).roleLabel());
-        assertEquals(
-                List.of("ほかのクラスから使えるようにします。"),
-                items.get(0).explanations()
-        );
+        assertTrue(items.get(0).explanations().contains(
+                "publicを付けると、どこからでも使えるようになります。"
+        ));
         assertEquals("引数名", items.get(9).roleLabel());
+    }
+
+    @Test
+    void Part1の四用語に構造化された詳細説明がある() {
+        LessonProgress progress = new LessonProgress(
+                LESSON_ID,
+                "class-public"
+        );
+
+        List<CodeReadingItem> items =
+                codeReadingService.createItems(LESSON_ID, progress);
+
+        CodeReadingItem publicItem = items.get(0);
+        assertTrue(publicItem.technicalExplanation().contains("access modifier"));
+        var accessTable = publicItem.explanationSections().stream()
+                .filter(section -> section.layout().equals("table"))
+                .findFirst().orElseThrow();
+        assertEquals(4, accessTable.entries().size());
+        assertTrue(accessTable.entries().stream().anyMatch(entry ->
+                entry.label().equals("package-private（何も書かない）")
+        ));
+        assertTrue(accessTable.entries().stream().anyMatch(entry ->
+                entry.label().equals("public") && entry.highlighted()
+        ));
+
+        CodeReadingItem classItem = items.get(1);
+        assertTrue(classItem.explanationSections().stream().anyMatch(section ->
+                section.layout().equals("diagram") && section.title().equals("クラスのイメージ")
+        ));
+        assertTrue(classItem.explanationSections().stream().anyMatch(section ->
+                section.layout().equals("comparison")
+                        && section.title().equals("初心者が迷いやすいポイント")
+        ));
+
+        CodeReadingItem mainItem = items.get(2);
+        assertTrue(mainItem.explanationSections().stream().anyMatch(section ->
+                section.layout().equals("examples")
+                        && section.entries().stream()
+                        .filter(entry -> entry.label().endsWith(".java")).count() == 2
+        ));
+        assertTrue(mainItem.explanationSections().stream().anyMatch(section ->
+                section.layout().equals("comparison")
+                        && section.title().equals("初心者が迷いやすいポイント")
+        ));
+
+        CodeReadingItem blockItem = items.get(3);
+        assertTrue(blockItem.explanationSections().stream()
+                .flatMap(section -> section.entries().stream())
+                .anyMatch(entry -> entry.before().contains("必ず対応する } で閉じます")));
+        assertTrue(blockItem.explanationSections().stream()
+                .filter(section -> section.layout().equals("diagram"))
+                .flatMap(section -> section.entries().stream())
+                .noneMatch(entry -> entry.label().equals("}")));
+
+        assertTrue(items.subList(0, 4).stream().allMatch(item ->
+                item.explanationSections().stream().map(section -> section.kind()).toList()
+                        .equals(List.of("identity", "rule", "beginner-point"))
+        ));
+        assertTrue(items.subList(0, 4).stream()
+                .flatMap(item -> item.explanationSections().stream())
+                .noneMatch(section -> section.kind().equals("takeaway")));
+        assertTrue(items.get(4).explanationSections().isEmpty());
     }
 
     @Test

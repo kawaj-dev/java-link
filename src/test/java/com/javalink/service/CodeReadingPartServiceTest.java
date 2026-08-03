@@ -70,14 +70,15 @@ class CodeReadingPartServiceTest {
     }
 
     @Test
-    void 各Partに初心者向けの導入説明がある() {
-        assertTrue(service.getPart(LESSON_ID, "part-1").introduction().stream()
-                .anyMatch(line -> line.contains("自由に変更")));
+    void Part1の完了まとめは簡潔でPart2以降は導入説明を維持する() {
+        assertTrue(service.getPart(LESSON_ID, "part-1").introduction().isEmpty());
+        assertTrue(service.getPart(LESSON_ID, "part-1").completionNotes().isEmpty());
         assertEquals(
                 "public static void main(String[] args) は、Javaでプログラムを始めるための決まり文句です。",
                 service.getPart(LESSON_ID, "part-2").introduction().get(0)
         );
         assertTrue(service.getParts(LESSON_ID).stream()
+                .skip(1)
                 .allMatch(part -> !part.introduction().isEmpty()));
     }
 

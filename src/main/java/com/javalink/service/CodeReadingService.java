@@ -75,6 +75,7 @@ public class CodeReadingService {
                         item.roleLabel(),
                         item.explanations(),
                         item.technicalExplanation(),
+                        item.explanationSections(),
                         item.order(),
                         item.completed(),
                         item.current()
@@ -130,6 +131,7 @@ public class CodeReadingService {
                 step.technicalTerm(),
                 step.beginnerExplanations(),
                 step.technicalExplanation(),
+                step.explanationSections(),
                 step.order(),
                 progress.isStepCompleted(step.id()),
                 progress.getCurrentStepId().equals(step.id())

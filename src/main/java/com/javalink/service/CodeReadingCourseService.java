@@ -170,6 +170,7 @@ public class CodeReadingCourseService {
                 step.technicalTerm(),
                 step.technicalExplanation(),
                 step.beginnerExplanations(),
+                step.explanationSections(),
                 partCompleted ? null : partService.findActionableStepId(result.progress(), part)
         );
     }
@@ -192,6 +193,7 @@ public class CodeReadingCourseService {
                 step.technicalTerm(),
                 step.technicalExplanation(),
                 step.beginnerExplanations(),
+                step.explanationSections(),
                 partService.findActionableStepId(progress, part)
         );
     }

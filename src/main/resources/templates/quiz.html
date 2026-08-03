@@ -27,16 +27,12 @@
 
     <!-- 導入：完成コードの全体像を見るだけの画面です。 -->
     <section th:if="${phase.name() == 'INTRO'}" class="quiz-focus-program"
-             aria-labelledby="intro-code-title">
-        <div class="quiz-program-intro">
-            <p>完成コード</p>
-            <h2 id="intro-code-title">Hello.java</h2>
-        </div>
+            >        
         <div class="quiz-ide-window">
             <div class="quiz-ide-tabbar">
                 <span class="quiz-ide-tab quiz-ide-tab--active">
                     <span class="quiz-java-file-icon" aria-hidden="true">J</span>
-                    Hello.java
+                    Main.java
                 </span>
             </div>
             <div class="quiz-ide-editor">
@@ -160,19 +156,101 @@
                          aria-live="polite">
                     <div th:each="item : ${readingItems}"
                          th:if="${item.current and answered == true and correct == true}">
-                        <h4 data-explanation-term th:text="${item.roleLabel}">アクセス修飾子</h4>
-                        <p data-explanation-technical th:text="${item.technicalExplanation}">
+                        <h4 data-explanation-term
+                            th:if="${item.explanationSections.isEmpty()}"
+                            th:text="${item.roleLabel}">アクセス修飾子</h4>
+                        <p data-explanation-technical
+                           th:if="${item.explanationSections.isEmpty()}"
+                           th:text="${item.technicalExplanation}">
                             publicはアクセス修飾子の1つです。
                         </p>
-                        <div data-explanation-beginner>
+                        <div data-explanation-beginner
+                             th:if="${item.explanationSections.isEmpty()}">
                         <p th:each="line : ${item.explanations}"
                            th:text="${line}">どこから使えるかを決めます。</p>
+                        </div>
+                        <div data-explanation-sections>
+                            <section class="quiz-reading-learning-aid"
+                                     th:each="section : ${item.explanationSections}"
+                                     th:classappend="| quiz-reading-learning-aid--${section.kind} quiz-reading-learning-aid-layout--${section.layout}|"
+                                     th:attr="data-section-kind=${section.kind},data-section-layout=${section.layout}">
+                                <h5 th:text="${section.title}">小見出し</h5>
+
+                              <div class="quiz-reading-access-table"
+     role="table"
+     th:if="${section.layout == 'table'}">
+
+    <div role="row"
+         th:each="entry : ${section.entries}"
+         th:classappend="${entry.highlighted
+             ? ' quiz-reading-access-row--focus'
+             : ''}">
+
+        <code role="cell"
+              th:text="${entry.label}">public</code>
+
+        <span role="cell"
+              th:text="${entry.before}">どこからでも</span>
+    </div>
+
+</div>
+                                   
+
+                                <div class="quiz-reading-concept-flow"
+                                     th:if="${section.layout == 'diagram'}">
+                                    <div th:each="entry : ${section.entries}">
+                                        <code th:text="${entry.label}">設計図</code>
+                                        <span aria-hidden="true">→</span>
+                                        <span th:text="${entry.before}">class Main</span>
+                                    </div>
+                                </div>
+
+                                <div class="quiz-reading-name-examples"
+                                     th:if="${section.layout == 'examples'}">
+                                    <div th:each="entry : ${section.entries}">
+                                        <p class="quiz-reading-examples-note"
+                                           th:if="${entry.label.isEmpty()}"
+                                           th:text="${entry.before}">ファイル名とクラス名を同じにします。</p>
+                                        <th:block th:if="${not entry.label.isEmpty()}">
+                                            <code th:text="${entry.label}">Main.java</code>
+                                            <span aria-hidden="true">→</span>
+                                            <code th:text="${entry.before}">public class Main</code>
+                                        </th:block>
+                                    </div>
+                                </div>
+
+                                <div class="quiz-reading-qa"
+                                     th:if="${section.layout == 'qa' or section.layout == 'comparison'}">
+                                    <p th:each="entry : ${section.entries}">
+                                        <strong th:text="${entry.label}">Q.</strong>
+                                        <span th:text="${entry.before}">質問</span>
+                                    </p>
+                                </div>
+
+                                <div class="quiz-reading-section-text"
+                                     th:if="${section.layout == 'text'}">
+                                    <p th:each="entry : ${section.entries}">
+                                        <strong th:if="${not entry.label.isEmpty()}"
+                                                th:text="${entry.label}">用語</strong>
+                                        <span th:text="${entry.before}"></span><strong
+                                            th:if="${not entry.emphasis.isEmpty()}"
+                                            th:text="${entry.emphasis}"></strong><span
+                                            th:text="${entry.after}"></span>
+                                    </p>
+                                </div>
+                                <ul class="quiz-reading-section-list"
+                                    th:if="${section.layout == 'list'}">
+                                    <li th:each="entry : ${section.entries}"
+                                        th:text="|${entry.before}${entry.emphasis}${entry.after}|">補足</li>
+                                </ul>
+                            </section>
                         </div>
                     </div>
                     <div th:if="${not (answered == true and correct == true)}">
                         <h4 data-explanation-term></h4>
                         <p data-explanation-technical></p>
                         <div data-explanation-beginner></div>
+                        <div data-explanation-sections></div>
                     </div>
                 </section>
             </section>
@@ -187,11 +265,12 @@
                         <dd th:text="${item.meaning}">外から使える</dd>
                     </div>
                 </dl>
-                <div class="quiz-reading-part-introduction quiz-reading-answer-explanation">
+                <div class="quiz-reading-part-introduction quiz-reading-answer-explanation"
+                     th:if="${not codeReadingPage.currentPart.introduction.isEmpty()}">
                     <p th:each="line : ${codeReadingPage.currentPart.introduction}"
                        th:text="${line}">初心者向けの説明</p>
                 </div>
-                <ul>
+                <ul th:if="${not codeReadingPage.completionNotes.isEmpty()}">
                     <li th:each="note : ${codeReadingPage.completionNotes}"
                         th:text="${note}">補足説明</li>
                 </ul>
@@ -216,7 +295,7 @@
             <div class="quiz-ide-tabbar">
                 <span class="quiz-ide-tab quiz-ide-tab--active">
                     <span class="quiz-java-file-icon" aria-hidden="true">J</span>
-                    Hello.java
+                    Main.java
                 </span>
             </div>
             <div class="quiz-ide-editor">

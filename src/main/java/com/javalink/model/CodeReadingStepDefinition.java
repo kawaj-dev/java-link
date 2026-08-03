@@ -21,6 +21,7 @@ public record CodeReadingStepDefinition(
         String technicalTerm,
         List<String> beginnerExplanations,
         String technicalExplanation,
+        List<CodeReadingExplanationSection> explanationSections,
         boolean required
 ) {
 
@@ -45,6 +46,10 @@ public record CodeReadingStepDefinition(
                 technicalExplanation,
                 "technicalExplanation must not be null"
         );
+        explanationSections = List.copyOf(Objects.requireNonNull(
+                explanationSections,
+                "explanationSections must not be null"
+        ));
         if (order < 1) {
             throw new IllegalArgumentException("order must be 1 or greater");
         }
