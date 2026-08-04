@@ -174,7 +174,8 @@
                                      th:each="section : ${item.explanationSections}"
                                      th:classappend="| quiz-reading-learning-aid--${section.kind} quiz-reading-learning-aid-layout--${section.layout}|"
                                      th:attr="data-section-kind=${section.kind},data-section-layout=${section.layout}">
-                                <h5 th:text="${section.title}">小見出し</h5>
+                                <h5 th:if="${not section.title.isEmpty()}"
+                                    th:text="${section.title}">小見出し</h5>
 
                               <div class="quiz-reading-access-table"
      role="table"

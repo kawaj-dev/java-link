@@ -185,9 +185,11 @@
         wrapper.dataset.sectionKind = section.kind;
         wrapper.dataset.sectionLayout = section.layout;
 
-        const heading = document.createElement("h5");
-        heading.textContent = section.title;
-        wrapper.append(heading);
+        if (section.title) {
+            const heading = document.createElement("h5");
+            heading.textContent = section.title;
+            wrapper.append(heading);
+        }
 
         if (section.layout === "table") {
             wrapper.append(createAccessTable(section.entries));

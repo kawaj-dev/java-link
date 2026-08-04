@@ -59,7 +59,7 @@ class QuizControllerTest {
                 .andExpect(model().attribute("phase", CodeReadingPhase.INTRO))
                 .andExpect(model().attributeExists("codeReadingPage"))
                 .andExpect(content().string(containsString("完成コード")))
-                .andExpect(content().string(containsString("Hello.java")))
+                .andExpect(content().string(containsString("Main.java")))
                 .andExpect(content().string(containsString("quiz-intro-code")))
                 .andExpect(content().string(containsString("public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello\");\n    }\n}")))
                 .andExpect(content().string(containsString("スタート")));
@@ -112,9 +112,8 @@ class QuizControllerTest {
                 .andExpect(content().string(not(containsString("次の問題へ"))))
                 .andExpect(content().string(containsString("data-answer-enabled=\"true\"")))
                 .andExpect(content().string(containsString("外から使える")))
-                .andExpect(content().string(containsString("アクセスできる範囲")))
-                .andExpect(content().string(containsString("package-private（何も書かない）")))
-                .andExpect(content().string(containsString("quiz-reading-access-row--focus")))
+                .andExpect(content().string(containsString("アクセス修飾子の種類")))
+                .andExpect(content().string(containsString("（指定なし）")))
                 .andExpect(content().string(containsString("どこからでも")))
                 .andExpect(content().string(not(containsString("今回はこれだけ"))));
     }
@@ -132,7 +131,7 @@ class QuizControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("設計図")))
                 .andExpect(content().string(containsString(
-                        "作るクラスにつけた名前"
+                        "家の設計図にあたるもの"
                 )));
 
         courseService.moveToNextItem(session, LESSON_ID);
@@ -141,10 +140,10 @@ class QuizControllerTest {
         mockMvc.perform(get("/quiz").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Main.java")))
-                .andExpect(content().string(containsString("Hello.java")))
+                .andExpect(content().string(containsString("Hello.javaであれば・・・")))
                 .andExpect(content().string(not(containsString("Calculator.java"))))
                 .andExpect(content().string(containsString(
-                        "Javaが開始時に探す特別なメソッド名"
+                        "Javaが最初に探す特別なメソッド"
                 )));
 
         mockMvc.perform(post("/quiz/answer/interactive")
@@ -153,9 +152,9 @@ class QuizControllerTest {
                         .param("selectedOption", "block-start"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correct").value(true))
-                .andExpect(jsonPath("$.explanationSections[0].title").value("開始波かっこ"))
+                .andExpect(jsonPath("$.explanationSections[0].title").value("{ 波かっこ　（開始）"))
                 .andExpect(jsonPath("$.explanationSections[2].entries[0].before")
-                        .value("{ が書かれたら、あとで必ず対応する } で閉じます。"))
+                        .value("「{」から「}」までをブロックと呼びます。"))
                 .andExpect(jsonPath("$.explanationSections.length()").value(3));
     }
 
@@ -238,10 +237,10 @@ class QuizControllerTest {
                 .andExpect(jsonPath("$.completedCount").value(1))
                 .andExpect(jsonPath("$.partCompleted").value(false))
                 .andExpect(jsonPath("$.technicalTerm").value("アクセス修飾子"))
-                .andExpect(jsonPath("$.explanationSections[1].kind").value("rule"))
+                .andExpect(jsonPath("$.explanationSections[1].kind").value("content"))
                 .andExpect(jsonPath("$.explanationSections[1].layout").value("table"))
                 .andExpect(jsonPath("$.explanationSections[1].entries[1].label")
-                        .value("package-private（何も書かない）"))
+                        .value("protected"))
                 .andExpect(jsonPath("$.nextStepId").value("class-keyword"));
 
         assertEquals(
@@ -703,7 +702,7 @@ class QuizControllerTest {
         mockMvc.perform(get("/quiz").session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("quiz-ide-window")))
-                .andExpect(content().string(containsString("Hello.java")))
+                .andExpect(content().string(containsString("Main.java")))
                 .andExpect(content().string(containsString("System.out.println(\"Hello\");")))
                 .andExpect(content().string(not(containsString(">SUMMARY<"))))
                 .andExpect(content().string(not(containsString("今日読めるようになったコード"))))

@@ -98,7 +98,7 @@ class CodeReadingServiceTest {
     }
 
     @Test
-    void Part1の四用語に構造化された詳細説明がある() {
+    void Stage1の全用語に共通三部構成の詳細説明がある() {
         LessonProgress progress = new LessonProgress(
                 LESSON_ID,
                 "class-public"
@@ -114,49 +114,37 @@ class CodeReadingServiceTest {
                 .findFirst().orElseThrow();
         assertEquals(4, accessTable.entries().size());
         assertTrue(accessTable.entries().stream().anyMatch(entry ->
-                entry.label().equals("package-private（何も書かない）")
-        ));
-        assertTrue(accessTable.entries().stream().anyMatch(entry ->
-                entry.label().equals("public") && entry.highlighted()
+                entry.label().equals("public")
         ));
 
         CodeReadingItem classItem = items.get(1);
         assertTrue(classItem.explanationSections().stream().anyMatch(section ->
-                section.layout().equals("diagram") && section.title().equals("クラスのイメージ")
-        ));
-        assertTrue(classItem.explanationSections().stream().anyMatch(section ->
-                section.layout().equals("comparison")
-                        && section.title().equals("初心者が迷いやすいポイント")
+                section.layout().equals("table") && section.title().equals("🏠 家でたとえると・・・")
         ));
 
         CodeReadingItem mainItem = items.get(2);
         assertTrue(mainItem.explanationSections().stream().anyMatch(section ->
                 section.layout().equals("examples")
                         && section.entries().stream()
-                        .filter(entry -> entry.label().endsWith(".java")).count() == 2
-        ));
-        assertTrue(mainItem.explanationSections().stream().anyMatch(section ->
-                section.layout().equals("comparison")
-                        && section.title().equals("初心者が迷いやすいポイント")
+                        .filter(entry -> entry.label().contains(".java")).count() == 2
         ));
 
         CodeReadingItem blockItem = items.get(3);
         assertTrue(blockItem.explanationSections().stream()
                 .flatMap(section -> section.entries().stream())
-                .anyMatch(entry -> entry.before().contains("必ず対応する } で閉じます")));
+                .anyMatch(entry -> entry.before().contains("あとで必ず対応する「}」を書きます")));
         assertTrue(blockItem.explanationSections().stream()
                 .filter(section -> section.layout().equals("diagram"))
                 .flatMap(section -> section.entries().stream())
                 .noneMatch(entry -> entry.label().equals("}")));
 
-        assertTrue(items.subList(0, 4).stream().allMatch(item ->
+        assertTrue(items.stream().allMatch(item ->
                 item.explanationSections().stream().map(section -> section.kind()).toList()
-                        .equals(List.of("identity", "rule", "beginner-point"))
+                        .equals(List.of("overview", "content", "supplement"))
         ));
-        assertTrue(items.subList(0, 4).stream()
+        assertTrue(items.stream()
                 .flatMap(item -> item.explanationSections().stream())
-                .noneMatch(section -> section.kind().equals("takeaway")));
-        assertTrue(items.get(4).explanationSections().isEmpty());
+                .noneMatch(section -> section.title().equals("初心者が迷いやすいポイント")));
     }
 
     @Test

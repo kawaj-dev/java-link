@@ -168,7 +168,7 @@ public class CodeReadingLessonCatalog {
                                 technicalTerm,
                                 List.of(beginnerExplanations),
                                 technicalExplanation,
-                                List.of(),
+                                standardExplanation(technicalTerm, technicalExplanation, beginnerExplanations),
                                 true);
         }
 
@@ -193,27 +193,27 @@ public class CodeReadingLessonCatalog {
 
         private static List<CodeReadingExplanationSection> publicExplanation() {
                 return List.of(
-                                section("identity", "text", "アクセス修飾子　access modifier　",
+                                section("overview", "text", "アクセス修飾子　access modifier　",
                                                 entry("", "クラスやメソッドを、", "どこから使えるか", "を決めます。")),
                                 section(
-                                                "rule",
+                                                "content",
                                                 "table",
                                                 "アクセス修飾子の種類",
                                                 entry("public", "🌎 どこからでも使える", "", ""),
                                                 entry("protected", "📦 同じパッケージ＋子クラス", "", ""),
                                                 entry("（指定なし）", "📦 同じパッケージだけ", "", ""),
                                                 entry("private", "🔒 自分のクラスだけ", "", "")),
-                                section("beginner-point", "text", "",
+                                section("supplement", "text", "",
                                                 entry("", "", "public", "が付いたクラス、メソッド、フィールドは、どこからでも使うことができます。"),
                                                 entry("", "自分のクラスだけでなく、他のクラスからも利用できます。", "", "")));
         }
 
         private static List<CodeReadingExplanationSection> classExplanation() {
                 return List.of(
-                                section("identity", "text", "クラス　class　",
+                                section("overview", "text", "クラス　class　",
                                                 entry("", "", "「これからプログラムの設計図（クラス）を作ります」", "という意味です。")),
                                 section(
-    "rule",
+    "content",
     "table",
     "🏠 家でたとえると・・・",
     entry(
@@ -229,33 +229,48 @@ entry(
     ""
 )
 ),
-                                section("beginner-point", "text", "",
+                                section("supplement", "text", "",
                                                 entry("", " ", "class", "は、「これから設計図を作ります」とコンピューターに伝えるキーワードです。")
                                                ));
         }
 
         private static List<CodeReadingExplanationSection> mainExplanation() {
                 return List.of(
-                                section("identity", "text", "クラス名　class name",
+                                section("overview", "text", "クラス名　class name",
                                                 entry("", "クラス（設計図）に付ける名前です。", "", ""),
                                                 entry("", "名前は自由に変更できます。今回は例として「", "Main", "」という名前にします。")),
-                                section("rule", "examples", "ファイル名とのルール",
+                                section("content", "examples", "ファイル名とのルール",
                                                 entry("", "publicなクラスでは、ファイル名とクラス名を同じにします。", "", ""),
                                                 entry("Main.javaであれば・・・", "public class Main", "", ""),
                                                 entry("Hello.javaであれば・・・", "public class Hello", "", "")),
-                                section("beginner-point", "comparison", "",
+                                section("supplement", "comparison", "",
                                                 entry("Main：　", "クラス名です。自由に変更できます。", "", ""),
                                                 entry("main：　", "Javaが最初に探す特別なメソッドです。変更できません。", "", "")));
         }
 
         private static List<CodeReadingExplanationSection> blockStartExplanation() {
                 return List.of(
-                                section("identity", "text", "{ 波かっこ　（開始）",
+                                section("overview", "text", "{ 波かっこ　（開始）",
                                                 entry("", "クラスやメソッドの中身が、", "ここから始まる", "ことを表します。")),
-                                section("rule", "diagram", "波かっこのルール",
+                                section("content", "diagram", "波かっこのルール",
                                                 entry("{ と } はセット", "「{」を書いたら、あとで必ず対応する「}」を書きます。", "", "")),
-                                section("beginner-point", "text", "",
+                                section("supplement", "text", "",
                                                 entry("", "「{」から「}」までをブロックと呼びます。", "", "")));
+        }
+
+        private static List<CodeReadingExplanationSection> standardExplanation(
+                        String technicalTerm,
+                        String technicalExplanation,
+                        String... beginnerExplanations) {
+                return List.of(
+                                section("overview", "text", technicalTerm,
+                                                entry("", "", "", "")),
+                                section("content", "text", "",
+                                                entry("", technicalExplanation, "", "")),
+                                section("supplement", "text", "",
+                                                java.util.Arrays.stream(beginnerExplanations)
+                                                                .map(line -> entry("", line, "", ""))
+                                                                .toArray(CodeReadingExplanationEntry[]::new)));
         }
 
         private static CodeReadingExplanationSection section(
