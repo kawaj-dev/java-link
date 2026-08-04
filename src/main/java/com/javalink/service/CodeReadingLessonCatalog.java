@@ -368,12 +368,12 @@ entry(
                                                 "part-2", 2, "mainメソッドを作る",
                                                 List.of(
                                                                 "public static void main(String[] args) は、Javaでプログラムを始めるための決まり文句です。",
-                                                                "Javaはこのmainメソッドから実行を始めます。"),
+                                                                "まずは構文として覚えてしまいましょう。"),
                                                 "public static void main(String[] args) {",
                                                 List.of("main-public", "static", "void", "main", "string-array", "args",
                                                                 "main-open"),
                                                 List.of("public", "static", "void", "main", "String[]", "args", "{"),
-                                                List.of("public static void main(String[] args) { は、mainメソッドを始める決まり文句です。"),
+                                                List.of("Javaはこのmainメソッドを探して、ここから実行を始めます"),
                                                 "Javaが最初に実行するmainメソッド"),
                                 new CodeReadingPart(
                                                 "part-3", 3, "「Hello」を表示する",
