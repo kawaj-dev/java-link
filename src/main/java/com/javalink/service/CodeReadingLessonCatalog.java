@@ -108,8 +108,9 @@ public class CodeReadingLessonCatalog {
                                 step("main-public", 5, "public", "public", "accessible", "外から使える",
                                                 "アクセス修飾子", "mainメソッドを外から呼び出せるようにします。",
                                                 "Javaから呼び出せる開始地点にします。"),
-                                step("static", 6, "static", "static", "without-instance", "インスタンスを作らなくても使える",
+                                richStep("static", 6, "static", "static", "without-instance", "インスタンスを作らなくても使える",
                                                 "static修飾子", "インスタンスに属さないことを示します。",
+                                                 staticExplanation(),
                                                 "インスタンスを作らなくても使えます。", "newしなくても呼び出せます。"),
                                 step("void", 7, "void", "void", "no-return", "戻り値を返さない",
                                                 "戻り値の型", "このメソッドが値を返さないことを示します。",
@@ -206,6 +207,20 @@ public class CodeReadingLessonCatalog {
                                 section("supplement", "text", "",
                                                 entry("", "", "public", "が付いたクラス、メソッド、フィールドは、どこからでも使うことができます。"),
                                                 entry("", "自分のクラスだけでなく、他のクラスからも利用できます。", "", "")));
+        }
+
+         private static List<CodeReadingExplanationSection> staticExplanation() {
+                return List.of(
+                                section("overview", "text", "static修飾子　static modifier",
+                                                entry("", "インスタンス（実体）を作らなくても、クラスから直接メソッドやフィールドを", "利用できる", "ようにする修飾子です。")),
+                                section(
+                                                "content",
+                                                "table",
+                                                "static修飾子の特徴",
+                                                entry("static", "インスタンス（実体）を作らなくても使える", "", ""),
+                                                entry("（なし）", "インスタンス（実体）を作ってから使う", "", "")),
+                                section("supplement", "text", "",
+                                                entry("", "staticが付いたメソッドやフィールドを、", "静的メンバ（static member）", "と呼びます。")));
         }
 
         private static List<CodeReadingExplanationSection> classExplanation() {
