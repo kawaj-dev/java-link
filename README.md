@@ -5,7 +5,7 @@
 > **― 学びながら開発する、開発しながら学ぶ ―**
 
 <p align="center">
-  <img src="docs/images/README_top2.png" alt="Java Link" width="900">
+  <img src="docs/images/README_header.png" alt="Java Link" width="900">
 </p>
 
 

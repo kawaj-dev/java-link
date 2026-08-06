@@ -6,6 +6,11 @@ target/
 *.iml
 .vscode/
 
-# 開発メモ・設計資料
-docs/
+# docs内は基本公開しない
+docs/*
+
+# imagesだけ公開する
+!docs/images/
+!docs/images/**
+
 開発メモ.md
