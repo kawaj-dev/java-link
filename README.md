@@ -1,12 +1,13 @@
 # Java Link
 
+> **初心者の今しか生まれない「わからない」を教材に。**
+>
+> **― 学びながら開発する、開発しながら学ぶ ―**
+
 <p align="center">
   <img src="docs/images/README_top2.png" alt="Java Link" width="900">
 </p>
 
-> **初心者の今しか生まれない「わからない」を教材に。**
->
-> **― 学びながら開発する、開発しながら学ぶ ―**
 
 Java Link は、Java初心者向けの学習Webアプリです。
 

@@ -105,16 +105,18 @@ public class CodeReadingLessonCatalog {
                                                 "あとで必ず対応する } で閉じます。",
                                                 "{ から対応する } までの範囲をブロックと呼びます。",
                                                 "今回は { = ここから始まる と覚えれば大丈夫です。"),
-                                step("main-public", 5, "public", "public", "accessible", "外から使える",
+                                richStep("main-public", 5, "public", "public", "accessible", "外から使える",
                                                 "アクセス修飾子", "mainメソッドを外から呼び出せるようにします。",
+                                                publicExplanation(),
                                                 "Javaから呼び出せる開始地点にします。"),
                                 richStep("static", 6, "static", "static", "without-instance", "インスタンスを作らなくても使える",
                                                 "static修飾子", "インスタンスに属さないことを示します。",
                                                  staticExplanation(),
                                                 "インスタンスを作らなくても使えます。", "newしなくても呼び出せます。"),
-                                step("void", 7, "void", "void", "no-return", "戻り値を返さない",
-                                                "戻り値の型", "このメソッドが値を返さないことを示します。",
-                                                "戻り値を返しません。"),
+                                richStep("void", 7, "void", "void", "no-return", "戻り値を返さない",
+                                                "戻り値の型", "このメソッド（動作）が、値を返さないことを示します。",
+                                                voidExplanation(),
+                                                "結果を返す必要がない場合に使います。"),
                                 step("main", 8, "main", "main", "program-entry", "プログラム開始メソッド",
                                                 "メソッド名", "Javaが実行開始時に探す名前です。",
                                                 "Javaはここから実行を始めます。"),
@@ -222,6 +224,50 @@ public class CodeReadingLessonCatalog {
                                 section("supplement", "text", "",
                                                 entry("", "staticが付いたメソッドやフィールドを、", "静的メンバ（static member）", "と呼びます。")));
         }
+
+        private static List<CodeReadingExplanationSection> voidExplanation() {
+    return List.of(
+            section(
+                    "overview",
+                    "text",
+                    "戻り値の型",
+                    entry(
+                            "",
+                            "",
+                            "このメソッド（動作）が、値を返さないことを示します。",
+                            ""
+                    )
+            ),
+            section(
+                    "content",
+                    "table",
+                    "内容",
+                    entry(
+                            "void を使う場合",
+                            "処理だけを行います。",
+                            "",
+                            ""
+                    ),
+                    entry(
+                            "void を使わない場合",
+                            "処理した後に結果を返します（int・String・booleanなどの型を指定）。",
+                            "",
+                            " "
+                    )
+            ),
+            section(
+                    "supplement",
+                    "text",
+                    "",
+                    entry(
+                            "",
+                            "画面に表示するだけの処理など、結果を返す必要がない場合に使います。",
+                            "",
+                            ""
+                    )
+            )
+    );
+}
 
         private static List<CodeReadingExplanationSection> classExplanation() {
                 return List.of(
