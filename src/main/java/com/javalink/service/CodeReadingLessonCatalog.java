@@ -95,7 +95,7 @@ public class CodeReadingLessonCatalog {
                                 richStep("class-name", 3, "Main", "Main", "main-class-name", "クラスの名前",
                                                 "クラス名",
                                                 "Mainは、作成するクラスにつけた名前です。",
-                                                mainExplanation(),
+                                                classNameExplanation(),
                                                 "Mainという名前は自由に変更できます。",
                                                 "publicなクラスでは、ファイル名とクラス名を同じにします。",
                                                 "Mainは決まり文句ではなく、クラスにつける名前です。"),
@@ -117,8 +117,9 @@ public class CodeReadingLessonCatalog {
                                                 "戻り値の型", "このメソッド（動作）が、値を返さないことを示します。",
                                                 voidExplanation(),
                                                 "結果を返す必要がない場合に使います。"),
-                                step("main", 8, "main", "main", "program-entry", "プログラム開始メソッド",
+                                richStep("main", 8, "main", "main", "program-entry", "プログラム開始メソッド",
                                                 "メソッド名", "Javaが実行開始時に探す名前です。",
+                                                mainExplanation(),
                                                 "Javaはここから実行を始めます。"),
                                 step("string-array", 9, "String[]", "String[]", "multiple-strings", "文字列の配列",
                                                 "引数の型", "文字列を複数まとめて扱う型です。",
@@ -269,6 +270,50 @@ public class CodeReadingLessonCatalog {
     );
 }
 
+ private static List<CodeReadingExplanationSection> mainExplanation() {
+    return List.of(
+            section(
+                    "overview",
+                    "text",
+                    "メソッド名 Method name",
+                    entry(
+                            "",
+                            "Javaが最初に実行する",
+                            "メソッド（動作）の名前",
+                            "です。プログラムのスタート地点です。"
+                    )
+            ),
+            section(
+                    "content",
+                    "table",
+                    "mainメソッドとMainクラスの違い",
+                    entry(
+                            "main",
+                            "Javaが最初に実行するメソッド（動作）の名前です。",
+                            "",
+                            "変更できません。"
+                    ),
+                    entry(
+                            "Main",
+                            "クラス（設計図）の名前です。",
+                            "",
+                            "自由に変更できます。"
+                    )
+            ),
+            section(
+                    "supplement",
+                    "text",
+                    "",
+                    entry(
+                            "",
+                            "プログラムを実行すると、Javaは最初に",
+                            "main",
+                            "メソッド（動作）を実行します。"
+                    )
+            )
+    );
+}
+
         private static List<CodeReadingExplanationSection> classExplanation() {
                 return List.of(
                                 section("overview", "text", "クラス　class　",
@@ -295,7 +340,7 @@ entry(
                                                ));
         }
 
-        private static List<CodeReadingExplanationSection> mainExplanation() {
+        private static List<CodeReadingExplanationSection> classNameExplanation() {
                 return List.of(
                                 section("overview", "text", "クラス名　class name",
                                                 entry("", "クラス（設計図）に付ける名前です。", "", ""),
