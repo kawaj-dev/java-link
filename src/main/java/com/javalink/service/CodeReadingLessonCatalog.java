@@ -111,7 +111,7 @@ public class CodeReadingLessonCatalog {
                                                 "Javaから呼び出せる開始地点にします。"),
                                 richStep("static", 6, "static", "static", "without-instance", "インスタンスを作らなくても使える",
                                                 "static修飾子", "インスタンスに属さないことを示します。",
-                                                 staticExplanation(),
+                                                staticExplanation(),
                                                 "インスタンスを作らなくても使えます。", "newしなくても呼び出せます。"),
                                 richStep("void", 7, "void", "void", "no-return", "戻り値を返さない",
                                                 "戻り値の型", "このメソッド（動作）が、値を返さないことを示します。",
@@ -121,11 +121,13 @@ public class CodeReadingLessonCatalog {
                                                 "メソッド名", "Javaが実行開始時に探す名前です。",
                                                 mainExplanation(),
                                                 "Javaはここから実行を始めます。"),
-                                step("string-array", 9, "String[]", "String[]", "multiple-strings", "文字列の配列",
-                                                "引数の型", "文字列を複数まとめて扱う型です。",
+                                richStep("string-array", 9, "String[]", "String[]", "multiple-strings", "文字列の配列",
+                                                "引数の型", "mainメソッドが受け取る引数（渡される値）の型です。",
+                                                stringArrayExplanation(),
                                                 "文字列の配列です。"),
-                                step("args", 10, "args", "args", "argument-variable", "受け取った値の名前",
-                                                "引数名", "mainメソッドが受け取る値につけた名前です。",
+                                richStep("args", 10, "args", "args", "argument-variable", "受け取った値の名前",
+                                                "引数名", "mainメソッドが受け取る引数（渡される値）につけられた名前です。",
+                                                argsExplanation(),
                                                 "受け取った値につける名前です。"),
                                 step("main-open", 11, "{", "{", "block-start", "ここから始まる",
                                                 "開始波かっこ", "mainメソッドのブロック開始を表します。",
@@ -212,10 +214,11 @@ public class CodeReadingLessonCatalog {
                                                 entry("", "自分のクラスだけでなく、他のクラスからも利用できます。", "", "")));
         }
 
-         private static List<CodeReadingExplanationSection> staticExplanation() {
+        private static List<CodeReadingExplanationSection> staticExplanation() {
                 return List.of(
                                 section("overview", "text", "static修飾子　static modifier",
-                                                entry("", "インスタンス（実体）を作らなくても、クラスから直接メソッドやフィールドを", "利用できる", "ようにする修飾子です。")),
+                                                entry("", "インスタンス（実体）を作らなくても、クラスから直接メソッドやフィールドを", "利用できる",
+                                                                "ようにする修飾子です。")),
                                 section(
                                                 "content",
                                                 "table",
@@ -227,117 +230,148 @@ public class CodeReadingLessonCatalog {
         }
 
         private static List<CodeReadingExplanationSection> voidExplanation() {
-    return List.of(
-            section(
-                    "overview",
-                    "text",
-                    "戻り値の型",
-                    entry(
-                            "",
-                            "",
-                            "このメソッド（動作）が、値を返さないことを示します。",
-                            ""
-                    )
-            ),
-            section(
-                    "content",
-                    "table",
-                    "内容",
-                    entry(
-                            "void を使う場合",
-                            "処理だけを行います。",
-                            "",
-                            ""
-                    ),
-                    entry(
-                            "void を使わない場合",
-                            "処理した後に結果を返します（int・String・booleanなどの型を指定）。",
-                            "",
-                            " "
-                    )
-            ),
-            section(
-                    "supplement",
-                    "text",
-                    "",
-                    entry(
-                            "",
-                            "画面に表示するだけの処理など、結果を返す必要がない場合に使います。",
-                            "",
-                            ""
-                    )
-            )
-    );
-}
+                return List.of(
+                                section(
+                                                "overview",
+                                                "text",
+                                                "戻り値の型",
+                                                entry(
+                                                                "",
+                                                                "",
+                                                                "このメソッド（動作）が、値を返さないことを示します。",
+                                                                "")),
+                                section(
+                                                "content",
+                                                "table",
+                                                "内容",
+                                                entry(
+                                                                "void を使う場合",
+                                                                "処理だけを行います。",
+                                                                "",
+                                                                ""),
+                                                entry(
+                                                                "void を使わない場合",
+                                                                "処理した後に結果を返します（int・String・booleanなどの型を指定）。",
+                                                                "",
+                                                                " ")),
+                                section(
+                                                "supplement",
+                                                "text",
+                                                "",
+                                                entry(
+                                                                "",
+                                                                "画面に表示するだけの処理など、結果を返す必要がない場合に使います。",
+                                                                "",
+                                                                "")));
+        }
 
- private static List<CodeReadingExplanationSection> mainExplanation() {
-    return List.of(
-            section(
-                    "overview",
-                    "text",
-                    "メソッド名 Method name",
-                    entry(
-                            "",
-                            "Javaが最初に実行する",
-                            "メソッド（動作）の名前",
-                            "です。プログラムのスタート地点です。"
-                    )
-            ),
-            section(
-                    "content",
-                    "table",
-                    "mainメソッドとMainクラスの違い",
-                    entry(
-                            "main",
-                            "Javaが最初に実行するメソッド（動作）の名前です。",
-                            "",
-                            "変更できません。"
-                    ),
-                    entry(
-                            "Main",
-                            "クラス（設計図）の名前です。",
-                            "",
-                            "自由に変更できます。"
-                    )
-            ),
-            section(
-                    "supplement",
-                    "text",
-                    "",
-                    entry(
-                            "",
-                            "プログラムを実行すると、Javaは最初に",
-                            "main",
-                            "メソッド（動作）を実行します。"
-                    )
-            )
-    );
-}
+        private static List<CodeReadingExplanationSection> mainExplanation() {
+                return List.of(
+                                section(
+                                                "overview",
+                                                "text",
+                                                "メソッド名 Method name",
+                                                entry(
+                                                                "",
+                                                                "Javaが最初に実行する",
+                                                                "メソッド（動作）の名前",
+                                                                "です。プログラムのスタート地点です。")),
+                                section(
+                                                "content",
+                                                "table",
+                                                "mainメソッドとMainクラスの違い",
+                                                entry(
+                                                                "main",
+                                                                "Javaが最初に実行するメソッド（動作）の名前です。変更できません。",
+                                                                "",
+                                                                ""),
+                                                entry(
+                                                                "Main",
+                                                                "クラス（設計図）の名前です。自由に変更できます。",
+                                                                "",
+                                                                "")),
+                                section(
+                                                "supplement",
+                                                "text",
+                                                "",
+                                                entry(
+                                                                "",
+                                                                "プログラムを実行すると、Javaは最初に",
+                                                                "main",
+                                                                "メソッド（動作）を実行します。")));
+        }
+
+        private static List<CodeReadingExplanationSection> stringArrayExplanation() {
+                return List.of(
+                                section(
+                                                "overview",
+                                                "text",
+                                                "引数の型 Argument type",
+                                                entry(
+                                                                "",
+                                                                "mainメソッドが受け取る",
+                                                                "引数（渡される値）の型",
+                                                                "です。")),
+                                section(
+                                                "content",
+                                                "table",
+                                                "String[]の意味",
+                                                entry(
+                                                                "String",
+                                                                "文字列を表す型です。",
+                                                                "",
+                                                                ""),
+                                                entry(
+                                                                "[]",
+                                                                "複数の値をまとめて扱う配列であることを表します。",
+                                                                "",
+                                                                "")),
+                                section(
+                                                "supplement",
+                                                "text",
+                                                "",
+                                                entry(
+                                                                "",
+                                                                "",
+                                                                "String[]",
+                                                                "は、文字列を複数まとめて扱う配列型です。")));
+        }
+
+        private static List<CodeReadingExplanationSection> argsExplanation() {
+                return List.of(
+                                section("overview", "text", "引数名 Argument name",
+                                                entry("", "mainメソッドが受け取る", "引数（渡される値）につけられた名前",
+                                                                "です。")),
+                                section(
+                                                "content",
+                                                "table",
+                                                "String[] と args の関係",
+                                                entry("String[]", "受け取る値の型です。", "", ""),
+                                                entry("args", "受け取った値につける名前です。", "", "")),
+                                section("supplement", "text", "",
+                                                entry("", "", "args", "という名前は変更できます。")));
+        }
 
         private static List<CodeReadingExplanationSection> classExplanation() {
                 return List.of(
                                 section("overview", "text", "クラス　class　",
                                                 entry("", "", "「これからプログラムの設計図（クラス）を作ります」", "という意味です。")),
                                 section(
-    "content",
-    "table",
-    "🏠 家でたとえると・・・",
-    entry(
-    "設計図",
-    "設計図を作り、その設計図をもとに家を建てます。",
-    "",
-    ""
-),
-entry(
-    "クラス",
-    "家の設計図にあたるものが、Javaでは「クラス」です。",
-    "",
-    ""
-)
-),
+                                                "content",
+                                                "table",
+                                                "🏠 家でたとえると・・・",
+                                                entry(
+                                                                "設計図",
+                                                                "設計図を作り、その設計図をもとに家を建てます。",
+                                                                "",
+                                                                ""),
+                                                entry(
+                                                                "クラス",
+                                                                "家の設計図にあたるものが、Javaでは「クラス」です。",
+                                                                "",
+                                                                "")),
                                 section("supplement", "text", "",
-                                                entry("", " ", "class", "は、「これから設計図を作ります」とコンピューターに伝えるキーワードです。")
-                                               ));
+                                                entry("", " ", "class", "は、「これから設計図を作ります」とコンピューターに伝えるキーワードです。")));
         }
 
         private static List<CodeReadingExplanationSection> classNameExplanation() {
