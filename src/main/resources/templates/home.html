@@ -4,39 +4,151 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/style.css?v=home-brand-phase-2">
 </head>
-<body>
-<main class="home-page">
-    <header class="home-header">
-        <p class="home-label">BEGINNER JAVA LESSON</p>
-        <h1>Java Link</h1>
-        <p class="home-subtitle">Javaを読んで、つなげて、動かそう</p>
-    </header>
+<body class="home-body">
+<header class="home-site-header">
+    <a class="home-logo" href="/" aria-label="Java Linkトップ">
+        <img class="home-logo-image" src="/images/JavaLink_icon.png" alt="">
+        <span>Java Link</span>
+    </a>
+    <nav class="home-site-nav" aria-label="トップページ案内">
+        <a href="#java-about"><span class="home-nav-icon home-nav-icon--book" aria-hidden="true"></span>Javaとは？</a>
+        <a href="#learning-modes"><span class="home-nav-icon home-nav-icon--help" aria-hidden="true">?</span>使い方</a>
+        <span class="home-login" aria-disabled="true"><span class="home-nav-icon home-nav-icon--user" aria-hidden="true"></span>ログイン</span>
+    </nav>
+</header>
 
-    <section class="home-menu" aria-label="学習メニュー">
+<main class="home-page">
+    <svg class="home-circuit-side home-circuit-side--left" viewBox="0 0 210 420" aria-hidden="true">
+        <g class="home-side-circuit home-side-circuit--blue">
+            <path d="M0 185h64l28-28v-78l28-28h35"/>
+            <path d="M0 220h86l28-28v-72h45"/>
+            <path d="M0 255h57l42 42h56"/>
+            <path d="M0 290h91l30 30v45"/>
+            <path d="M38 220v-86l27-27h28"/>
+            <path d="M0 150h42l24-24h43l27-27h31"/>
+            <path d="M0 325h49l27 27h38l24 24h31"/>
+            <path d="M0 360h72l24 24h31"/>
+            <circle cx="162" cy="51" r="7"/><circle cx="166" cy="120" r="7"/>
+            <circle cx="162" cy="297" r="7"/><circle cx="121" cy="373" r="7"/>
+            <circle cx="100" cy="107" r="7"/><circle cx="174" cy="99" r="5"/>
+            <circle cx="175" cy="376" r="5"/><circle cx="134" cy="384" r="5"/>
+        </g>
+    </svg>
+    <svg class="home-circuit-side home-circuit-side--right" viewBox="0 0 230 420" aria-hidden="true">
+        <g class="home-side-circuit home-side-circuit--blue">
+            <path d="M230 170h-70l-28-28v-61l-27-27H66"/>
+            <path d="M230 205h-92l-28-28v-63H71"/>
+            <path d="M230 240h-64l-38 38H72"/>
+            <path d="M230 275h-91l-31 31v61"/>
+            <path d="M230 135h-49l-25-25h-38L91 83H54"/>
+            <path d="M230 310h-61l-28 28h-38l-25 25H48"/>
+            <circle cx="59" cy="54" r="7"/><circle cx="64" cy="114" r="7"/>
+            <circle cx="65" cy="278" r="7"/><circle cx="108" cy="375" r="7"/>
+            <circle cx="47" cy="83" r="5"/><circle cx="41" cy="363" r="5"/>
+        </g>
+        <g class="home-side-circuit home-side-circuit--yellow">
+            <path d="M230 222h-116l-29-29v-66"/>
+            <path d="M230 257h-91l-28 28v56"/>
+            <circle cx="85" cy="119" r="7"/><circle cx="111" cy="349" r="7"/>
+        </g>
+    </svg>
+
+    <section class="home-hero" aria-labelledby="home-title">
+        <svg class="home-hero-circuit" viewBox="0 -4 520 72" aria-hidden="true">
+            <defs>
+                <linearGradient id="home-circuit-power" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0" stop-color="#087dff"/>
+                    <stop offset="0.55" stop-color="#087dff"/>
+                    <stop offset="0.78" stop-color="#4eddf2"/>
+                    <stop offset="1" stop-color="#ffd400"/>
+                </linearGradient>
+            </defs>
+            <path class="home-hero-circuit-wire" d="M42 32H410"/>
+            <path class="home-hero-circuit-wire home-hero-circuit-wire--power" d="M250 32H410"/>
+            <circle class="home-hero-circuit-ring" cx="42" cy="32" r="12"/>
+            <circle class="home-hero-circuit-ring" cx="146" cy="32" r="12"/>
+            <circle class="home-hero-circuit-ring" cx="250" cy="32" r="12"/>
+            <g class="home-hero-circuit-bulb" transform="translate(424 -2) scale(.72)">
+                <path d="M30 13c-15 0-27 11-27 26 0 10 5 17 12 23 4 3 5 7 5 11h20c0-4 1-8 5-11 7-6 12-13 12-23 0-15-12-26-27-26Z"/>
+                <path d="M21 79h18M23 86h14"/>
+                <path class="home-hero-circuit-filament" d="M22 45c5 0 8 3 8 9 0-6 3-9 8-9-1 8-4 10-8 10-4 0-7-2-8-10Zm8 10v17"/>
+                <path class="home-hero-circuit-rays" d="M30 0v-9M7 9 1 2M53 9l6-7M-1 33h-9M61 33h9"/>
+            </g>
+        </svg>
+        <h1 id="home-title"><span class="home-title-java">Java</span><span class="home-title-link">Link</span></h1>
+        <p class="home-catchphrase">
+            <span class="home-catchphrase-read">読んで、</span>
+            <span class="home-catchphrase-connect">つなげて、</span>
+            <span class="home-catchphrase-run">動かそう。</span>
+        </p>
+
+        <ol class="home-learning-flow" aria-label="学習の流れ">
+            <li>
+                <span class="home-flow-icon home-flow-icon--read" aria-hidden="true"><i></i><i></i><i></i></span>
+                <span>読む</span>
+            </li>
+            <li class="home-flow-arrow" aria-hidden="true">→</li>
+            <li>
+                <span class="home-flow-icon home-flow-icon--connect" aria-hidden="true"><i></i><i></i></span>
+                <span>つなげる</span>
+            </li>
+            <li class="home-flow-arrow" aria-hidden="true">→</li>
+            <li>
+                <span class="home-flow-icon home-flow-icon--run" aria-hidden="true"><i></i></span>
+                <span>動かす</span>
+            </li>
+        </ol>
+    </section>
+
+    <section class="home-menu" id="learning-modes" aria-label="学習モード">
         <article class="home-menu-card home-menu-card--reading">
-            <div class="home-menu-icon" aria-hidden="true">💡</div>
+            <div class="home-menu-card-symbol" aria-hidden="true">
+                <svg class="home-card-icon home-card-icon--book" viewBox="0 0 64 64">
+                    <path d="M8 13c9-3 17-1 24 5v35c-7-6-15-8-24-5V13Zm48 0c-9-3-17-1-24 5v35c7-6 15-8 24-5V13Z"/>
+                    <path d="M32 18v35"/>
+                </svg>
+            </div>
             <h2>コードを左から読む</h2>
             <p>
                 Javaコードを左から順番に読み、<br>
                 一つひとつの意味を日本語で確認します。
             </p>
-            <a class="home-menu-button home-menu-button--reading" href="/quiz">学習をはじめる</a>
+            <a class="home-menu-button home-menu-button--reading" href="/quiz"><span>学習をはじめる</span><span aria-hidden="true">→</span></a>
         </article>
 
         <article class="home-menu-card home-menu-card--town">
-            <div class="home-menu-icon" aria-hidden="true">🏘</div>
+            <div class="home-menu-card-symbol home-menu-card-symbol--town" aria-hidden="true">
+                <svg class="home-card-icon home-card-icon--town" viewBox="0 0 64 64">
+                    <path d="M6 50h52v9H6zM10 29h15v21H10zM27 19h15v31H27zM45 34h11v16H45zM34 8l8 11H26l8-11Z"/>
+                    <path class="home-card-icon-cutout" d="M14 34h6v6h-6zM14 43h6v7h-6zM31 26h6v6h-6zM31 36h6v6h-6zM48 39h5v6h-5zM30 49h9v10h-9z"/>
+                    <path class="home-card-icon-road" d="M12 59h40M22 59l-4 5M42 59l4 5"/>
+                    <path class="home-card-icon-spark" d="M55 7v8M51 11h8"/>
+                </svg>
+            </div>
             <h2>Javaタウンをつくろう</h2>
             <p>
-                コードカードを正しく並べて、<br>
-                Java Townに建物や明かりを増やします。
+                コードカードを正しくつなげて、<br>
+                Javaタウンに建物や明かりを増やします。
             </p>
-            <a class="home-menu-button home-menu-button--town" href="/stage1">タウンをつくる</a>
+            <a class="home-menu-button home-menu-button--town" href="/stage1"><span>タウンをつくる</span><span aria-hidden="true">→</span></a>
         </article>
     </section>
 
     <p class="home-guide">どちらの学習からでも自由に始められます。</p>
+
+    <section class="home-concept" id="java-about" aria-labelledby="home-concept-title">
+        <h2 id="home-concept-title">
+            説明は変わりません。<br>
+            変わるのは、<span>学習者の理解</span>です。
+        </h2>
+        <p>
+            Java Linkでは、「今はここだけ覚えれば大丈夫」といった学習段階に応じた説明ではなく、最初から最後まで同じ説明を使います。<br>
+            学習を進めるほど、同じ説明から読み取れる内容が増え、見える景色が変わっていきます。
+        </p>
+        <p class="home-concept-closing"><span>「前よりわかる」</span>を、ひとつずつ。</p>
+    </section>
 </main>
 <div th:replace="~{fragments/java-glossary :: glossary}"></div>
 </body>
