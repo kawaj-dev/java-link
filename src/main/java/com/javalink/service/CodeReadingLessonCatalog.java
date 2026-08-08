@@ -60,6 +60,7 @@ public class CodeReadingLessonCatalog {
 
         private static CodeReadingLessonDefinition createStage1() {
                 return new CodeReadingLessonDefinition(
+
                                 STAGE1_LESSON_ID,
                                 "Stage 1",
                                 "「Hello」と表示するプログラムを読めるようになろう",
@@ -129,8 +130,9 @@ public class CodeReadingLessonCatalog {
                                                 "引数名", "mainメソッドが受け取る引数（渡される値）につけられた名前です。",
                                                 argsExplanation(),
                                                 "受け取った値につける名前です。"),
-                                step("main-open", 11, "{", "{", "block-start", "ここから始まる",
+                                richStep("main-open", 11, "{", "{", "block-start", "ここから始まる",
                                                 "開始波かっこ", "mainメソッドのブロック開始を表します。",
+                                                blockStartExplanation(),
                                                 "mainメソッドの中身がここから始まります。"),
                                 step("print-command", 12, "System.out.println", "System.out.println",
                                                 "display-and-newline", "画面に表示して改行する",
@@ -436,14 +438,14 @@ public class CodeReadingLessonCatalog {
         private static List<CodeReadingCircuitDefinition> createStage1Circuits() {
                 return List.of(
                                 new CodeReadingCircuitDefinition(
-                                                "class-declaration", "public class Main { }",
+                                                "class-declaration", "public class Main { ",
                                                 List.of("class-public", "class-keyword", "class-name", "class-open"),
-                                                List.of("public", "class", "Main", "{ }")),
+                                                List.of("public", "class", "Main", "{ ")),
                                 new CodeReadingCircuitDefinition(
-                                                "main-method", "public static void main(String[] args) { }",
+                                                "main-method", "public static void main(String[] args) { ",
                                                 List.of("main-public", "static", "void", "main", "string-array", "args",
                                                                 "main-open"),
-                                                List.of("public", "static", "void", "main", "String[]", "args", "{ }")),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{ ")),
                                 new CodeReadingCircuitDefinition(
                                                 "print-statement", "System.out.println(\"Hello\");",
                                                 List.of("print-command", "hello-string", "semicolon"),
@@ -458,7 +460,7 @@ public class CodeReadingLessonCatalog {
                 return Map.of(
                                 "part-1", List.of(line(
                                                 List.of("class-public", "class-keyword", "class-name", "class-open"),
-                                                "}", "")),
+                                                "", "")),
                                 "part-2", List.of(new CodeReadingCodeLineDefinition(
                                                 List.of(
                                                                 token("main-public"), token("static"),
@@ -467,7 +469,7 @@ public class CodeReadingLessonCatalog {
                                                                                 ""),
                                                                 new CodeReadingCodeTokenDefinition("args", "", ")"),
                                                                 token("main-open")),
-                                                "}",
+                                                "",
                                                 "quiz-reading-code-line--part-2")),
                                 "part-3", List.of(new CodeReadingCodeLineDefinition(
                                                 List.of(

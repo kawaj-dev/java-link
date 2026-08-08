@@ -249,6 +249,6 @@ class CodeReadingServiceTest {
         assertEquals(7, line.tokens().size());
         assertEquals("(", line.tokens().get(4).prefix());
         assertEquals(")", line.tokens().get(5).suffix());
-        assertEquals("}", line.trailingCode());
+        assertEquals("", line.trailingCode());
     }
 }

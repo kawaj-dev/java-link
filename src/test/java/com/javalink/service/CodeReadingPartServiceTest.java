@@ -99,13 +99,13 @@ class CodeReadingPartServiceTest {
                 groups.stream().map(group -> group.bulbs().size()).toList()
         );
         CodeReadingCircuitGroup mainMethod = groups.get(1);
-        assertEquals("public static void main(String[] args) { }", mainMethod.codeLabel());
+        assertEquals("public static void main(String[] args) { ", mainMethod.codeLabel());
         assertEquals(4, mainMethod.bulbs().stream().filter(bulb -> bulb.completed()).count());
         assertTrue(mainMethod.current());
         assertTrue(mainMethod.bulbs().stream()
                 .anyMatch(bulb -> bulb.stepId().equals("string-array") && bulb.current()));
         assertEquals(
-                List.of("public", "static", "void", "main", "String[]", "args", "{ }"),
+                List.of("public", "static", "void", "main", "String[]", "args", "{ "),
                 mainMethod.bulbs().stream().map(bulb -> bulb.codeLabel()).toList()
         );
         assertEquals(
