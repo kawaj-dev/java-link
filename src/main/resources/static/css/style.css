@@ -1050,7 +1050,7 @@ h1 {
     display: block;
     width: min(390px, 78vw);
     height: auto;
-    margin: 0 auto 10px;
+    margin: 0 auto 4px;
     overflow: visible;
 }
 
@@ -1058,7 +1058,7 @@ h1 {
     fill: none;
     stroke: #087dff;
     stroke-linecap: round;
-    stroke-width: 5;
+    stroke-width: 6;
 }
 
 .home-hero-circuit-wire--power {
@@ -1068,7 +1068,11 @@ h1 {
 .home-hero-circuit-ring {
     fill: var(--home-navy);
     stroke: #087dff;
-    stroke-width: 7;
+    stroke-width: 6;
+}
+
+.home-hero-circuit-ring--lit {
+    stroke: #ffd400;
 }
 
 .home-hero-circuit-bulb {
@@ -1076,8 +1080,10 @@ h1 {
     stroke: var(--home-yellow);
     stroke-linecap: round;
     stroke-linejoin: round;
-    stroke-width: 5;
-    filter: drop-shadow(0 0 8px rgba(255, 212, 0, 0.42));
+    stroke-width: 4.2;
+    filter:
+        drop-shadow(0 0 5px rgba(255, 212, 0, 0.7))
+        drop-shadow(0 0 13px rgba(255, 212, 0, 0.34));
 }
 
 .home-hero-circuit-filament {
@@ -1092,13 +1098,13 @@ h1 {
     display: flex;
     align-items: baseline;
     justify-content: center;
-    gap: 0.075em;
+    gap: 0.11em;
     margin: 0;
     color: #ffffff;
-    font-size: clamp(3.5rem, 7.5vw, 5.4rem);
+    font-size: clamp(3.5rem, 7.8vw, 5.65rem);
     font-weight: 800;
     line-height: 0.95;
-    letter-spacing: -0.065em;
+    letter-spacing: -0.055em;
     text-shadow: 0 10px 35px rgba(1, 14, 36, 0.3);
 }
 
@@ -1108,11 +1114,19 @@ h1 {
 
 .home-title-link {
     color: #087dff;
+    background: linear-gradient(180deg, #168dff 0%, #087dff 58%, #0564ea 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .home-catchphrase {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(24px, 3.5vw, 46px);
     margin: 14px 0 0;
-    font-size: clamp(1.1rem, 2.7vw, 1.5rem);
+    font-size: clamp(1.1rem, 2.6vw, 1.45rem);
     font-weight: 800;
     letter-spacing: 0.05em;
 }
@@ -1149,16 +1163,33 @@ h1 {
 }
 
 .home-flow-arrow {
-    color: rgba(255, 255, 255, 0.62);
-    font-size: 1.4rem;
+    position: relative;
+    width: 42px;
+    height: 2.5px;
+    border-radius: 999px;
+    background: #1685ff;
+    color: transparent;
+    font-size: 0;
+}
+
+.home-flow-arrow::after {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 9px;
+    height: 9px;
+    transform: translateY(-50%) rotate(45deg);
+    border-top: 2.5px solid #1685ff;
+    border-right: 2.5px solid #1685ff;
+    content: "";
 }
 
 .home-flow-icon {
     display: grid;
-    width: 48px;
-    height: 48px;
+    width: 54px;
+    height: 54px;
     place-items: center;
-    border: 2px solid #1685ff;
+    border: 2.5px solid #1685ff;
     border-radius: 50%;
     background: rgba(6, 38, 75, 0.28);
     color: #62b6ff;
@@ -1175,9 +1206,9 @@ h1 {
 
 .home-flow-icon--read::before {
     position: absolute;
-    top: 12px;
-    bottom: 12px;
-    left: 13px;
+    top: 25%;
+    bottom: 25%;
+    left: 27%;
     width: 2px;
     border-radius: 2px;
     background: #62b6ff;
@@ -1186,23 +1217,23 @@ h1 {
 
 .home-flow-icon--read i {
     position: absolute;
-    left: 20px;
-    width: 15px;
+    left: 42%;
+    width: 32%;
     height: 2px;
     border-radius: 2px;
     background: #62b6ff;
 }
 
 .home-flow-icon--read i:nth-child(1) {
-    top: 14px;
+    top: 29%;
 }
 
 .home-flow-icon--read i:nth-child(2) {
-    top: 22px;
+    top: 46%;
 }
 
 .home-flow-icon--read i:nth-child(3) {
-    top: 30px;
+    top: 63%;
 }
 
 .home-flow-icon--connect i {
@@ -1215,20 +1246,20 @@ h1 {
 }
 
 .home-flow-icon--connect i:first-child {
-    top: 25px;
-    left: 10px;
+    top: 52%;
+    left: 21%;
 }
 
 .home-flow-icon--connect i:last-child {
-    top: 12px;
-    right: 10px;
+    top: 25%;
+    right: 21%;
 }
 
 .home-flow-icon--connect::after {
     position: absolute;
-    top: 23px;
-    left: 17px;
-    width: 18px;
+    top: 48%;
+    left: 34%;
+    width: 38%;
     height: 3px;
     transform: rotate(-34deg);
     border-radius: 3px;
@@ -1244,8 +1275,8 @@ h1 {
 
 .home-flow-icon--run i {
     position: absolute;
-    top: 13px;
-    left: 18px;
+    top: 27%;
+    left: 38%;
     width: 0;
     height: 0;
     border-top: 10px solid transparent;
@@ -1412,7 +1443,7 @@ h1 {
 .home-concept h2 {
     margin: 0;
     color: #102c49;
-    font-size: clamp(1.55rem, 4vw, 2.35rem);
+    font-size: clamp(1.45rem, 3.5vw, 2.1rem);
     line-height: 1.6;
 }
 
@@ -1430,7 +1461,7 @@ h1 {
 .home-concept-closing {
     margin: 52px 0 0;
     color: #163652;
-    font-size: 1.15rem;
+    font-size: 1.5rem;
     font-weight: 700;
 }
 
@@ -1487,7 +1518,7 @@ h1 {
     }
 
     .home-hero-circuit {
-        margin-bottom: 12px;
+        margin-bottom: 8px;
     }
 
     .home-learning-flow {
@@ -1507,7 +1538,8 @@ h1 {
     }
 
     .home-flow-arrow {
-        font-size: 1rem;
+        width: 24px;
+        font-size: 0;
     }
 
     .home-menu {
@@ -1575,7 +1607,7 @@ h1 {
     }
 
     .home-hero h1 {
-        font-size: clamp(3.6rem, 19vw, 5rem);
+        font-size: clamp(3.6rem, 19.5vw, 5.1rem);
     }
 
     .home-catchphrase {
