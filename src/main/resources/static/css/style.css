@@ -3430,6 +3430,88 @@ h1 {
     font-size: clamp(0.62rem, 2.4vw, 1rem);
 }
 
+/* /quiz INTRO: TOPページのネイビー・ブルー・黄色へ色調だけを統一します。 */
+body:has(.quiz-focus-program) {
+    color: #102f52;
+    background:
+        radial-gradient(circle at 15% 15%, #dcecff 0, transparent 30%),
+        linear-gradient(145deg, #f8fbff 0%, #eaf2fb 100%);
+}
+
+body:has(.quiz-focus-program) .page-home-navigation a {
+    color: #375579;
+}
+
+body:has(.quiz-focus-program) .label {
+    color: #087dff;
+}
+
+body:has(.quiz-focus-program) .quiz-focus-header h1 {
+    color: #0b2c59;
+}
+
+body:has(.quiz-focus-program) .quiz-focus-stage {
+    color: #096fd3;
+}
+
+body:has(.quiz-focus-program) .quiz-focus-header h2 {
+    color: #102f52;
+}
+
+body:has(.quiz-focus-program) .quiz-focus-program {
+    border-color: #c8d8ea;
+    background: rgba(251, 253, 255, 0.96);
+    box-shadow: 0 12px 34px rgba(7, 26, 53, 0.1);
+}
+
+body:has(.quiz-focus-program) .quiz-focus-program .quiz-ide-window {
+    border-color: #284669;
+    background: #071a35;
+    box-shadow: 0 14px 34px rgba(7, 26, 53, 0.22);
+}
+
+body:has(.quiz-focus-program) .quiz-focus-program .quiz-ide-tabbar {
+    border-bottom-color: #284669;
+    background: #0b2442;
+}
+
+body:has(.quiz-focus-program) .quiz-focus-program .quiz-ide-tab {
+    border-right-color: #284669;
+    color: #b8c9df;
+}
+
+body:has(.quiz-focus-program) .quiz-focus-program .quiz-ide-tab--active {
+    border-top-color: #1685ff;
+    color: #f4f8ff;
+    background: #071a35;
+}
+
+body:has(.quiz-focus-program) .quiz-focus-program .quiz-java-file-icon {
+    color: #071a35;
+    background: #ffd400;
+}
+
+body:has(.quiz-focus-program) .quiz-focus-program .quiz-ide-editor,
+body:has(.quiz-focus-program) .quiz-focus-program .quiz-full-code {
+    color: #e5edf7;
+    background: #071a35;
+}
+
+body:has(.quiz-focus-program) .quiz-focus-program .quiz-ide-line-numbers {
+    border-right-color: #183656;
+    color: #748aa3;
+    background: #06162b;
+}
+
+body:has(.quiz-focus-program) .quiz-intro-start .next-button {
+    color: #ffffff;
+    background-color: #087dff;
+}
+
+body:has(.quiz-focus-program) .quiz-intro-start .next-button:hover {
+    background-color: #0565d8;
+}
+
 /* 各Partで、コードの長さを保ちながら意味カードを対応させます。 */
 .quiz-reading-code-map {
     display: flex;
@@ -5534,4 +5616,365 @@ h1 {
         grid-row: 2;
         grid-column: 1;
     }
+}
+
+/* /quiz LEARNING: 青=ブランド・現在位置、緑=完了、黄色=点灯。 */
+body:has(.quiz-focus-learning) {
+    color: #102f52;
+    background:
+        radial-gradient(circle at 15% 15%, #dcecff 0, transparent 30%),
+        linear-gradient(145deg, #f8fbff 0%, #eaf2fb 100%);
+}
+
+body:has(.quiz-focus-learning) .page-home-navigation a {
+    color: #375579;
+}
+
+body:has(.quiz-focus-learning) .label {
+    color: #087dff;
+}
+
+body:has(.quiz-focus-learning) .quiz-focus-header h1 {
+    color: #0b2c59;
+}
+
+body:has(.quiz-focus-learning) .quiz-focus-stage {
+    color: #096fd3;
+}
+
+body:has(.quiz-focus-learning) .quiz-focus-header h2,
+body:has(.quiz-focus-learning) .quiz-focus-question h2 {
+    color: #102f52;
+}
+
+body:has(.quiz-focus-learning) .quiz-focus-question p {
+    color: #52677e;
+}
+
+body:has(.quiz-focus-learning) .quiz-focus-learning {
+    border-color: #c8d8ea;
+    background: rgba(251, 253, 255, 0.96);
+    box-shadow: 0 12px 34px rgba(7, 26, 53, 0.1);
+}
+
+body:has(.quiz-focus-learning) .quiz-focus-learning-header {
+    border-bottom-color: #d8e3ef;
+    color: #087dff;
+}
+
+body:has(.quiz-focus-learning) .quiz-focus-learning-divider {
+    color: #9aacc2;
+}
+
+body:has(.quiz-focus-learning) .quiz-focus-learning-part-title {
+    color: #375579;
+}
+
+body:has(.quiz-focus-learning) .quiz-reading-code-panel {
+    background: #071a35;
+    box-shadow: 0 12px 28px rgba(7, 26, 53, 0.2);
+}
+
+body:has(.quiz-focus-learning)
+    .quiz-reading-code-unit--current .quiz-reading-keyword,
+body:has(.quiz-focus-learning) .quiz-code-token--current {
+    color: #071a35 !important;
+    background: #9fcaff;
+    box-shadow: 0 0 0 3px rgba(22, 133, 255, 0.22);
+}
+
+body:has(.quiz-focus-learning) .quiz-circuit-code-button {
+    color: #40566f;
+}
+
+body:has(.quiz-focus-learning) .quiz-circuit-toggle {
+    border-color: #a8b8ca;
+    background: #e9eff5;
+}
+
+body:has(.quiz-focus-learning)
+    .quiz-part-circuit-step--explaining .quiz-code-circuit-node code,
+body:has(.quiz-focus-learning)
+    .quiz-part-circuit-step--next .quiz-code-circuit-node code {
+    color: #075fbd;
+    background: #eaf3ff;
+    box-shadow: 0 0 0 1px #8bbfff;
+}
+
+body:has(.quiz-focus-learning)
+    .quiz-part-circuit-step--next:not(.quiz-part-circuit-step--completed)
+    .quiz-part-bulb {
+    border-color: #1685ff;
+    box-shadow: 0 0 0 3px rgba(22, 133, 255, 0.14);
+}
+
+body:has(.quiz-focus-learning)
+    .quiz-code-circuit-bulbs
+    .quiz-part-circuit-step--explaining .quiz-part-bulb {
+    outline-color: rgba(22, 133, 255, 0.28);
+}
+
+body:has(.quiz-focus-learning)
+    .quiz-circuit-code-button--next:not(:disabled) {
+    border-color: #1685ff;
+    color: #0b2c59;
+    background: #ffffff;
+}
+
+body:has(.quiz-focus-learning)
+    .quiz-circuit-code-button--next:not(:disabled):hover {
+    border-color: #0565d8;
+    background: #edf5ff;
+}
+
+body:has(.quiz-focus-learning)
+    .quiz-circuit-code-button--explaining:disabled {
+    color: #0b2c59;
+    border-color: #087dff;
+    background: #dcecff;
+    box-shadow: 0 0 0 4px rgba(22, 133, 255, 0.14),
+        0 7px 16px rgba(7, 26, 53, 0.14);
+}
+
+body:has(.quiz-focus-learning) .quiz-circuit-code-button--locked:disabled {
+    color: #788695;
+    border-color: #d5dde6;
+    background: #f2f5f8;
+}
+
+body:has(.quiz-focus-learning) .quiz-circuit-code-button:focus-visible {
+    outline-color: rgba(22, 133, 255, 0.38);
+}
+
+/* /quiz RUN: 青=ブランド・処理中、緑=成功、黄色=達成。 */
+body:has(.quiz-summary-development-flow) {
+    color: #102f52;
+    background:
+        radial-gradient(circle at 15% 15%, #dcecff 0, transparent 30%),
+        linear-gradient(145deg, #f8fbff 0%, #eaf2fb 100%);
+}
+
+body:has(.quiz-summary-development-flow) .page-home-navigation a {
+    color: #375579;
+}
+
+body:has(.quiz-summary-development-flow) .label {
+    color: #087dff;
+}
+
+body:has(.quiz-summary-development-flow) .quiz-focus-header h1 {
+    color: #0b2c59;
+}
+
+body:has(.quiz-summary-development-flow) .quiz-focus-stage {
+    color: #096fd3;
+}
+
+body:has(.quiz-summary-development-flow) .quiz-focus-header h2 {
+    color: #102f52;
+}
+
+body:has(.quiz-summary-development-flow) .quiz-final-review {
+    border-color: #c8d8ea;
+    background: rgba(251, 253, 255, 0.96);
+    box-shadow: 0 12px 34px rgba(7, 26, 53, 0.1);
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-development-flow .quiz-ide-window {
+    border-color: #284669;
+    background: #071a35;
+    box-shadow: 0 14px 34px rgba(7, 26, 53, 0.22);
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-development-flow .quiz-ide-tabbar {
+    border-bottom-color: #284669;
+    background: #0b2442;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-development-flow .quiz-ide-tab {
+    border-right-color: #284669;
+    color: #b8c9df;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-development-flow .quiz-ide-tab--active {
+    border-top-color: #1685ff;
+    color: #f4f8ff;
+    background: #071a35;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-development-flow .quiz-java-file-icon {
+    color: #071a35;
+    background: #ffd400;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-development-flow .quiz-ide-editor,
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-development-flow .quiz-full-code {
+    color: #e5edf7;
+    background: #071a35;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-development-flow .quiz-ide-line-numbers {
+    border-right-color: #183656;
+    color: #748aa3;
+    background: #06162b;
+}
+
+body:has(.quiz-summary-development-flow) .quiz-summary-run-panel .run-button {
+    color: #ffffff;
+    background-color: #087dff;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-run-panel .run-button:hover:not(:disabled) {
+    background-color: #0565d8;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-run-panel .run-button:focus-visible {
+    outline-color: #9fcaff;
+}
+
+body:has(.quiz-summary-development-flow) .quiz-summary-process-panel {
+    border-color: #bfd2e8;
+    color: #102f52;
+    background: #edf5ff;
+}
+
+body:has(.quiz-summary-development-flow) .quiz-summary-process-primary {
+    color: #075fbd;
+}
+
+body:has(.quiz-summary-development-flow) .quiz-summary-process-details {
+    border-top-color: #c8d8ea;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-process-details strong {
+    color: #0b2c59;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-process-details span {
+    color: #405b78;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-terminal .quiz-terminal-header {
+    border-bottom-color: #284669;
+    background: #0b2442;
+}
+
+body:has(.quiz-summary-development-flow)
+    .quiz-summary-terminal .quiz-terminal-header h2 {
+    color: #e5edf7;
+}
+
+/* /quiz LEARNING: 緑は完了・正解だけに限定し、教材装飾はブランドブルーへ寄せます。 */
+body:has(.quiz-focus-learning)
+    .quiz-circuit-code-button[aria-pressed="true"] .quiz-circuit-toggle {
+    border-color: #6aa897;
+    background: #83bcae;
+}
+
+body:has(.quiz-focus-learning)
+    .quiz-circuit-code-button--completed:disabled:not(
+        .quiz-circuit-code-button--explaining
+    ) {
+    color: #405950;
+    border-color: #c8ded7;
+    background: #f7fbf9;
+}
+
+body:has(.quiz-focus-learning) .quiz-reading-fixed-card {
+    border-color: #bfd9d1;
+    color: #3b6257;
+    background: #f8fcfa;
+}
+
+body:has(.quiz-focus-learning)
+    .quiz-reading-code-panel .quiz-reading-fixed-card {
+    border-color: #b8d4cb;
+    background: #f7fbf9;
+}
+
+body:has(.quiz-focus-learning) .quiz-reading-answer-confirmation,
+body:has(.quiz-focus-learning) .quiz-reading-part-complete {
+    border-color: #c9ded7;
+    background: #f9fcfb;
+}
+
+body:has(.quiz-focus-learning) .quiz-focus-feedback--correct {
+    border-color: #c9ded7;
+    background: #f9fcfb;
+}
+
+body:has(.quiz-focus-learning) .quiz-reading-learning-aid h5 {
+    color: #0b2c59;
+}
+
+body:has(.quiz-focus-learning) .quiz-reading-access-row--focus {
+    background: #eaf3ff !important;
+    box-shadow: inset 3px 0 #1685ff;
+}
+
+body:has(.quiz-focus-learning) .quiz-reading-concept-flow {
+    color: #294867;
+    background: #f3f7fc;
+}
+
+body:has(.quiz-focus-learning) .quiz-reading-concept-flow code {
+    color: #075fbd;
+}
+
+body:has(.quiz-focus-learning) .quiz-reading-qa {
+    border-left-color: #8bbfff;
+    background: #f8fbff;
+}
+
+body:has(.quiz-focus-learning) .quiz-reading-qa p:nth-child(2) {
+    background: #edf5ff;
+}
+
+body:has(.quiz-focus-learning) .quiz-reading-qa strong {
+    color: #075fbd;
+}
+
+body:has(.quiz-focus-learning) .java-glossary-open {
+    border-color: rgba(8, 125, 255, 0.35);
+    color: #075fbd;
+    background: rgba(255, 255, 255, 0.94);
+}
+
+body:has(.quiz-focus-learning) .quiz-understood-form {
+    flex: 0 0 auto;
+    margin-left: auto;
+}
+
+body:has(.quiz-focus-learning) .quiz-understood-link {
+    padding: 2px 0;
+    border: 0;
+    color: #526f8d;
+    background: transparent;
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 650;
+    cursor: pointer;
+}
+
+body:has(.quiz-focus-learning) .quiz-understood-link:hover {
+    color: #087dff;
+}
+
+body:has(.quiz-focus-learning) .quiz-understood-link:focus-visible {
+    border-radius: 4px;
+    outline: 2px solid rgba(22, 133, 255, 0.42);
+    outline-offset: 4px;
 }

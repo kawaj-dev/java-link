@@ -46,15 +46,38 @@ class QuizReadingScriptTest {
         String script = readScript();
 
         assertTrue(script.contains("result.explanationSections"));
+        assertTrue(script.contains("section.sectionType"));
+        assertTrue(script.contains("section.sectionType || \"text\""));
+        assertTrue(script.contains("dataset.sectionType"));
+        assertFalse(script.contains("section.layout"));
+        assertFalse(script.contains("dataset.sectionLayout"));
+        assertFalse(script.contains("result.technicalExplanation"));
+        assertFalse(script.contains("result.beginnerExplanations"));
+        assertFalse(script.contains("data-explanation-technical"));
+        assertFalse(script.contains("data-explanation-beginner"));
         assertTrue(script.contains("createExplanationSection"));
         assertTrue(script.contains("createAccessTable"));
         assertTrue(script.contains("createDiagram"));
         assertTrue(script.contains("createQa"));
+
+        String template = readTemplate();
+        assertTrue(template.contains("data-section-type"));
+        assertFalse(template.contains("data-section-layout"));
+        assertTrue(template.contains("section.sectionType.value != 'table'"));
     }
 
     private String readScript() throws IOException {
         try (InputStream stream = getClass().getResourceAsStream(
                 "/static/js/quiz-reading.js"
+        )) {
+            assertNotNull(stream);
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    private String readTemplate() throws IOException {
+        try (InputStream stream = getClass().getResourceAsStream(
+                "/templates/quiz.html"
         )) {
             assertNotNull(stream);
             return new String(stream.readAllBytes(), StandardCharsets.UTF_8);

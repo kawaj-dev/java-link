@@ -149,41 +149,21 @@
         if (!panel) {
             return;
         }
-        const term = panel.querySelector("[data-explanation-term]");
-        const technical = panel.querySelector("[data-explanation-technical]");
-        const beginner = panel.querySelector("[data-explanation-beginner]");
         const sections = panel.querySelector("[data-explanation-sections]");
-        const hasSections = Array.isArray(result.explanationSections)
-            && result.explanationSections.length > 0;
-        if (term) {
-            term.textContent = result.technicalTerm;
-            term.hidden = hasSections;
-        }
-        if (technical) {
-            technical.textContent = result.technicalExplanation;
-            technical.hidden = hasSections;
-        }
-        if (beginner) {
-            beginner.replaceChildren(...result.beginnerExplanations.map((line) => {
-                const paragraph = document.createElement("p");
-                paragraph.textContent = line;
-                return paragraph;
-            }));
-            beginner.hidden = hasSections;
-        }
         if (sections) {
-            sections.replaceChildren(...(hasSections
-                ? result.explanationSections.map(createExplanationSection)
-                : []));
+            const explanationSections = Array.isArray(result.explanationSections)
+                ? result.explanationSections
+                : [];
+            sections.replaceChildren(...explanationSections.map(createExplanationSection));
         }
         panel.hidden = false;
     }
 
     function createExplanationSection(section) {
+        const sectionType = section.sectionType || "text";
         const wrapper = document.createElement("section");
-        wrapper.className = `quiz-reading-learning-aid quiz-reading-learning-aid--${section.kind} quiz-reading-learning-aid-layout--${section.layout}`;
-        wrapper.dataset.sectionKind = section.kind;
-        wrapper.dataset.sectionLayout = section.layout;
+        wrapper.className = `quiz-reading-learning-aid quiz-reading-learning-aid-layout--${sectionType}`;
+        wrapper.dataset.sectionType = sectionType;
 
         if (section.title) {
             const heading = document.createElement("h5");
@@ -191,15 +171,15 @@
             wrapper.append(heading);
         }
 
-        if (section.layout === "table") {
+        if (sectionType === "table") {
             wrapper.append(createAccessTable(section.entries));
-        } else if (section.layout === "diagram") {
+        } else if (sectionType === "diagram") {
             wrapper.append(createDiagram(section.entries));
-        } else if (section.layout === "examples") {
+        } else if (sectionType === "examples") {
             wrapper.append(createExamples(section.entries));
-        } else if (section.layout === "qa" || section.layout === "comparison") {
+        } else if (sectionType === "qa" || sectionType === "comparison") {
             wrapper.append(createQa(section.entries));
-        } else if (section.layout === "list") {
+        } else if (sectionType === "list") {
             wrapper.append(createExplanationList(section.entries));
         } else {
             wrapper.append(createExplanationText(section.entries));

@@ -19,8 +19,6 @@ public record CodeReadingStepDefinition(
         CodeReadingCardDefinition correctCard,
         List<CodeReadingCardDefinition> distractorCards,
         String technicalTerm,
-        List<String> beginnerExplanations,
-        String technicalExplanation,
         List<CodeReadingExplanationSection> explanationSections,
         boolean required
 ) {
@@ -38,25 +36,12 @@ public record CodeReadingStepDefinition(
                 "distractorCards must not be null"
         ));
         Objects.requireNonNull(technicalTerm, "technicalTerm must not be null");
-        beginnerExplanations = List.copyOf(Objects.requireNonNull(
-                beginnerExplanations,
-                "beginnerExplanations must not be null"
-        ));
-        Objects.requireNonNull(
-                technicalExplanation,
-                "technicalExplanation must not be null"
-        );
         explanationSections = List.copyOf(Objects.requireNonNull(
                 explanationSections,
                 "explanationSections must not be null"
         ));
         if (order < 1) {
             throw new IllegalArgumentException("order must be 1 or greater");
-        }
-        if (beginnerExplanations.isEmpty()) {
-            throw new IllegalArgumentException(
-                    "beginnerExplanations must not be empty"
-            );
         }
     }
 

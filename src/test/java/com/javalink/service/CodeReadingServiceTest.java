@@ -1,6 +1,7 @@
 package com.javalink.service;
 
 import com.javalink.model.CodeReadingItem;
+import com.javalink.model.CodeReadingAnswerResponse;
 import com.javalink.model.CodeReadingPart;
 import com.javalink.model.LessonProgress;
 import com.javalink.model.QuizOption;
@@ -8,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Arrays;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -91,14 +94,15 @@ class CodeReadingServiceTest {
                 codeReadingService.createItems(LESSON_ID, progress);
 
         assertEquals("アクセス修飾子", items.get(0).roleLabel());
-        assertTrue(items.get(0).explanations().contains(
-                "publicを付けると、どこからでも使えるようになります。"
-        ));
+        assertTrue(items.get(0).explanationSections().stream()
+                .flatMap(section -> section.entries().stream())
+                .map(entry -> entry.before() + entry.emphasis() + entry.after())
+                .anyMatch(text -> text.contains("どこからでも使うことができます")));
         assertEquals("引数名", items.get(9).roleLabel());
     }
 
     @Test
-    void Stage1の全用語に共通三部構成の詳細説明がある() {
+    void Stage1の全用語に必要な説明セクションが教材順である() {
         LessonProgress progress = new LessonProgress(
                 LESSON_ID,
                 "class-public"
@@ -108,9 +112,10 @@ class CodeReadingServiceTest {
                 codeReadingService.createItems(LESSON_ID, progress);
 
         CodeReadingItem publicItem = items.get(0);
-        assertTrue(publicItem.technicalExplanation().contains("access modifier"));
+        assertTrue(publicItem.explanationSections().stream()
+                .anyMatch(section -> section.title().contains("access modifier")));
         var accessTable = publicItem.explanationSections().stream()
-                .filter(section -> section.layout().equals("table"))
+                .filter(section -> section.sectionType().value().equals("table"))
                 .findFirst().orElseThrow();
         assertEquals(4, accessTable.entries().size());
         assertTrue(accessTable.entries().stream().anyMatch(entry ->
@@ -119,12 +124,12 @@ class CodeReadingServiceTest {
 
         CodeReadingItem classItem = items.get(1);
         assertTrue(classItem.explanationSections().stream().anyMatch(section ->
-                section.layout().equals("table") && section.title().equals("🏠 家でたとえると・・・")
+                section.sectionType().value().equals("table") && section.title().equals("🏠 家でたとえると・・・")
         ));
 
         CodeReadingItem mainItem = items.get(2);
         assertTrue(mainItem.explanationSections().stream().anyMatch(section ->
-                section.layout().equals("examples")
+                section.sectionType().value().equals("examples")
                         && section.entries().stream()
                         .filter(entry -> entry.label().contains(".java")).count() == 2
         ));
@@ -134,17 +139,52 @@ class CodeReadingServiceTest {
                 .flatMap(section -> section.entries().stream())
                 .anyMatch(entry -> entry.before().contains("あとで必ず対応する「}」を書きます")));
         assertTrue(blockItem.explanationSections().stream()
-                .filter(section -> section.layout().equals("diagram"))
+                .filter(section -> section.sectionType().value().equals("diagram"))
                 .flatMap(section -> section.entries().stream())
                 .noneMatch(entry -> entry.label().equals("}")));
 
         assertTrue(items.stream().allMatch(item ->
-                item.explanationSections().stream().map(section -> section.kind()).toList()
-                        .equals(List.of("overview", "content", "supplement"))
+                !item.explanationSections().isEmpty()
         ));
+        assertEquals(
+                List.of("text", "table", "text"),
+                publicItem.explanationSections().stream()
+                        .map(section -> section.sectionType().value()).toList()
+        );
+        assertTrue(mainItem.explanationSections().stream().anyMatch(section ->
+                section.sectionType().value().equals("comparison")
+        ));
+        for (int index : List.of(5, 6, 7, 8, 9)) {
+            assertTrue(items.get(index).explanationSections().stream()
+                    .anyMatch(section -> section.sectionType().value().equals("table")));
+        }
+        for (int index : List.of(11, 12, 13, 14, 15)) {
+            CodeReadingItem textItem = items.get(index);
+            assertTrue(textItem.explanationSections().stream()
+                    .flatMap(section -> section.entries().stream())
+                    .map(entry -> entry.before() + entry.emphasis() + entry.after())
+                    .anyMatch(text -> !text.isBlank()));
+        }
         assertTrue(items.stream()
                 .flatMap(item -> item.explanationSections().stream())
                 .noneMatch(section -> section.title().equals("初心者が迷いやすいポイント")));
+    }
+
+    @Test
+    void 表示Modelに旧互換説明フィールドが存在しない() {
+        Set<String> itemComponents = Arrays.stream(CodeReadingItem.class.getRecordComponents())
+                .map(component -> component.getName())
+                .collect(java.util.stream.Collectors.toSet());
+        Set<String> responseComponents = Arrays.stream(CodeReadingAnswerResponse.class.getRecordComponents())
+                .map(component -> component.getName())
+                .collect(java.util.stream.Collectors.toSet());
+
+        assertFalse(itemComponents.contains("technicalExplanation"));
+        assertFalse(itemComponents.contains("explanations"));
+        assertFalse(responseComponents.contains("technicalExplanation"));
+        assertFalse(responseComponents.contains("beginnerExplanations"));
+        assertTrue(itemComponents.contains("explanationSections"));
+        assertTrue(responseComponents.contains("explanationSections"));
     }
 
     @Test

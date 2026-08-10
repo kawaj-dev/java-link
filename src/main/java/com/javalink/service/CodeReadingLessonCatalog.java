@@ -9,9 +9,11 @@ import com.javalink.model.CodeReadingExplanationSection;
 import com.javalink.model.CodeReadingLessonDefinition;
 import com.javalink.model.CodeReadingPart;
 import com.javalink.model.CodeReadingStepDefinition;
+import com.javalink.model.ExplanationSectionType;
 import com.javalink.model.Lesson;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -82,58 +84,29 @@ public class CodeReadingLessonCatalog {
                 return List.of(
                                 richStep("class-public", 1, "public", "public", "accessible", "外から使える",
                                                 "アクセス修飾子",
-                                                "publicは、クラスやメソッドをどこから使えるか決めるアクセス修飾子（access modifier）です。",
-                                                publicExplanation(),
-                                                "publicを付けると、どこからでも使えるようになります。",
-                                                "今回は public = 外から使える と覚えれば大丈夫です。"),
+                                                publicExplanation()),
                                 richStep("class-keyword", 2, "class", "class", "declare-class", "クラスを作る",
                                                 "クラスを作るキーワード",
-                                                "classは、クラスを作ることをJavaへ伝えるキーワードです。",
-                                                classExplanation(),
-                                                "Javaでは、プログラムをクラスという単位で作ります。",
-                                                "クラスは、プログラムの設計図のようなものです。",
-                                                "今回は class = クラスを作る と覚えれば大丈夫です。"),
+                                                classExplanation()),
                                 richStep("class-name", 3, "Main", "Main", "main-class-name", "クラスの名前",
                                                 "クラス名",
-                                                "Mainは、作成するクラスにつけた名前です。",
-                                                classNameExplanation(),
-                                                "Mainという名前は自由に変更できます。",
-                                                "publicなクラスでは、ファイル名とクラス名を同じにします。",
-                                                "Mainは決まり文句ではなく、クラスにつける名前です。"),
+                                                classNameExplanation()),
                                 richStep("class-open", 4, "{", "{", "block-start", "ここから始まる",
-                                                "開始波かっこ", "クラスやメソッドの中身がここから始まることを表します。",
-                                                blockStartExplanation(),
-                                                "あとで必ず対応する } で閉じます。",
-                                                "{ から対応する } までの範囲をブロックと呼びます。",
-                                                "今回は { = ここから始まる と覚えれば大丈夫です。"),
+                                                "開始波かっこ", blockStartExplanation()),
                                 richStep("main-public", 5, "public", "public", "accessible", "外から使える",
-                                                "アクセス修飾子", "mainメソッドを外から呼び出せるようにします。",
-                                                publicExplanation(),
-                                                "Javaから呼び出せる開始地点にします。"),
+                                                "アクセス修飾子", publicExplanation()),
                                 richStep("static", 6, "static", "static", "without-instance", "インスタンスを作らなくても使える",
-                                                "static修飾子", "インスタンスに属さないことを示します。",
-                                                staticExplanation(),
-                                                "インスタンスを作らなくても使えます。", "newしなくても呼び出せます。"),
+                                                "static修飾子", staticExplanation()),
                                 richStep("void", 7, "void", "void", "no-return", "戻り値を返さない",
-                                                "戻り値の型", "このメソッド（動作）が、値を返さないことを示します。",
-                                                voidExplanation(),
-                                                "結果を返す必要がない場合に使います。"),
+                                                "戻り値の型", voidExplanation()),
                                 richStep("main", 8, "main", "main", "program-entry", "プログラム開始メソッド",
-                                                "メソッド名", "Javaが実行開始時に探す名前です。",
-                                                mainExplanation(),
-                                                "Javaはここから実行を始めます。"),
+                                                "メソッド名", mainExplanation()),
                                 richStep("string-array", 9, "String[]", "String[]", "multiple-strings", "文字列の配列",
-                                                "引数の型", "mainメソッドが受け取る引数（渡される値）の型です。",
-                                                stringArrayExplanation(),
-                                                "文字列の配列です。"),
+                                                "引数の型", stringArrayExplanation()),
                                 richStep("args", 10, "args", "args", "argument-variable", "受け取った値の名前",
-                                                "引数名", "mainメソッドが受け取る引数（渡される値）につけられた名前です。",
-                                                argsExplanation(),
-                                                "受け取った値につける名前です。"),
+                                                "引数名", argsExplanation()),
                                 richStep("main-open", 11, "{", "{", "block-start", "ここから始まる",
-                                                "開始波かっこ", "mainメソッドのブロック開始を表します。",
-                                                blockStartExplanation(),
-                                                "mainメソッドの中身がここから始まります。"),
+                                                "開始波かっこ", blockStartExplanation()),
                                 step("print-command", 12, "System.out.println", "System.out.println",
                                                 "display-and-newline", "画面に表示して改行する",
                                                 "画面へ表示する命令", "標準出力へ内容を表示して改行する命令です。",
@@ -174,8 +147,6 @@ public class CodeReadingLessonCatalog {
                                 new CodeReadingCardDefinition(cardId, cardText),
                                 List.of(),
                                 technicalTerm,
-                                List.of(beginnerExplanations),
-                                technicalExplanation,
                                 standardExplanation(technicalTerm, technicalExplanation, beginnerExplanations),
                                 true);
         }
@@ -188,251 +159,242 @@ public class CodeReadingLessonCatalog {
                         String cardId,
                         String cardText,
                         String technicalTerm,
-                        String technicalExplanation,
-                        List<CodeReadingExplanationSection> explanationSections,
-                        String... beginnerExplanations) {
+                        List<CodeReadingExplanationSection> explanationSections) {
                 return new CodeReadingStepDefinition(
                                 id, order, displayLabel, "", targetCode, "",
                                 displayLabel + " の意味はどれですか？",
                                 new CodeReadingCardDefinition(cardId, cardText),
-                                List.of(), technicalTerm, List.of(beginnerExplanations),
-                                technicalExplanation, explanationSections, true);
+                                List.of(), technicalTerm, explanationSections, true);
         }
 
         private static List<CodeReadingExplanationSection> publicExplanation() {
                 return List.of(
-                                section("overview", "text", "アクセス修飾子　access modifier　",
-                                                entry("", "クラスやメソッドを、", "どこから使えるか", "を決めます。")),
-                                section(
-                                                "content",
-                                                "table",
+                                textSection("アクセス修飾子　access modifier　",
+                                                text("クラスやメソッドを、", "どこから使えるか", "を決めます。")),
+                                tableSection(
                                                 "アクセス修飾子の種類",
-                                                entry("public", "🌎 どこからでも使える", "", ""),
-                                                entry("protected", "📦 同じパッケージ＋子クラス", "", ""),
-                                                entry("（指定なし）", "📦 同じパッケージだけ", "", ""),
-                                                entry("private", "🔒 自分のクラスだけ", "", "")),
-                                section("supplement", "text", "",
-                                                entry("", "", "public", "が付いたクラス、メソッド、フィールドは、どこからでも使うことができます。"),
-                                                entry("", "自分のクラスだけでなく、他のクラスからも利用できます。", "", "")));
+                                                tableRow("public", "🌎 どこからでも使える"),
+                                                tableRow("protected", "📦 同じパッケージ＋子クラス"),
+                                                tableRow("（指定なし）", "📦 同じパッケージだけ"),
+                                                tableRow("private", "🔒 自分のクラスだけ")),
+                                textSection("",
+                                                text("", "public", "が付いたクラス、メソッド、フィールドは、どこからでも使うことができます。"),
+                                                text("自分のクラスだけでなく、他のクラスからも利用できます。")));
         }
 
         private static List<CodeReadingExplanationSection> staticExplanation() {
                 return List.of(
-                                section("overview", "text", "static修飾子　static modifier",
-                                                entry("", "インスタンス（実体）を作らなくても、クラスから直接メソッドやフィールドを", "利用できる",
+                                textSection("static修飾子　static modifier",
+                                                text("インスタンス（実体）を作らなくても、クラスから直接メソッドやフィールドを", "利用できる",
                                                                 "ようにする修飾子です。")),
-                                section(
-                                                "content",
-                                                "table",
+                                tableSection(
                                                 "static修飾子の特徴",
-                                                entry("static", "インスタンス（実体）を作らなくても使える", "", ""),
-                                                entry("（なし）", "インスタンス（実体）を作ってから使う", "", "")),
-                                section("supplement", "text", "",
-                                                entry("", "staticが付いたメソッドやフィールドを、", "静的メンバ（static member）", "と呼びます。")));
+                                                tableRow("static", "インスタンス（実体）を作らなくても使える"),
+                                                tableRow("（なし）", "インスタンス（実体）を作ってから使う")),
+                                textSection("",
+                                                text("staticが付いたメソッドやフィールドを、", "静的メンバ（static member）", "と呼びます。")));
         }
 
         private static List<CodeReadingExplanationSection> voidExplanation() {
                 return List.of(
-                                section(
-                                                "overview",
-                                                "text",
-                                                "戻り値の型",
-                                                entry(
-                                                                "",
-                                                                "",
-                                                                "このメソッド（動作）が、値を返さないことを示します。",
-                                                                "")),
-                                section(
-                                                "content",
-                                                "table",
+                                textSection("戻り値の型",
+                                                text("", "このメソッド（動作）が、値を返さないことを示します。", "")),
+                                tableSection(
                                                 "内容",
-                                                entry(
-                                                                "void を使う場合",
-                                                                "処理だけを行います。",
-                                                                "",
-                                                                ""),
-                                                entry(
-                                                                "void を使わない場合",
-                                                                "処理した後に結果を返します（int・String・booleanなどの型を指定）。",
-                                                                "",
-                                                                " ")),
-                                section(
-                                                "supplement",
-                                                "text",
-                                                "",
-                                                entry(
-                                                                "",
-                                                                "画面に表示するだけの処理など、結果を返す必要がない場合に使います。",
-                                                                "",
-                                                                "")));
+                                                tableRow("void を使う場合", "処理だけを行います。"),
+                                                tableRow("void を使わない場合", "処理した後に結果を返します（int・String・booleanなどの型を指定）。")),
+                                textSection("",
+                                                text("画面に表示するだけの処理など、結果を返す必要がない場合に使います。")));
         }
 
         private static List<CodeReadingExplanationSection> mainExplanation() {
                 return List.of(
-                                section(
-                                                "overview",
-                                                "text",
-                                                "メソッド名 Method name",
-                                                entry(
-                                                                "",
-                                                                "Javaが最初に実行する",
-                                                                "メソッド（動作）の名前",
+                                textSection("メソッド名 Method name",
+                                                text("Javaが最初に実行する", "メソッド（動作）の名前",
                                                                 "です。プログラムのスタート地点です。")),
-                                section(
-                                                "content",
-                                                "table",
+                                tableSection(
                                                 "mainメソッドとMainクラスの違い",
-                                                entry(
-                                                                "main",
-                                                                "Javaが最初に実行するメソッド（動作）の名前です。変更できません。",
-                                                                "",
-                                                                ""),
-                                                entry(
-                                                                "Main",
-                                                                "クラス（設計図）の名前です。自由に変更できます。",
-                                                                "",
-                                                                "")),
-                                section(
-                                                "supplement",
-                                                "text",
-                                                "",
-                                                entry(
-                                                                "",
-                                                                "プログラムを実行すると、Javaは最初に",
-                                                                "main",
+                                                tableRow("main", "Javaが最初に実行するメソッド（動作）の名前です。変更できません。"),
+                                                tableRow("Main", "クラス（設計図）の名前です。自由に変更できます。")),
+                                textSection("",
+                                                text("プログラムを実行すると、Javaは最初に", "main",
                                                                 "メソッド（動作）を実行します。")));
         }
 
         private static List<CodeReadingExplanationSection> stringArrayExplanation() {
                 return List.of(
-                                section(
-                                                "overview",
-                                                "text",
-                                                "引数の型 Argument type",
-                                                entry(
-                                                                "",
-                                                                "mainメソッドが受け取る",
-                                                                "引数（渡される値）の型",
-                                                                "です。")),
-                                section(
-                                                "content",
-                                                "table",
+                                textSection("引数の型 Argument type",
+                                                text("mainメソッドが受け取る", "引数（渡される値）の型", "です。")),
+                                tableSection(
                                                 "String[]の意味",
-                                                entry(
-                                                                "String",
-                                                                "文字列を表す型です。",
-                                                                "",
-                                                                ""),
-                                                entry(
-                                                                "[]",
-                                                                "複数の値をまとめて扱う配列であることを表します。",
-                                                                "",
-                                                                "")),
-                                section(
-                                                "supplement",
-                                                "text",
-                                                "",
-                                                entry(
-                                                                "",
-                                                                "",
-                                                                "String[]",
-                                                                "は、文字列を複数まとめて扱う配列型です。")));
+                                                tableRow("String", "文字列を表す型です。"),
+                                                tableRow("[]", "複数の値をまとめて扱う配列であることを表します。")),
+                                textSection("",
+                                                text("", "String[]", "は、文字列を複数まとめて扱う配列型です。")));
         }
 
         private static List<CodeReadingExplanationSection> argsExplanation() {
                 return List.of(
-                                section("overview", "text", "引数名 Argument name",
-                                                entry("", "mainメソッドが受け取る", "引数（渡される値）につけられた名前",
+                                textSection("引数名 Argument name",
+                                                text("mainメソッドが受け取る", "引数（渡される値）につけられた名前",
                                                                 "です。")),
-                                section(
-                                                "content",
-                                                "table",
+                                tableSection(
                                                 "String[] と args の関係",
-                                                entry("String[]", "受け取る値の型です。", "", ""),
-                                                entry("args", "受け取った値につける名前です。", "", "")),
-                                section("supplement", "text", "",
-                                                entry("", "", "args", "という名前は変更できます。")));
+                                                tableRow("String[]", "受け取る値の型です。"),
+                                                tableRow("args", "受け取った値につける名前です。")),
+                                textSection("",
+                                                text("", "args", "という名前は変更できます。")));
         }
 
         private static List<CodeReadingExplanationSection> classExplanation() {
                 return List.of(
-                                section("overview", "text", "クラス　class　",
-                                                entry("", "", "「これからプログラムの設計図（クラス）を作ります」", "という意味です。")),
-                                section(
-                                                "content",
-                                                "table",
+                                textSection("クラス　class　",
+                                                text("", "「これからプログラムの設計図（クラス）を作ります」", "という意味です。")),
+                                tableSection(
                                                 "🏠 家でたとえると・・・",
-                                                entry(
-                                                                "設計図",
-                                                                "設計図を作り、その設計図をもとに家を建てます。",
-                                                                "",
-                                                                ""),
-                                                entry(
-                                                                "クラス",
-                                                                "家の設計図にあたるものが、Javaでは「クラス」です。",
-                                                                "",
-                                                                "")),
-                                section("supplement", "text", "",
-                                                entry("", " ", "class", "は、「これから設計図を作ります」とコンピューターに伝えるキーワードです。")));
+                                                tableRow("設計図", "設計図を作り、その設計図をもとに家を建てます。"),
+                                                tableRow("クラス", "家の設計図にあたるものが、Javaでは「クラス」です。")),
+                                textSection("",
+                                                text(" ", "class", "は、「これから設計図を作ります」とコンピューターに伝えるキーワードです。")));
         }
 
         private static List<CodeReadingExplanationSection> classNameExplanation() {
                 return List.of(
-                                section("overview", "text", "クラス名　class name",
-                                                entry("", "クラス（設計図）に付ける名前です。", "", ""),
-                                                entry("", "名前は自由に変更できます。今回は例として「", "Main", "」という名前にします。")),
-                                section("content", "examples", "ファイル名とのルール",
-                                                entry("", "publicなクラスでは、ファイル名とクラス名を同じにします。", "", ""),
-                                                entry("Main.javaであれば・・・", "public class Main", "", ""),
-                                                entry("Hello.javaであれば・・・", "public class Hello", "", "")),
-                                section("supplement", "comparison", "",
-                                                entry("Main：　", "クラス名です。自由に変更できます。", "", ""),
-                                                entry("main：　", "Javaが最初に探す特別なメソッドです。変更できません。", "", "")));
+                                textSection("クラス名　class name",
+                                                text("クラス（設計図）に付ける名前です。"),
+                                                text("名前は自由に変更できます。今回は例として「", "Main", "」という名前にします。")),
+                                examplesSection("ファイル名とのルール",
+                                                note("publicなクラスでは、ファイル名とクラス名を同じにします。"),
+                                                example("Main.javaであれば・・・", "public class Main"),
+                                                example("Hello.javaであれば・・・", "public class Hello")),
+                                comparisonSection("",
+                                                comparisonEntry("Main：　", "クラス名です。自由に変更できます。"),
+                                                comparisonEntry("main：　", "Javaが最初に探す特別なメソッドです。変更できません。")));
         }
 
         private static List<CodeReadingExplanationSection> blockStartExplanation() {
                 return List.of(
-                                section("overview", "text", "{ 波かっこ　（開始）",
-                                                entry("", "クラスやメソッドの中身が、", "ここから始まる", "ことを表します。")),
-                                section("content", "diagram", "波かっこのルール",
-                                                entry("{ と } はセット", "「{」を書いたら、あとで必ず対応する「}」を書きます。", "", "")),
-                                section("supplement", "text", "",
-                                                entry("", "「{」から「}」までをブロックと呼びます。", "", "")));
+                                textSection("{ 波かっこ　（開始）",
+                                                text("クラスやメソッドの中身が、", "ここから始まる", "ことを表します。")),
+                                diagramSection("波かっこのルール",
+                                                diagramRow("{ と } はセット", "「{」を書いたら、あとで必ず対応する「}」を書きます。")),
+                                textSection("",
+                                                text("「{」から「}」までをブロックと呼びます。")));
         }
 
         private static List<CodeReadingExplanationSection> standardExplanation(
                         String technicalTerm,
                         String technicalExplanation,
                         String... beginnerExplanations) {
-                return List.of(
-                                section("overview", "text", technicalTerm,
-                                                entry("", "", "", "")),
-                                section("content", "text", "",
-                                                entry("", technicalExplanation, "", "")),
-                                section("supplement", "text", "",
-                                                java.util.Arrays.stream(beginnerExplanations)
-                                                                .map(line -> entry("", line, "", ""))
-                                                                .toArray(CodeReadingExplanationEntry[]::new)));
+                List<CodeReadingExplanationSection> sections = new ArrayList<>();
+                if (!technicalTerm.isBlank()) {
+                        sections.add(textSection(technicalTerm, text("")));
+                }
+                if (!technicalExplanation.isBlank()) {
+                        sections.add(textSection("", text(technicalExplanation)));
+                }
+                if (beginnerExplanations.length > 0) {
+                        sections.add(textSection("",
+                                        java.util.Arrays.stream(beginnerExplanations)
+                                                        .map(CodeReadingLessonCatalog::text)
+                                                        .toArray(CodeReadingExplanationEntry[]::new)));
+                }
+                return List.copyOf(sections);
+        }
+
+        private static CodeReadingExplanationSection textSection(
+                        String title,
+                        CodeReadingExplanationEntry... entries) {
+                return section(ExplanationSectionType.TEXT, title, entries);
+        }
+
+        private static CodeReadingExplanationSection tableSection(
+                        String title,
+                        CodeReadingExplanationEntry... rows) {
+                return section(ExplanationSectionType.TABLE, title, rows);
+        }
+
+        private static CodeReadingExplanationSection diagramSection(
+                        String title,
+                        CodeReadingExplanationEntry... rows) {
+                return section(ExplanationSectionType.DIAGRAM, title, rows);
+        }
+
+        private static CodeReadingExplanationSection examplesSection(
+                        String title,
+                        CodeReadingExplanationEntry... examples) {
+                return section(ExplanationSectionType.EXAMPLES, title, examples);
+        }
+
+        private static CodeReadingExplanationSection qaSection(
+                        String title,
+                        CodeReadingExplanationEntry... entries) {
+                return section(ExplanationSectionType.QA, title, entries);
+        }
+
+        private static CodeReadingExplanationSection comparisonSection(
+                        String title,
+                        CodeReadingExplanationEntry... entries) {
+                return section(ExplanationSectionType.COMPARISON, title, entries);
+        }
+
+        private static CodeReadingExplanationSection listSection(
+                        String title,
+                        CodeReadingExplanationEntry... items) {
+                return section(ExplanationSectionType.LIST, title, items);
         }
 
         private static CodeReadingExplanationSection section(
-                        String kind,
-                        String layout,
+                        ExplanationSectionType sectionType,
                         String title,
                         CodeReadingExplanationEntry... entries) {
-                return new CodeReadingExplanationSection(kind, layout, title, List.of(entries));
+                return new CodeReadingExplanationSection(sectionType, title, List.of(entries));
         }
 
-        private static CodeReadingExplanationEntry entry(
-                        String label,
+        private static CodeReadingExplanationEntry text(
                         String before,
                         String emphasis,
                         String after) {
-                return new CodeReadingExplanationEntry(label, before, emphasis, after, false);
+                return new CodeReadingExplanationEntry("", before, emphasis, after, false);
         }
 
-        private static CodeReadingExplanationEntry highlightedEntry(String label, String text) {
-                return new CodeReadingExplanationEntry(label, text, "", "", true);
+        private static CodeReadingExplanationEntry text(String content) {
+                return text(content, "", "");
+        }
+
+        private static CodeReadingExplanationEntry tableRow(String label, String description) {
+                return new CodeReadingExplanationEntry(label, description, "", "", false);
+        }
+
+        private static CodeReadingExplanationEntry highlightedTableRow(String label, String description) {
+                return new CodeReadingExplanationEntry(label, description, "", "", true);
+        }
+
+        private static CodeReadingExplanationEntry diagramRow(String source, String destination) {
+                return new CodeReadingExplanationEntry(source, destination, "", "", false);
+        }
+
+        private static CodeReadingExplanationEntry example(String label, String code) {
+                return new CodeReadingExplanationEntry(label, code, "", "", false);
+        }
+
+        private static CodeReadingExplanationEntry note(String content) {
+                return new CodeReadingExplanationEntry("", content, "", "", false);
+        }
+
+        private static CodeReadingExplanationEntry qaEntry(String label, String content) {
+                return new CodeReadingExplanationEntry(label, content, "", "", false);
+        }
+
+        private static CodeReadingExplanationEntry comparisonEntry(String label, String content) {
+                return new CodeReadingExplanationEntry(label, content, "", "", false);
+        }
+
+        private static CodeReadingExplanationEntry listItem(
+                        String before,
+                        String emphasis,
+                        String after) {
+                return new CodeReadingExplanationEntry("", before, emphasis, after, false);
         }
 
         private static List<CodeReadingCircuitDefinition> createStage1Circuits() {

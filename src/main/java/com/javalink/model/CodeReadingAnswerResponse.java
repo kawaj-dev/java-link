@@ -13,8 +13,6 @@ public record CodeReadingAnswerResponse(
         int completedCount,
         boolean partCompleted,
         String technicalTerm,
-        String technicalExplanation,
-        List<String> beginnerExplanations,
         List<CodeReadingExplanationSection> explanationSections,
         String nextStepId
 ) {
@@ -26,8 +24,9 @@ public record CodeReadingAnswerResponse(
         );
         Objects.requireNonNull(meaning, "meaning must not be null");
         Objects.requireNonNull(technicalTerm, "technicalTerm must not be null");
-        Objects.requireNonNull(technicalExplanation, "technicalExplanation must not be null");
-        beginnerExplanations = List.copyOf(beginnerExplanations);
-        explanationSections = List.copyOf(explanationSections);
+        explanationSections = List.copyOf(Objects.requireNonNull(
+                explanationSections,
+                "explanationSections must not be null"
+        ));
     }
 }

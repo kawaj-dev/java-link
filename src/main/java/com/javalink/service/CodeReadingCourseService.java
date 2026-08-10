@@ -87,6 +87,46 @@ public class CodeReadingCourseService {
     }
 
     /**
+     * 学習者が理解済みと判断した現在Partの未完了stepを、既存の正解処理で
+     * すべて完了させ、既存のPart遷移で次PartまたはSUMMARYへ進めます。
+     */
+    public PartTransitionResult markCurrentPartUnderstoodAndAdvance(
+            HttpSession session,
+            String lessonId
+    ) {
+        LessonProgress progress =
+                lessonProgressService.getProgress(session, lessonId);
+        CodeReadingPart part = partService.getPartForStep(
+                lessonId,
+                progress.getCurrentStepId()
+        );
+
+        while (!part.stepIds().stream()
+                .allMatch(progress.getCompletedStepIds()::contains)) {
+            String currentStepId = progress.getCurrentStepId();
+            if (progress.isStepCompleted(currentStepId)) {
+                progress = moveToNextItem(session, lessonId);
+                continue;
+            }
+            CodeReadingStepDefinition step = lessonCatalog
+                    .getDefinition(lessonId)
+                    .getStep(currentStepId);
+            answerCurrentItem(
+                    session,
+                    lessonId,
+                    step.correctCard().id()
+            );
+            progress = lessonProgressService.getProgress(session, lessonId);
+            if (!part.stepIds().stream()
+                    .allMatch(progress.getCompletedStepIds()::contains)) {
+                progress = moveToNextItem(session, lessonId);
+            }
+        }
+
+        return moveToNextPart(session, lessonId);
+    }
+
+    /**
      * 画面演出用に、サーバーで判定・保存した結果を返します。
      * 正解判定そのものは既存のLessonEngineへ任せます。
      */
@@ -168,8 +208,6 @@ public class CodeReadingCourseService {
                 completedCount,
                 partCompleted,
                 step.technicalTerm(),
-                step.technicalExplanation(),
-                step.beginnerExplanations(),
                 step.explanationSections(),
                 partCompleted ? null : partService.findActionableStepId(result.progress(), part)
         );
@@ -191,8 +229,6 @@ public class CodeReadingCourseService {
                 completedCount,
                 completedCount == part.stepIds().size(),
                 step.technicalTerm(),
-                step.technicalExplanation(),
-                step.beginnerExplanations(),
                 step.explanationSections(),
                 partService.findActionableStepId(progress, part)
         );

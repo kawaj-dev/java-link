@@ -3,6 +3,10 @@ package com.javalink.service;
 import com.javalink.model.CodeReadingLessonDefinition;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -28,7 +32,7 @@ class CodeReadingLessonCatalogTest {
     }
 
     @Test
-    void Step定義に正解カードと二段階の説明を保持する() {
+    void Step定義に正解カードと正本の説明セクションを保持する() {
         var step = catalog.getDefinition(
                 LessonService.HELLO_PROGRAM_LESSON_ID
         ).getStep("main-public");
@@ -36,8 +40,14 @@ class CodeReadingLessonCatalogTest {
         assertEquals("accessible", step.correctCard().id());
         assertEquals("外から使える", step.correctCard().text());
         assertEquals("アクセス修飾子", step.technicalTerm());
-        assertFalse(step.beginnerExplanations().isEmpty());
-        assertFalse(step.technicalExplanation().isBlank());
+        assertEquals(
+                java.util.List.of("text", "table", "text"),
+                step.explanationSections().stream()
+                        .map(section -> section.sectionType().value()).toList()
+        );
+        assertTrue(step.explanationSections().stream()
+                .flatMap(section -> section.entries().stream())
+                .anyMatch(entry -> entry.emphasis().equals("public")));
         assertEquals("main-public", step.toLessonStep().id());
     }
 
@@ -49,5 +59,24 @@ class CodeReadingLessonCatalogTest {
                 () -> catalog.getDefinition("stage-2-reading")
         );
         assertTrue(exception.getMessage().contains("stage-2-reading"));
+    }
+
+    @Test
+    void 教材定義に種類別Helperが揃い文字列layoutを受け取らない() {
+        Set<String> helperNames = Arrays.stream(
+                        CodeReadingLessonCatalog.class.getDeclaredMethods()
+                )
+                .map(method -> method.getName())
+                .collect(Collectors.toSet());
+
+        assertTrue(helperNames.containsAll(Set.of(
+                "textSection", "tableSection", "diagramSection",
+                "examplesSection", "qaSection", "comparisonSection", "listSection",
+                "text", "tableRow", "highlightedTableRow", "diagramRow",
+                "example", "note", "qaEntry", "comparisonEntry", "listItem"
+        )));
+        assertTrue(Arrays.stream(CodeReadingLessonCatalog.class.getDeclaredMethods())
+                .filter(method -> method.getName().equals("section"))
+                .noneMatch(method -> method.getParameterTypes()[0].equals(String.class)));
     }
 }

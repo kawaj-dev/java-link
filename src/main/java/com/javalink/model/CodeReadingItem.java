@@ -12,8 +12,6 @@ public record CodeReadingItem(
         String optionId,
         String meaning,
         String roleLabel,
-        List<String> explanations,
-        String technicalExplanation,
         List<CodeReadingExplanationSection> explanationSections,
         int order,
         boolean completed,
@@ -26,11 +24,6 @@ public record CodeReadingItem(
         Objects.requireNonNull(optionId, "optionId must not be null");
         Objects.requireNonNull(meaning, "meaning must not be null");
         Objects.requireNonNull(roleLabel, "roleLabel must not be null");
-        explanations = List.copyOf(explanations);
-        Objects.requireNonNull(
-                technicalExplanation,
-                "technicalExplanation must not be null"
-        );
         explanationSections = List.copyOf(Objects.requireNonNull(
                 explanationSections,
                 "explanationSections must not be null"

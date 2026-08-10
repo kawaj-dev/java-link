@@ -97,6 +97,16 @@ public class QuizController {
         return "redirect:/quiz";
     }
 
+    /** 学習者自身の判断で、現在のPartを理解済みとして次へ進みます。 */
+    @PostMapping("/quiz/part/understood")
+    public String markCurrentPartUnderstood(HttpSession session) {
+        courseService.markCurrentPartUnderstoodAndAdvance(
+                session,
+                lessonId
+        );
+        return "redirect:/quiz";
+    }
+
     /** JavaScript演出用に、Serviceが判定・保存した回答結果を返します。 */
     @PostMapping("/quiz/answer/interactive")
     @ResponseBody

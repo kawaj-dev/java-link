@@ -62,11 +62,13 @@
                 <span class="quiz-focus-learning-part-title"
                       th:text="${codeReadingPage.currentPart.title}">クラスを作る</span>
             </p>
-            <span data-part-progress
-                  th:attr="data-part-total=${codeReadingPage.partStepIds.size()}"
-                  th:text="|完了 ${codeReadingPage.partCompletedCount} / ${codeReadingPage.partStepIds.size()}|">
-                完了 0 / 4
-            </span>
+            <form class="quiz-understood-form"
+                  th:if="${not codeReadingPage.partCompleted}"
+                  th:action="@{/quiz/part/understood}" method="post">
+                <button class="quiz-understood-link" type="submit">
+                    理解済み　次のPartへ <span aria-hidden="true">→</span>
+                </button>
+            </form>
         </header>
 
         <!-- 全Part共通：コード、回路、問題、正解確認の順に視線を導きます。 -->
@@ -156,30 +158,17 @@
                          aria-live="polite">
                     <div th:each="item : ${readingItems}"
                          th:if="${item.current and answered == true and correct == true}">
-                        <h4 data-explanation-term
-                            th:if="${item.explanationSections.isEmpty()}"
-                            th:text="${item.roleLabel}">アクセス修飾子</h4>
-                        <p data-explanation-technical
-                           th:if="${item.explanationSections.isEmpty()}"
-                           th:text="${item.technicalExplanation}">
-                            publicはアクセス修飾子の1つです。
-                        </p>
-                        <div data-explanation-beginner
-                             th:if="${item.explanationSections.isEmpty()}">
-                        <p th:each="line : ${item.explanations}"
-                           th:text="${line}">どこから使えるかを決めます。</p>
-                        </div>
                         <div data-explanation-sections>
                             <section class="quiz-reading-learning-aid"
                                      th:each="section : ${item.explanationSections}"
-                                     th:classappend="| quiz-reading-learning-aid--${section.kind} quiz-reading-learning-aid-layout--${section.layout}|"
-                                     th:attr="data-section-kind=${section.kind},data-section-layout=${section.layout}">
+                                     th:classappend="| quiz-reading-learning-aid-layout--${section.sectionType.value}|"
+                                     th:attr="data-section-type=${section.sectionType.value}">
                                 <h5 th:if="${not section.title.isEmpty()}"
                                     th:text="${section.title}">小見出し</h5>
 
                               <div class="quiz-reading-access-table"
      role="table"
-     th:if="${section.layout == 'table'}">
+     th:if="${section.sectionType.value == 'table'}">
 
     <div role="row"
          th:each="entry : ${section.entries}"
@@ -198,7 +187,7 @@
                                    
 
                                 <div class="quiz-reading-concept-flow"
-                                     th:if="${section.layout == 'diagram'}">
+                                     th:if="${section.sectionType.value == 'diagram'}">
                                     <div th:each="entry : ${section.entries}">
                                         <code th:text="${entry.label}">設計図</code>
                                         <span aria-hidden="true">→</span>
@@ -207,7 +196,7 @@
                                 </div>
 
                                 <div class="quiz-reading-name-examples"
-                                     th:if="${section.layout == 'examples'}">
+                                     th:if="${section.sectionType.value == 'examples'}">
                                     <div th:each="entry : ${section.entries}">
                                         <p class="quiz-reading-examples-note"
                                            th:if="${entry.label.isEmpty()}"
@@ -221,7 +210,7 @@
                                 </div>
 
                                 <div class="quiz-reading-qa"
-                                     th:if="${section.layout == 'qa' or section.layout == 'comparison'}">
+                                     th:if="${section.sectionType.value == 'qa' or section.sectionType.value == 'comparison'}">
                                     <p th:each="entry : ${section.entries}">
                                         <strong th:text="${entry.label}">Q.</strong>
                                         <span th:text="${entry.before}">質問</span>
@@ -229,7 +218,12 @@
                                 </div>
 
                                 <div class="quiz-reading-section-text"
-                                     th:if="${section.layout == 'text'}">
+                                     th:if="${section.sectionType.value != 'table'
+                                         and section.sectionType.value != 'diagram'
+                                         and section.sectionType.value != 'examples'
+                                         and section.sectionType.value != 'qa'
+                                         and section.sectionType.value != 'comparison'
+                                         and section.sectionType.value != 'list'}">
                                     <p th:each="entry : ${section.entries}">
                                         <strong th:if="${not entry.label.isEmpty()}"
                                                 th:text="${entry.label}">用語</strong>
@@ -240,7 +234,7 @@
                                     </p>
                                 </div>
                                 <ul class="quiz-reading-section-list"
-                                    th:if="${section.layout == 'list'}">
+                                    th:if="${section.sectionType.value == 'list'}">
                                     <li th:each="entry : ${section.entries}"
                                         th:text="|${entry.before}${entry.emphasis}${entry.after}|">補足</li>
                                 </ul>
@@ -248,9 +242,6 @@
                         </div>
                     </div>
                     <div th:if="${not (answered == true and correct == true)}">
-                        <h4 data-explanation-term></h4>
-                        <p data-explanation-technical></p>
-                        <div data-explanation-beginner></div>
                         <div data-explanation-sections></div>
                     </div>
                 </section>
