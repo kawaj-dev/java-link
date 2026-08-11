@@ -5917,7 +5917,27 @@ body:has(.quiz-focus-learning) .quiz-focus-feedback--correct {
 }
 
 body:has(.quiz-focus-learning) .quiz-reading-learning-aid h5 {
+    margin: 0 0 16px;
+    padding: 10px 14px;
+
     color: #0b2c59;
+    background: #eef5ff;
+    border-left: 4px solid #1685ff;
+    border-radius: 4px;
+
+    font-size: 1.05rem;
+    font-weight: 750;
+}
+
+body:has(.quiz-focus-learning)
+.quiz-reading-learning-aid:has(h5) {
+    border-top: none;
+    padding-top: 0;
+}
+
+body:has(.quiz-focus-learning)
+.quiz-reading-learning-aid + .quiz-reading-learning-aid {
+    margin-top: 28px;
 }
 
 body:has(.quiz-focus-learning) .quiz-reading-access-row--focus {

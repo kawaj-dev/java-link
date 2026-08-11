@@ -107,17 +107,13 @@ public class CodeReadingLessonCatalog {
                                                 "引数名", argsExplanation()),
                                 richStep("main-open", 11, "{", "{", "block-start", "ここから始まる",
                                                 "開始波かっこ", blockStartExplanation()),
-                                step("print-command", 12, "System.out.println", "System.out.println",
+                                richStep("print-command", 12, "System.out.println", "System.out.println",
                                                 "display-and-newline", "画面に表示して改行する",
-                                                "画面へ表示する命令", "標準出力へ内容を表示して改行する命令です。",
-                                                "かっこの中の内容を画面へ表示して改行します。",
-                                                "ドットは左側のものが持つ機能へ順番につなぎます。"),
-                                step("hello-string", 13, "\"Hello\"", "\"Hello\"", "display-text", "表示する文字",
-                                                "文字列リテラル", "ダブルクォートで囲んだ文字列の値です。",
-                                                "printlnに渡す文字列です。"),
-                                step("semicolon", 14, ";", ";", "command-end", "命令の終わり",
-                                                "セミコロン", "Javaの文が終わる位置を表します。",
-                                                "この命令がここで終わることを表します。"),
+                                                "標準出力", systemOutPrintlnExplanation()),
+                                richStep("hello-string", 13, "\"Hello\"", "\"Hello\"", "display-text", "表示する文字",
+                                                "文字列リテラル", helloStringExplanation()),
+                                richStep("semicolon", 14, ";", ";", "command-end", "命令の終わり",
+                                                "セミコロン", semicolonExplanation()),
                                 step("main-close", 15, "}", "}", "close-main", "mainメソッド終了",
                                                 "終了波かっこ", "mainメソッドのブロックを閉じます。",
                                                 "mainメソッドの中身がここで終わります。"),
@@ -280,6 +276,67 @@ public class CodeReadingLessonCatalog {
                                                 diagramRow("{ と } はセット", "「{」を書いたら、あとで必ず対応する「}」を書きます。")),
                                 textSection("",
                                                 text("「{」から「}」までをブロックと呼びます。")));
+        }
+
+        private static List<CodeReadingExplanationSection> systemOutPrintlnExplanation() {
+                return List.of(
+                                textSection(
+                                                "標準出力　standard output",
+                                                text(
+                                                                "標準出力に内容を表示し、",
+                                                                "最後に改行します",
+                                                                "。")),
+                                tableSection(
+                                                "System.out.println のしくみ",
+                                                tableRow("System", "クラス　システムに関する機能を持ちます。"),
+                                                tableRow("out", "フィールド　標準出力を表します。"),
+                                                tableRow("println", "メソッド　内容を出力して改行します。")),
+                                tableSection(
+                                                "println と print の違い",
+                                                tableRow("println", "表示したあと改行します。"),
+                                                tableRow("print", "表示したあと改行しません。")));
+        }
+
+        private static List<CodeReadingExplanationSection> helloStringExplanation() {
+                return List.of(
+                                textSection(
+                                                "文字列リテラル　string literal",
+                                                text(
+                                                                "ダブルクォート「\" \"」で囲んで、",
+                                                                "文字列を直接書いたもの",
+                                                                "です。")),
+                                tableSection(
+                                                "ダブルクォート「\" \"」の中",
+                                                tableRow("\"Hello\"", "英字を書くことができます。"),
+                                                tableRow("\"こんにちは\"", "日本語を書くことができます。"),
+                                                tableRow("\"Javaを勉強中\"", "文字を組み合わせて書くこともできます。"),
+                                                tableRow("\"123\"", "数字も文字列として書くことができます。")),
+                                textSection(
+                                                "println との関係",
+                                                text(
+                                                                "「\"Hello\"」が",
+                                                                "printlnに渡され",
+                                                                "、その内容が表示されます。")));
+        }
+
+        private static List<CodeReadingExplanationSection> semicolonExplanation() {
+                return List.of(
+                                textSection(
+                                                "セミコロン　semicolon",
+                                                text(
+                                                                "Javaでは、文の末尾に「;」を付けます。",
+                                                                "",
+                                                                "")),
+                                textSection(
+                                                "セミコロン「 ; 」を付けないケース",
+                                                text(
+                                                                "Javaのすべての構文の末尾に「;」を付けるわけではありません。",
+                                                                "",
+                                                                ""),
+                                                text(
+                                                                "if (条件) { } や while (条件) { } のように、「;」を付けない部分もあります。コメントにも「;」は必要ありません。",
+                                                                "",
+                                                                "")));
         }
 
         private static List<CodeReadingExplanationSection> standardExplanation(
