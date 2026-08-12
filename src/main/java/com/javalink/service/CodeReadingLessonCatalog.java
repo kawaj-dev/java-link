@@ -7,6 +7,8 @@ import com.javalink.model.CodeReadingCodeTokenDefinition;
 import com.javalink.model.CodeReadingExplanationEntry;
 import com.javalink.model.CodeReadingExplanationSection;
 import com.javalink.model.CodeReadingLessonDefinition;
+import com.javalink.model.CodeReadingOfficialReference;
+import com.javalink.model.CodeReadingOfficialSource;
 import com.javalink.model.CodeReadingPart;
 import com.javalink.model.CodeReadingStepDefinition;
 import com.javalink.model.ExplanationSectionType;
@@ -14,6 +16,7 @@ import com.javalink.model.Lesson;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
@@ -82,7 +85,7 @@ public class CodeReadingLessonCatalog {
 
         private static List<CodeReadingStepDefinition> createStage1Steps() {
                 return List.of(
-                                richStep("class-public", 1, "public", "public", "accessible", "外から使える",
+                                richStep("class-public", 1, "public", "public", "accessible", "ほかの場所からも使える",
                                                 "アクセス修飾子",
                                                 publicExplanation()),
                                 richStep("class-keyword", 2, "class", "class", "declare-class", "クラスを作る",
@@ -93,7 +96,7 @@ public class CodeReadingLessonCatalog {
                                                 classNameExplanation()),
                                 richStep("class-open", 4, "{", "{", "block-start", "ここから始まる",
                                                 "開始波かっこ", blockStartExplanation()),
-                                richStep("main-public", 5, "public", "public", "accessible", "外から使える",
+                                richStep("main-public", 5, "public", "public", "accessible", "ほかの場所からも使える",
                                                 "アクセス修飾子", publicExplanation()),
                                 richStep("static", 6, "static", "static", "without-instance", "インスタンスを作らなくても使える",
                                                 "static修飾子", staticExplanation()),
@@ -103,7 +106,7 @@ public class CodeReadingLessonCatalog {
                                                 "メソッド名", mainExplanation()),
                                 richStep("string-array", 9, "String[]", "String[]", "multiple-strings", "文字列の配列",
                                                 "引数の型", stringArrayExplanation()),
-                                richStep("args", 10, "args", "args", "argument-variable", "受け取った値の名前",
+                                richStep("args", 10, "args", "args", "argument-variable", "変数の名前",
                                                 "引数名", argsExplanation()),
                                 richStep("main-open", 11, "{", "{", "block-start", "ここから始まる",
                                                 "開始波かっこ", blockStartExplanation()),
@@ -168,14 +171,26 @@ public class CodeReadingLessonCatalog {
                                 textSection("アクセス修飾子　access modifier　",
                                                 text("クラスやメソッドを、", "どこから使えるか", "を決めます。")),
                                 tableSection(
-                                                "アクセス修飾子の種類",
-                                                tableRow("public", "🌎 どこからでも使える"),
+                                                "アクセスできる範囲の違い",
+                                                tableRow("public", "🌎 ほかの場所からも使える"),
                                                 tableRow("protected", "📦 同じパッケージ＋子クラス"),
                                                 tableRow("（指定なし）", "📦 同じパッケージだけ"),
                                                 tableRow("private", "🔒 自分のクラスだけ")),
-                                textSection("",
-                                                text("", "public", "が付いたクラス、メソッド、フィールドは、どこからでも使うことができます。"),
-                                                text("自分のクラスだけでなく、他のクラスからも利用できます。")));
+                                textSection("ポイント",
+                                                text("", "public", "が付いたクラス、メソッド、フィールドなどは、ほかのクラスからも利用できます。"),
+                                                text("実際に利用できる範囲は、そのクラスやパッケージなどの条件にも関係します。")),
+                                officialReferencesSection(
+                                                "技術的根拠：Javaの公式仕様・API",
+                                                jlsReference(
+                                                                "§6.6",
+                                                                "Access Control",
+                                                                "Javaのアクセス制御について定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.6"),
+                                                jlsReference(
+                                                                "§6.6.1",
+                                                                "Determining Accessibility",
+                                                                "public などで宣言された要素にアクセスできる条件を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.6.1")));
         }
 
         private static List<CodeReadingExplanationSection> staticExplanation() {
@@ -187,59 +202,111 @@ public class CodeReadingLessonCatalog {
                                                 "static修飾子の特徴",
                                                 tableRow("static", "インスタンス（実体）を作らなくても使える"),
                                                 tableRow("（なし）", "インスタンス（実体）を作ってから使う")),
-                                textSection("",
-                                                text("staticが付いたメソッドやフィールドを、", "静的メンバ（static member）", "と呼びます。")));
+                                textSection("ポイント",
+                                                text("Javaのプログラムを実行するとき、", "開始地点となる main メソッドにも、インスタンスを作らずに呼び出せるように static", " が付いています。")),
+                                officialReferencesSection(
+                                                "技術的根拠：Javaの公式仕様・API",
+                                                jlsReference(
+                                                                "§8.4.3.2",
+                                                                "static Methods",
+                                                                "static修飾子がメソッドをクラスメソッドとして定義し、特定のインスタンスを参照せずに呼び出されることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4.3.2"),
+                                                jlsReference(
+                                                                "§12.1.4",
+                                                                "Invoke Test.main",
+                                                                "Javaアプリケーションの開始時に呼び出されるmainメソッドについて定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html#jls-12.1.4")));
         }
 
         private static List<CodeReadingExplanationSection> voidExplanation() {
                 return List.of(
-                                textSection("戻り値の型",
-                                                text("", "このメソッド（動作）が、値を返さないことを示します。", "")),
+                                textSection("戻り値　return value",
+                                                text("このメソッドが、", "値を返さない", "ことを表します。")),
                                 tableSection(
-                                                "内容",
-                                                tableRow("void を使う場合", "処理だけを行います。"),
-                                                tableRow("void を使わない場合", "処理した後に結果を返します（int・String・booleanなどの型を指定）。")),
-                                textSection("",
-                                                text("画面に表示するだけの処理など、結果を返す必要がない場合に使います。")));
+                                                "戻り値の違い",
+                                                tableRow("void", "値を返さない"),
+                                                tableRow("int", "int 型の値を返す"),
+                                                tableRow("String", "String 型の値を返す")),
+                                textSection("ポイント",
+                                                text("画面に表示するだけの処理など、結果を返す必要がない場合に使います。")),
+                                officialReferencesSection(
+                                                "技術的根拠：Javaの公式仕様・API",
+                                                jlsReference(
+                                                                "§8.4.5",
+                                                                "Method Result",
+                                                                "メソッドが値を返さない場合に void キーワードを使用することを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4.5"),
+                                                jlsReference(
+                                                                "§12.1.4",
+                                                                "Invoke Test.main",
+                                                                "プログラムの開始地点となる main メソッドが void で宣言されている必要があることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html#jls-12.1.4")));
         }
 
         private static List<CodeReadingExplanationSection> mainExplanation() {
                 return List.of(
-                                textSection("メソッド名 Method name",
-                                                text("Javaが最初に実行する", "メソッド（動作）の名前",
+                                textSection("メソッド名　method name",
+                                                text("Javaが最初に実行する", "メソッドの名前",
                                                                 "です。プログラムのスタート地点です。")),
                                 tableSection(
                                                 "mainメソッドとMainクラスの違い",
-                                                tableRow("main", "Javaが最初に実行するメソッド（動作）の名前です。変更できません。"),
-                                                tableRow("Main", "クラス（設計図）の名前です。自由に変更できます。")),
-                                textSection("",
-                                                text("プログラムを実行すると、Javaは最初に", "main",
-                                                                "メソッド（動作）を実行します。")));
+                                                tableRow("main", "Javaが最初に実行するメソッドの名前"),
+                                                tableRow("Main", "自分で決めるクラスの名前")),
+                                textSection("ポイント",
+                                                text("", "main",
+                                                                " はJavaのキーワードではありませんが、プログラムの開始に使われる決められたメソッド名です。")),
+                                officialReferencesSection(
+                                                "技術的根拠：Javaの公式仕様・API",
+                                                jlsReference(
+                                                                "§12.1.4",
+                                                                "Invoke Test.main",
+                                                                "プログラムの開始時に呼び出される main メソッドが備えるべき条件を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html#jls-12.1.4")));
         }
 
         private static List<CodeReadingExplanationSection> stringArrayExplanation() {
                 return List.of(
-                                textSection("引数の型 Argument type",
-                                                text("mainメソッドが受け取る", "引数（渡される値）の型", "です。")),
+                                textSection("配列型　array type",
+                                                text("文字列（String）を複数まとめて扱うための型です。")),
                                 tableSection(
                                                 "String[]の意味",
                                                 tableRow("String", "文字列を表す型です。"),
                                                 tableRow("[]", "複数の値をまとめて扱う配列であることを表します。")),
-                                textSection("",
-                                                text("", "String[]", "は、文字列を複数まとめて扱う配列型です。")));
+                                textSection("ポイント",
+                                                text("プログラムの実行時に、外から渡された文字列を受け取るために使います。")),
+                                officialReferencesSection(
+                                                "技術的根拠：Javaの公式仕様・API",
+                                                jlsReference(
+                                                                "§10.1",
+                                                                "Array Types",
+                                                                "配列型が要素の型とブラケット [] の組み合わせで構成されることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html#jls-10.1"),
+                                                jlsReference(
+                                                                "§12.1.4",
+                                                                "Invoke Test.main",
+                                                                "main メソッドが引数として String の配列を受け取る必要があることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html#jls-12.1.4")));
         }
 
         private static List<CodeReadingExplanationSection> argsExplanation() {
                 return List.of(
-                                textSection("引数名 Argument name",
-                                                text("mainメソッドが受け取る", "引数（渡される値）につけられた名前",
-                                                                "です。")),
+                                textSection("引数名　argument name",
+                                                text("渡された情報（引数）を受け取るための", "変数の名前", "です。")),
                                 tableSection(
                                                 "String[] と args の関係",
-                                                tableRow("String[]", "受け取る値の型です。"),
-                                                tableRow("args", "受け取った値につける名前です。")),
-                                textSection("",
-                                                text("", "args", "という名前は変更できます。")));
+                                                tableRow("String[]", "受け取る値の型です"),
+                                                tableRow("args", "受け取る変数の名前です")),
+                                textSection("ポイント",
+                                                text("", "args", " はJavaで決められたキーワードではなく、単なる「変数の名前」です。"),
+                                                text("別の名前に変えても動きますが、", "args", "と書くのがJavaの世界で広く使われている慣習です。"),
+                                                text("", "", "")),
+                                officialReferencesSection(
+                                                "技術的根拠：Javaの公式仕様・API",
+                                                jlsReference(
+                                                                "§12.1.4",
+                                                                "Invoke Test.main",
+                                                                "main メソッドが String の配列を形式パラメータとして1つ持つことを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-12.html#jls-12.1.4")));
         }
 
         private static List<CodeReadingExplanationSection> classExplanation() {
@@ -247,35 +314,90 @@ public class CodeReadingLessonCatalog {
                                 textSection("クラス　class　",
                                                 text("", "「これからプログラムの設計図（クラス）を作ります」", "という意味です。")),
                                 tableSection(
-                                                "🏠 家でたとえると・・・",
-                                                tableRow("設計図", "設計図を作り、その設計図をもとに家を建てます。"),
-                                                tableRow("クラス", "家の設計図にあたるものが、Javaでは「クラス」です。")),
-                                textSection("",
-                                                text(" ", "class", "は、「これから設計図を作ります」とコンピューターに伝えるキーワードです。")));
+                                                "クラス宣言の基本形",
+                                                tableRow("class クラス名 {　　}", ""),
+                                                tableRow("class", "クラスを作る"),
+                                                tableRow("クラス名", "作るクラスの名前（自分で決めることができます）"),
+                                                tableRow("{ ～ }", "クラスの中身を書く範囲")),
+                                textSection("ポイント",
+                                                text(" ", "class", "は、新しいクラスを定義するときに使うJavaのキーワードです。")),
+                                officialReferencesSection(
+                                                "技術的根拠：Javaの公式仕様・API",
+                                                jlsReference(
+                                                                "§8.1",
+                                                                "Class Declarations",
+                                                                "クラス宣言が新しいクラスを定義するものであることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.1"),
+                                                jlsReference(
+                                                                "§3.9",
+                                                                "Keywords",
+                                                                "class がJavaの予約済キーワードであることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-3.html#jls-3.9")));
         }
 
         private static List<CodeReadingExplanationSection> classNameExplanation() {
                 return List.of(
                                 textSection("クラス名　class name",
-                                                text("クラス（設計図）に付ける名前です。"),
-                                                text("名前は自由に変更できます。今回は例として「", "Main", "」という名前にします。")),
-                                examplesSection("ファイル名とのルール",
-                                                note("publicなクラスでは、ファイル名とクラス名を同じにします。"),
-                                                example("Main.javaであれば・・・", "public class Main"),
-                                                example("Hello.javaであれば・・・", "public class Hello")),
-                                comparisonSection("",
-                                                comparisonEntry("Main：　", "クラス名です。自由に変更できます。"),
-                                                comparisonEntry("main：　", "Javaが最初に探す特別なメソッドです。変更できません。")));
+                                                text("", "自分で決めるクラスの名前", "です。")),
+                                textSection("名前を付けるときのルール",
+                                                new CodeReadingExplanationEntry(
+                                                                "1. 自由に決めてOK：",
+                                                                "予約語でなければ、好きな名前を付けられます。",
+                                                                "", "", false),
+                                                new CodeReadingExplanationEntry(
+                                                                "2. 大文字で始めるのが慣習：",
+                                                                "", "Main や Test",
+                                                                " のように大文字で書き始めることが推奨されています。", false),
+                                                new CodeReadingExplanationEntry(
+                                                                "3. ファイル名と同じにする：",
+                                                                "", "public class Main と書いた場合、ファイル名は Main.java",
+                                                                " にします。", false)),
+                                textSection("ポイント",
+                                                text("", "class", " キーワードの直後に書くことで、これから作るクラスの名前をJavaに伝えます。")),
+                                officialReferencesSection(
+                                                "技術的根拠：Javaの公式仕様・API",
+                                                jlsReference(
+                                                                "§8.1",
+                                                                "Class Declarations",
+                                                                "クラス宣言におけるTypeIdentifierが、そのクラスの名前を指定するものであることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.1"),
+                                                jlsReference(
+                                                                "§7.6",
+                                                                "Top Level Class and Interface Declarations",
+                                                                "ファイルシステムを使用する場合の、publicなトップレベルクラスとファイル名の関係を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-7.html#jls-7.6"),
+                                                jlsReference(
+                                                                "§6.1",
+                                                                "Declarations",
+                                                                "クラス名などに使われるJavaの命名規約について示しています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.1")));
         }
 
         private static List<CodeReadingExplanationSection> blockStartExplanation() {
                 return List.of(
-                                textSection("{ 波かっこ　（開始）",
-                                                text("クラスやメソッドの中身が、", "ここから始まる", "ことを表します。")),
-                                diagramSection("波かっこのルール",
-                                                diagramRow("{ と } はセット", "「{」を書いたら、あとで必ず対応する「}」を書きます。")),
-                                textSection("",
-                                                text("「{」から「}」までをブロックと呼びます。")));
+                                textSection("セパレータ（左波括弧）　separator",
+                                                text("クラスやメソッドの", "中身が、ここから始まる", "ことを表す記号です。")),
+                                tableSection("波括弧のルール",
+                                                tableRow("{ と } はセット", "{ で始まった範囲は、対応する } で終わります。")),
+                                textSection("ポイント",
+                                                text("閉じ忘れがあると、Javaはプログラムの構造を正しく理解できずエラーになります。")),
+                                officialReferencesSection(
+                                                "技術的根拠：Javaの公式仕様・API",
+                                                jlsReference(
+                                                                "§3.11",
+                                                                "Separators",
+                                                                "{ がJava言語において区切りを表す「セパレータ」という記号であることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-3.html#jls-3.11"),
+                                                jlsReference(
+                                                                "§8.1.7",
+                                                                "Class Body and Member Declarations",
+                                                                "クラスの本体が { で始まり } で終わることを規定しています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.1.7"),
+                                                jlsReference(
+                                                                "§14.2",
+                                                                "Blocks",
+                                                                "メソッドの中身などに使われるブロックが { で始まり } で終わることを定義しています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.2")));
         }
 
         private static List<CodeReadingExplanationSection> systemOutPrintlnExplanation() {
@@ -351,7 +473,7 @@ public class CodeReadingLessonCatalog {
                         sections.add(textSection("", text(technicalExplanation)));
                 }
                 if (beginnerExplanations.length > 0) {
-                        sections.add(textSection("",
+                        sections.add(textSection("ポイント",
                                         java.util.Arrays.stream(beginnerExplanations)
                                                         .map(CodeReadingLessonCatalog::text)
                                                         .toArray(CodeReadingExplanationEntry[]::new)));
@@ -405,7 +527,36 @@ public class CodeReadingLessonCatalog {
                         ExplanationSectionType sectionType,
                         String title,
                         CodeReadingExplanationEntry... entries) {
-                return new CodeReadingExplanationSection(sectionType, title, List.of(entries));
+                return new CodeReadingExplanationSection(
+                                sectionType,
+                                title,
+                                List.of(entries),
+                                List.of());
+        }
+
+        private static CodeReadingExplanationSection officialReferencesSection(
+                        String title,
+                        CodeReadingOfficialReference... references) {
+                return new CodeReadingExplanationSection(
+                                ExplanationSectionType.OFFICIAL_REFERENCES,
+                                title,
+                                List.of(),
+                                List.of(references));
+        }
+
+        private static CodeReadingOfficialReference jlsReference(
+                        String sectionNumber,
+                        String sectionTitle,
+                        String description,
+                        String uri) {
+                return new CodeReadingOfficialReference(
+                                CodeReadingOfficialSource.JLS,
+                                "Java SE 21",
+                                "JLS Java SE 21",
+                                sectionNumber,
+                                sectionTitle,
+                                description,
+                                URI.create(uri));
         }
 
         private static CodeReadingExplanationEntry text(

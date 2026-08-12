@@ -111,13 +111,13 @@ class QuizControllerTest {
                 .andExpect(content().string(not(containsString("quiz-reading-step-heading"))))
                 .andExpect(content().string(not(containsString("次の問題へ"))))
                 .andExpect(content().string(containsString("data-answer-enabled=\"true\"")))
-                .andExpect(content().string(containsString("外から使える")))
-                .andExpect(content().string(containsString("アクセス修飾子の種類")))
+                .andExpect(content().string(containsString("ほかの場所からも使える")))
+                .andExpect(content().string(containsString("アクセスできる範囲の違い")))
                 .andExpect(content().string(containsString("data-section-type=\"text\"")))
                 .andExpect(content().string(containsString("data-section-type=\"table\"")))
                 .andExpect(content().string(not(containsString("data-section-layout"))))
                 .andExpect(content().string(containsString("（指定なし）")))
-                .andExpect(content().string(containsString("どこからでも")))
+                .andExpect(content().string(containsString("ほかの場所からも")))
                 .andExpect(content().string(not(containsString("今回はこれだけ"))));
     }
 
@@ -132,22 +132,32 @@ class QuizControllerTest {
 
         mockMvc.perform(get("/quiz").session(session))
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("設計図")))
+                .andExpect(content().string(containsString("クラス宣言の基本形")))
+                .andExpect(content().string(containsString("ポイント")))
+                .andExpect(content().string(containsString("class クラス名")))
                 .andExpect(content().string(containsString(
-                        "家の設計図にあたるもの"
-                )));
+                        "作るクラスの名前（自分で決めることができます）"
+                )))
+                .andExpect(content().string(not(containsString("家でたとえると"))));
 
         courseService.moveToNextItem(session, LESSON_ID);
         courseService.answerCurrentItem(session, LESSON_ID, "main-class-name");
 
         mockMvc.perform(get("/quiz").session(session))
                 .andExpect(status().isOk())
+                .andExpect(content().string(containsString("名前を付けるときのルール")))
+                .andExpect(content().string(containsString("自分で決めるクラスの名前")))
+                .andExpect(content().string(containsString("自由に決めてOK")))
+                .andExpect(content().string(containsString("大文字で始めるのが慣習")))
+                .andExpect(content().string(containsString("Main や Test")))
                 .andExpect(content().string(containsString("Main.java")))
-                .andExpect(content().string(containsString("Hello.javaであれば・・・")))
-                .andExpect(content().string(not(containsString("Calculator.java"))))
                 .andExpect(content().string(containsString(
-                        "Javaが最初に探す特別なメソッド"
-                )));
+                        "これから作るクラスの名前をJavaに伝えます。"
+                )))
+                .andExpect(content().string(not(containsString("大文字で始めるのがマナー"))))
+                .andExpect(content().string(not(containsString(
+                        "作成するプログラムの部品（クラス）に付ける固有の名前です。"
+                ))));
 
         mockMvc.perform(post("/quiz/answer/interactive")
                         .session(session)
@@ -155,10 +165,12 @@ class QuizControllerTest {
                         .param("selectedOption", "block-start"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correct").value(true))
-                .andExpect(jsonPath("$.explanationSections[0].title").value("{ 波かっこ　（開始）"))
+                .andExpect(jsonPath("$.explanationSections[0].title")
+                        .value("セパレータ（左波括弧）　separator"))
                 .andExpect(jsonPath("$.explanationSections[2].entries[0].before")
-                        .value("「{」から「}」までをブロックと呼びます。"))
-                .andExpect(jsonPath("$.explanationSections.length()").value(3));
+                        .value("閉じ忘れがあると、Javaはプログラムの構造を正しく理解できずエラーになります。"))
+                .andExpect(jsonPath("$.explanationSections[3].officialReferences.length()").value(3))
+                .andExpect(jsonPath("$.explanationSections.length()").value(4));
     }
 
     @Test
@@ -198,7 +210,7 @@ class QuizControllerTest {
                         "value=\"accessible\""
                 )))
                 .andExpect(content().string(not(containsString(
-                        "外から使える。知識スイッチを入れる"
+                        "ほかの場所からも使える。知識スイッチを入れる"
                 ))))
                 .andExpect(content().string(containsString(
                         "data-current-meaning-slot"
@@ -241,7 +253,7 @@ class QuizControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.correct").value(true))
                 .andExpect(jsonPath("$.answeredStepId").value("class-public"))
-                .andExpect(jsonPath("$.meaning").value("外から使える"))
+                .andExpect(jsonPath("$.meaning").value("ほかの場所からも使える"))
                 .andExpect(jsonPath("$.completedCount").value(1))
                 .andExpect(jsonPath("$.partCompleted").value(false))
                 .andExpect(jsonPath("$.technicalTerm").value("アクセス修飾子"))
@@ -251,6 +263,24 @@ class QuizControllerTest {
                 .andExpect(jsonPath("$.explanationSections[1].kind").doesNotExist())
                 .andExpect(jsonPath("$.explanationSections[1].entries[1].label")
                         .value("protected"))
+                .andExpect(jsonPath("$.explanationSections[3].sectionType")
+                        .value("official-references"))
+                .andExpect(jsonPath("$.explanationSections[3].officialReferences.length()")
+                        .value(2))
+                .andExpect(jsonPath("$.explanationSections[3].officialReferences[0].source")
+                        .value("jls"))
+                .andExpect(jsonPath("$.explanationSections[3].officialReferences[0].version")
+                        .value("Java SE 21"))
+                .andExpect(jsonPath("$.explanationSections[3].officialReferences[0].sourceName")
+                        .value("JLS Java SE 21"))
+                .andExpect(jsonPath("$.explanationSections[3].officialReferences[0].sectionNumber")
+                        .value("§6.6"))
+                .andExpect(jsonPath("$.explanationSections[3].officialReferences[0].sectionTitle")
+                        .value("Access Control"))
+                .andExpect(jsonPath("$.explanationSections[3].officialReferences[0].description")
+                        .value("Javaのアクセス制御について定めています。"))
+                .andExpect(jsonPath("$.explanationSections[3].officialReferences[0].uri")
+                        .value("https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.6"))
                 .andExpect(jsonPath("$.nextStepId").value("class-keyword"));
 
         assertEquals(
@@ -394,7 +424,7 @@ class QuizControllerTest {
                 .andExpect(content().string(containsString(
                         "quiz-reading-code-meaning--visible"
                 )))
-                .andExpect(content().string(containsString("外から使える")))
+                .andExpect(content().string(containsString("ほかの場所からも使える")))
                 .andExpect(content().string(containsString(
                         "quiz-part-circuit-step--completed"
                 )))
@@ -529,7 +559,7 @@ class QuizControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(model().attribute("phase", CodeReadingPhase.LEARNING))
                 .andExpect(content().string(containsString("public</code>")))
-                .andExpect(content().string(containsString("外から使える")))
+                .andExpect(content().string(containsString("ほかの場所からも使える")))
                 .andExpect(content().string(containsString("次のコードへ")))
                 .andExpect(content().string(not(containsString(
                         "MainはJavaの固定名ではなく"
@@ -577,7 +607,7 @@ class QuizControllerTest {
                 .andExpect(content().string(not(containsString("quiz-reading-step-heading"))))
                 .andExpect(content().string(not(containsString("次の問題へ"))))
                 .andExpect(content().string(containsString("quiz-part-circuit-step--completed")))
-                .andExpect(content().string(containsString("外から使える")))
+                .andExpect(content().string(containsString("ほかの場所からも使える")))
                 .andExpect(content().string(containsString("data-part-complete")));
     }
 

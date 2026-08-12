@@ -49,6 +49,13 @@ class QuizReadingScriptTest {
         assertTrue(script.contains("section.sectionType"));
         assertTrue(script.contains("section.sectionType || \"text\""));
         assertTrue(script.contains("dataset.sectionType"));
+        assertTrue(script.contains("createOfficialReferences"));
+        assertTrue(script.contains("section.officialReferences"));
+        assertTrue(script.contains("link.target = \"_blank\""));
+        assertTrue(script.contains("link.rel = \"noopener noreferrer\""));
+        assertTrue(script.contains("reference.description"));
+        assertTrue(script.contains("${reference.sourceName} ${reference.sectionNumber} — ${reference.sectionTitle}"));
+        assertFalse(script.contains("innerHTML"));
         assertFalse(script.contains("section.layout"));
         assertFalse(script.contains("dataset.sectionLayout"));
         assertFalse(script.contains("result.technicalExplanation"));
@@ -64,6 +71,14 @@ class QuizReadingScriptTest {
         assertTrue(template.contains("data-section-type"));
         assertFalse(template.contains("data-section-layout"));
         assertTrue(template.contains("section.sectionType.value != 'table'"));
+        assertTrue(template.contains("section.sectionType.value == 'official-references'"));
+        assertTrue(template.contains("target=\"_blank\""));
+        assertTrue(template.contains("rel=\"noopener noreferrer\""));
+        assertTrue(template.contains("reference.description"));
+        assertTrue(template.contains("${reference.sourceName} ${reference.sectionNumber} — ${reference.sectionTitle}"));
+        assertTrue(template.contains("style.css(v='class-explanation-2')"));
+        assertTrue(template.contains("quiz-reading.js(v='official-references-2')"));
+        assertFalse(template.contains("continuous-circuit-1"));
     }
 
     private String readScript() throws IOException {

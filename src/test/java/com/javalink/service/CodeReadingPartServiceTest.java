@@ -110,12 +110,12 @@ class CodeReadingPartServiceTest {
         );
         assertEquals(
                 List.of(
-                        "外から使える",
+                        "ほかの場所からも使える",
                         "インスタンスを作らなくても使える",
                         "戻り値を返さない",
                         "プログラム開始メソッド",
                         "文字列の配列",
-                        "受け取った値の名前",
+                        "変数の名前",
                         "ここから始まる"
                 ),
                 mainMethod.bulbs().stream().map(bulb -> bulb.meaning()).toList()

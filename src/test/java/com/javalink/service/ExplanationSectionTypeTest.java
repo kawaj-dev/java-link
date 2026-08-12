@@ -20,7 +20,10 @@ class ExplanationSectionTypeTest {
                 .toList();
 
         assertEquals(
-                List.of("text", "table", "diagram", "examples", "qa", "comparison", "list"),
+                List.of(
+                        "text", "table", "diagram", "examples", "qa", "comparison", "list",
+                        "official-references"
+                ),
                 values
         );
         assertEquals("\"table\"", new ObjectMapper().writeValueAsString(
@@ -36,7 +39,10 @@ class ExplanationSectionTypeTest {
                 .map(component -> component.getName())
                 .toList();
 
-        assertEquals(List.of("sectionType", "title", "entries"), components);
+        assertEquals(
+                List.of("sectionType", "title", "entries", "officialReferences"),
+                components
+        );
         assertFalse(components.contains("layout"));
     }
 }

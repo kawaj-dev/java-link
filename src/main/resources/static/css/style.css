@@ -3758,6 +3758,45 @@ body:has(.quiz-focus-program) .quiz-intro-start .next-button:hover {
     grid-template-columns: minmax(120px, 0.95fr) minmax(0, 1.7fr);
 }
 
+.quiz-reading-access-table > div:has(span:empty) {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.quiz-reading-access-table > div:has(span:empty) code {
+    white-space: pre-line;
+}
+
+.quiz-reading-access-table > div:has(span:empty) span {
+    display: none;
+}
+
+/* classの基本形は、先頭のコード例だけを薄いコード領域に残し、意味を縦に読み進めます。 */
+.quiz-reading-access-table:has(> div:first-child span:empty) {
+    gap: 14px;
+}
+
+.quiz-reading-access-table:has(> div:first-child span:empty) > div:not(:first-child) {
+    display: block;
+    padding: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.quiz-reading-access-table:has(> div:first-child span:empty) > div:not(:first-child) code {
+    display: block;
+    margin-bottom: 3px;
+}
+
+.quiz-reading-access-table:has(> div:first-child span:empty) > div:not(:first-child) span {
+    display: block;
+    line-height: 1.7;
+}
+
+.quiz-reading-access-table:has(> div:first-child span:empty) > div:not(:first-child) span::before {
+    content: "→ ";
+    color: #52708d;
+}
+
 .quiz-reading-access-table > div.quiz-reading-access-row--no-label {
     grid-template-columns: minmax(0, 1fr);
 }
@@ -3856,6 +3895,44 @@ body:has(.quiz-focus-program) .quiz-intro-start .next-button:hover {
     line-height: 1.7;
 }
 
+.quiz-reading-learning-aid-layout--official-references {
+    color: #294867;
+}
+
+.quiz-reading-official-references {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.quiz-reading-official-references a {
+    display: inline;
+    color: #075fbd;
+    font-weight: 700;
+    line-height: 1.6;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    overflow-wrap: anywhere;
+}
+
+.quiz-reading-official-references a:hover {
+    color: #087dff;
+}
+
+.quiz-reading-official-references a:focus-visible {
+    outline: 3px solid rgba(8, 125, 255, 0.28);
+    outline-offset: 2px;
+}
+
+.quiz-reading-official-references p {
+    margin: 2px 0 0;
+    color: #405a73;
+    font-size: 0.9rem;
+    line-height: 1.65;
+}
+
 @media (max-width: 520px) {
     .quiz-reading-learning-aid {
         font-size: 0.86rem;
@@ -3882,6 +3959,10 @@ body:has(.quiz-focus-program) .quiz-intro-start .next-button:hover {
 
     .quiz-reading-qa p {
         grid-template-columns: 32px minmax(0, 1fr);
+    }
+
+    .quiz-reading-official-references a {
+        font-size: 0.88rem;
     }
 }
 
@@ -5930,6 +6011,23 @@ body:has(.quiz-focus-learning) .quiz-reading-learning-aid h5 {
 }
 
 body:has(.quiz-focus-learning)
+.quiz-reading-learning-aid-layout--official-references > h5 {
+    margin: 0 0 13px;
+    padding: 0;
+    color: #405a73;
+    background: transparent;
+    border: none;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+body:has(.quiz-focus-learning)
+.quiz-reading-learning-aid-layout--official-references > h5::before {
+    content: "📖";
+    margin-right: 6px;
+}
+
+body:has(.quiz-focus-learning)
 .quiz-reading-learning-aid:has(h5) {
     border-top: none;
     padding-top: 0;
@@ -5938,6 +6036,14 @@ body:has(.quiz-focus-learning)
 body:has(.quiz-focus-learning)
 .quiz-reading-learning-aid + .quiz-reading-learning-aid {
     margin-top: 28px;
+}
+
+body:has(.quiz-focus-learning)
+.quiz-reading-learning-aid +
+.quiz-reading-learning-aid-layout--official-references {
+    margin-top: 48px;
+    padding-top: 10px;
+    border-top: 1px solid #d4dee8;
 }
 
 body:has(.quiz-focus-learning) .quiz-reading-access-row--focus {

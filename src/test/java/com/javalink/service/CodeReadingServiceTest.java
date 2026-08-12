@@ -54,10 +54,10 @@ class CodeReadingServiceTest {
         );
         assertEquals(
                 List.of(
-                        "外から使える", "クラスを作る", "クラスの名前", "ここから始まる",
-                        "外から使える", "インスタンスを作らなくても使える",
+                        "ほかの場所からも使える", "クラスを作る", "クラスの名前", "ここから始まる",
+                        "ほかの場所からも使える", "インスタンスを作らなくても使える",
                         "戻り値を返さない", "プログラム開始メソッド",
-                        "文字列の配列", "受け取った値の名前", "ここから始まる",
+                        "文字列の配列", "変数の名前", "ここから始まる",
                         "画面に表示して改行する", "表示する文字", "命令の終わり",
                         "mainメソッド終了", "Mainクラス終了"
                 ),
@@ -97,7 +97,7 @@ class CodeReadingServiceTest {
         assertTrue(items.get(0).explanationSections().stream()
                 .flatMap(section -> section.entries().stream())
                 .map(entry -> entry.before() + entry.emphasis() + entry.after())
-                .anyMatch(text -> text.contains("どこからでも使うことができます")));
+                .anyMatch(text -> text.contains("ほかのクラスからも利用できます")));
         assertEquals("引数名", items.get(9).roleLabel());
     }
 
@@ -123,37 +123,45 @@ class CodeReadingServiceTest {
         ));
 
         CodeReadingItem classItem = items.get(1);
-        assertTrue(classItem.explanationSections().stream().anyMatch(section ->
-                section.sectionType().value().equals("table") && section.title().equals("🏠 家でたとえると・・・")
-        ));
+        var classDeclaration = classItem.explanationSections().stream()
+                .filter(section -> section.sectionType().value().equals("table"))
+                .findFirst().orElseThrow();
+        assertEquals("クラス宣言の基本形", classDeclaration.title());
+        assertEquals(
+                java.util.List.of("class クラス名 {　　}", "class", "クラス名", "{ ～ }"),
+                classDeclaration.entries().stream().map(entry -> entry.label()).toList()
+        );
+        assertFalse(classItem.explanationSections().stream()
+                .anyMatch(section -> section.title().equals("🏠 家でたとえると・・・")));
 
         CodeReadingItem mainItem = items.get(2);
-        assertTrue(mainItem.explanationSections().stream().anyMatch(section ->
-                section.sectionType().value().equals("examples")
-                        && section.entries().stream()
-                        .filter(entry -> entry.label().contains(".java")).count() == 2
-        ));
+        assertEquals(
+                java.util.List.of("text", "text", "text", "official-references"),
+                mainItem.explanationSections().stream()
+                        .map(section -> section.sectionType().value()).toList()
+        );
+        assertEquals("名前を付けるときのルール", mainItem.explanationSections().get(1).title());
+        assertEquals(3, mainItem.explanationSections().get(1).entries().size());
+        assertEquals(3, mainItem.explanationSections().get(3).officialReferences().size());
 
         CodeReadingItem blockItem = items.get(3);
         assertTrue(blockItem.explanationSections().stream()
                 .flatMap(section -> section.entries().stream())
-                .anyMatch(entry -> entry.before().contains("あとで必ず対応する「}」を書きます")));
+                .anyMatch(entry -> entry.before().contains("対応する } で終わります")));
         assertTrue(blockItem.explanationSections().stream()
-                .filter(section -> section.sectionType().value().equals("diagram"))
+                .filter(section -> section.sectionType().value().equals("table"))
                 .flatMap(section -> section.entries().stream())
-                .noneMatch(entry -> entry.label().equals("}")));
+                .anyMatch(entry -> entry.label().equals("{ と } はセット")));
 
         assertTrue(items.stream().allMatch(item ->
                 !item.explanationSections().isEmpty()
         ));
         assertEquals(
-                List.of("text", "table", "text"),
+                List.of("text", "table", "text", "official-references"),
                 publicItem.explanationSections().stream()
                         .map(section -> section.sectionType().value()).toList()
         );
-        assertTrue(mainItem.explanationSections().stream().anyMatch(section ->
-                section.sectionType().value().equals("comparison")
-        ));
+        assertEquals("ポイント", mainItem.explanationSections().get(2).title());
         for (int index : List.of(5, 6, 7, 8, 9)) {
             assertTrue(items.get(index).explanationSections().stream()
                     .anyMatch(section -> section.sectionType().value().equals("table")));

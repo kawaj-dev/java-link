@@ -10,7 +10,8 @@ public enum ExplanationSectionType {
     EXAMPLES("examples"),
     QA("qa"),
     COMPARISON("comparison"),
-    LIST("list");
+    LIST("list"),
+    OFFICIAL_REFERENCES("official-references");
 
     private final String value;
 

@@ -181,10 +181,29 @@
             wrapper.append(createQa(section.entries));
         } else if (sectionType === "list") {
             wrapper.append(createExplanationList(section.entries));
+        } else if (sectionType === "official-references") {
+            wrapper.append(createOfficialReferences(section.officialReferences));
         } else {
             wrapper.append(createExplanationText(section.entries));
         }
         return wrapper;
+    }
+
+    function createOfficialReferences(references) {
+        const list = document.createElement("ul");
+        list.className = "quiz-reading-official-references";
+        references.forEach((reference) => {
+            const item = document.createElement("li");
+            const link = document.createElement("a");
+            link.href = reference.uri;
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+            link.textContent = `${reference.sourceName} ${reference.sectionNumber} — ${reference.sectionTitle}`;
+            const description = textElement("p", reference.description);
+            item.append(link, description);
+            list.append(item);
+        });
+        return list;
     }
 
     function createExplanationList(entries) {

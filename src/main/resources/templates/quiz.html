@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='continuous-circuit-1')}"
-          href="/css/style.css?v=continuous-circuit-1">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='class-explanation-2')}"
+          href="/css/style.css?v=class-explanation-2">
     <script th:if="${phase.name() == 'LEARNING'}" defer
-            th:src="@{/js/quiz-reading.js(v='continuous-circuit-1')}"
-            src="/js/quiz-reading.js?v=continuous-circuit-1"></script>
+            th:src="@{/js/quiz-reading.js(v='official-references-2')}"
+            src="/js/quiz-reading.js?v=official-references-2"></script>
 </head>
 <body>
 <main class="quiz-page quiz-focus-page">
@@ -223,7 +223,8 @@
                                          and section.sectionType.value != 'examples'
                                          and section.sectionType.value != 'qa'
                                          and section.sectionType.value != 'comparison'
-                                         and section.sectionType.value != 'list'}">
+                                         and section.sectionType.value != 'list'
+                                         and section.sectionType.value != 'official-references'}">
                                     <p th:each="entry : ${section.entries}">
                                         <strong th:if="${not entry.label.isEmpty()}"
                                                 th:text="${entry.label}">用語</strong>
@@ -237,6 +238,20 @@
                                     th:if="${section.sectionType.value == 'list'}">
                                     <li th:each="entry : ${section.entries}"
                                         th:text="|${entry.before}${entry.emphasis}${entry.after}|">補足</li>
+                                </ul>
+                                <ul class="quiz-reading-official-references"
+                                    th:if="${section.sectionType.value == 'official-references'}">
+                                    <li th:each="reference : ${section.officialReferences}">
+                                        <a th:href="${reference.uri}"
+                                           target="_blank"
+                                           rel="noopener noreferrer"
+                                           th:text="|${reference.sourceName} ${reference.sectionNumber} — ${reference.sectionTitle}|">
+                                            JLS Java SE 21 §6.6 — Access Control
+                                        </a>
+                                        <p th:text="${reference.description}">
+                                            Javaのアクセス制御について定めています。
+                                        </p>
+                                    </li>
                                 </ul>
                             </section>
                         </div>
