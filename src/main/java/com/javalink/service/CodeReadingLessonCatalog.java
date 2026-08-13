@@ -27,6 +27,8 @@ import java.util.Map;
 public class CodeReadingLessonCatalog {
 
         public static final String STAGE1_LESSON_ID = "hello-program-reading";
+        private static final String OFFICIAL_REFERENCES_TITLE =
+                        "このページの技術的根拠：Javaの公式仕様・API";
         private static final String DEFAULT_LESSON_ID = STAGE1_LESSON_ID;
         private final Map<String, CodeReadingLessonDefinition> definitions;
 
@@ -84,6 +86,7 @@ public class CodeReadingLessonCatalog {
         }
 
         private static List<CodeReadingStepDefinition> createStage1Steps() {
+                List<CodeReadingExplanationSection> blockEndExplanation = blockEndExplanation();
                 return List.of(
                                 richStep("class-public", 1, "public", "public", "accessible", "ほかの場所からも使える",
                                                 "アクセス修飾子",
@@ -115,14 +118,12 @@ public class CodeReadingLessonCatalog {
                                                 "標準出力", systemOutPrintlnExplanation()),
                                 richStep("hello-string", 13, "\"Hello\"", "\"Hello\"", "display-text", "表示する文字",
                                                 "文字列リテラル", helloStringExplanation()),
-                                richStep("semicolon", 14, ";", ";", "command-end", "命令の終わり",
+                                richStep("semicolon", 14, ";", ";", "command-end", "文の終わり",
                                                 "セミコロン", semicolonExplanation()),
-                                step("main-close", 15, "}", "}", "close-main", "mainメソッド終了",
-                                                "終了波かっこ", "mainメソッドのブロックを閉じます。",
-                                                "mainメソッドの中身がここで終わります。"),
-                                step("class-close", 16, "}", "}", "close-class", "Mainクラス終了",
-                                                "終了波かっこ", "Mainクラスのブロックを閉じます。",
-                                                "Mainクラスの中身がここで終わります。"));
+                                richStep("main-close", 15, "}", "}", "close-main", "ここで終わる",
+                                                "終了波かっこ", blockEndExplanation),
+                                richStep("class-close", 16, "}", "}", "close-class", "ここで終わる",
+                                                "終了波かっこ", blockEndExplanation));
         }
 
         private static CodeReadingStepDefinition step(
@@ -180,7 +181,7 @@ public class CodeReadingLessonCatalog {
                                                 text("", "public", "が付いたクラス、メソッド、フィールドなどは、ほかのクラスからも利用できます。"),
                                                 text("実際に利用できる範囲は、そのクラスやパッケージなどの条件にも関係します。")),
                                 officialReferencesSection(
-                                                "技術的根拠：Javaの公式仕様・API",
+                                                OFFICIAL_REFERENCES_TITLE,
                                                 jlsReference(
                                                                 "§6.6",
                                                                 "Access Control",
@@ -205,7 +206,7 @@ public class CodeReadingLessonCatalog {
                                 textSection("ポイント",
                                                 text("Javaのプログラムを実行するとき、", "開始地点となる main メソッドにも、インスタンスを作らずに呼び出せるように static", " が付いています。")),
                                 officialReferencesSection(
-                                                "技術的根拠：Javaの公式仕様・API",
+                                                OFFICIAL_REFERENCES_TITLE,
                                                 jlsReference(
                                                                 "§8.4.3.2",
                                                                 "static Methods",
@@ -230,7 +231,7 @@ public class CodeReadingLessonCatalog {
                                 textSection("ポイント",
                                                 text("画面に表示するだけの処理など、結果を返す必要がない場合に使います。")),
                                 officialReferencesSection(
-                                                "技術的根拠：Javaの公式仕様・API",
+                                                OFFICIAL_REFERENCES_TITLE,
                                                 jlsReference(
                                                                 "§8.4.5",
                                                                 "Method Result",
@@ -256,7 +257,7 @@ public class CodeReadingLessonCatalog {
                                                 text("", "main",
                                                                 " はJavaのキーワードではありませんが、プログラムの開始に使われる決められたメソッド名です。")),
                                 officialReferencesSection(
-                                                "技術的根拠：Javaの公式仕様・API",
+                                                OFFICIAL_REFERENCES_TITLE,
                                                 jlsReference(
                                                                 "§12.1.4",
                                                                 "Invoke Test.main",
@@ -275,7 +276,7 @@ public class CodeReadingLessonCatalog {
                                 textSection("ポイント",
                                                 text("プログラムの実行時に、外から渡された文字列を受け取るために使います。")),
                                 officialReferencesSection(
-                                                "技術的根拠：Javaの公式仕様・API",
+                                                OFFICIAL_REFERENCES_TITLE,
                                                 jlsReference(
                                                                 "§10.1",
                                                                 "Array Types",
@@ -301,7 +302,7 @@ public class CodeReadingLessonCatalog {
                                                 text("別の名前に変えても動きますが、", "args", "と書くのがJavaの世界で広く使われている慣習です。"),
                                                 text("", "", "")),
                                 officialReferencesSection(
-                                                "技術的根拠：Javaの公式仕様・API",
+                                                OFFICIAL_REFERENCES_TITLE,
                                                 jlsReference(
                                                                 "§12.1.4",
                                                                 "Invoke Test.main",
@@ -322,7 +323,7 @@ public class CodeReadingLessonCatalog {
                                 textSection("ポイント",
                                                 text(" ", "class", "は、新しいクラスを定義するときに使うJavaのキーワードです。")),
                                 officialReferencesSection(
-                                                "技術的根拠：Javaの公式仕様・API",
+                                                OFFICIAL_REFERENCES_TITLE,
                                                 jlsReference(
                                                                 "§8.1",
                                                                 "Class Declarations",
@@ -355,7 +356,7 @@ public class CodeReadingLessonCatalog {
                                 textSection("ポイント",
                                                 text("", "class", " キーワードの直後に書くことで、これから作るクラスの名前をJavaに伝えます。")),
                                 officialReferencesSection(
-                                                "技術的根拠：Javaの公式仕様・API",
+                                                OFFICIAL_REFERENCES_TITLE,
                                                 jlsReference(
                                                                 "§8.1",
                                                                 "Class Declarations",
@@ -382,7 +383,7 @@ public class CodeReadingLessonCatalog {
                                 textSection("ポイント",
                                                 text("閉じ忘れがあると、Javaはプログラムの構造を正しく理解できずエラーになります。")),
                                 officialReferencesSection(
-                                                "技術的根拠：Javaの公式仕様・API",
+                                                OFFICIAL_REFERENCES_TITLE,
                                                 jlsReference(
                                                                 "§3.11",
                                                                 "Separators",
@@ -410,13 +411,23 @@ public class CodeReadingLessonCatalog {
                                                                 "。")),
                                 tableSection(
                                                 "System.out.println のしくみ",
-                                                tableRow("System", "クラス　システムに関する機能を持ちます。"),
-                                                tableRow("out", "フィールド　標準出力を表します。"),
-                                                tableRow("println", "メソッド　内容を出力して改行します。")),
+                                                tableRow("System", "Java標準のクラスです"),
+                                                tableRow("out", "標準出力を表すフィールドです"),
+                                                tableRow("println", "内容を出力して改行するメソッドです")),
                                 tableSection(
                                                 "println と print の違い",
-                                                tableRow("println", "表示したあと改行します。"),
-                                                tableRow("print", "表示したあと改行しません。")));
+                                                tableRow("println", "表示したあと改行します"),
+                                                tableRow("print", "表示したあと改行しません")),
+                                officialReferencesSection(
+                                                OFFICIAL_REFERENCES_TITLE,
+                                                javaSeApiReference(
+                                                                "System.out",
+                                                                "Systemクラスのoutフィールドが、標準出力を表すPrintStream型のフィールドであることを定めています。",
+                                                                "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/System.html#out"),
+                                                javaSeApiReference(
+                                                                "PrintStream.println(String)",
+                                                                "println(String)メソッドが内容を出力し、その後に行を終了させることを定めています。",
+                                                                "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/PrintStream.html#println(java.lang.String)")));
         }
 
         private static List<CodeReadingExplanationSection> helloStringExplanation() {
@@ -424,41 +435,114 @@ public class CodeReadingLessonCatalog {
                                 textSection(
                                                 "文字列リテラル　string literal",
                                                 text(
-                                                                "ダブルクォート「\" \"」で囲んで、",
+                                                                "ダブルクォート \" \" で囲んで、",
                                                                 "文字列を直接書いたもの",
                                                                 "です。")),
                                 tableSection(
-                                                "ダブルクォート「\" \"」の中",
-                                                tableRow("\"Hello\"", "英字を書くことができます。"),
+                                                "ダブルクォート \" \" の中",
+                                                tableRow("\"Hello\"", "英語を書くことができます。"),
                                                 tableRow("\"こんにちは\"", "日本語を書くことができます。"),
                                                 tableRow("\"Javaを勉強中\"", "文字を組み合わせて書くこともできます。"),
                                                 tableRow("\"123\"", "数字も文字列として書くことができます。")),
                                 textSection(
                                                 "println との関係",
                                                 text(
-                                                                "「\"Hello\"」が",
-                                                                "printlnに渡され",
-                                                                "、その内容が表示されます。")));
+                                                                "\"Hello\" は println に渡す",
+                                                                "引数",
+                                                                "です。その内容が表示されます。")),
+                                officialReferencesSection(
+                                                OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference(
+                                                                "§3.10.5",
+                                                                "String Literals",
+                                                                "ダブルクォートで囲まれた文字の並びが文字列リテラルであり、String型であることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-3.html#jls-3.10.5"),
+                                                javaSeApiReference(
+                                                                "java.lang.String",
+                                                                "Javaプログラム内の文字列リテラルが、Stringクラスのインスタンスとして扱われることを示しています。",
+                                                                "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html")));
         }
 
         private static List<CodeReadingExplanationSection> semicolonExplanation() {
                 return List.of(
                                 textSection(
-                                                "セミコロン　semicolon",
+                                                "セパレータ（セミコロン）　separator",
                                                 text(
-                                                                "Javaでは、文の末尾に「;」を付けます。",
-                                                                "",
-                                                                "")),
+                                                                "; は、Javaのコードで",
+                                                                "文を区切るために使われる記号",
+                                                                "です。")),
+                                tableSection(
+                                                "; が必要な場合と必要でない場合",
+                                                tableRow("式文・宣言文", "例：println(...); ／ int x = 1;　　;：必要"),
+                                                tableRow("return・break など", "例：return; ／ break;　　;：必要"),
+                                                tableRow("ブロック", "例：{ ... }　　;：不要"),
+                                                tableRow("クラス・メソッドの本体", "例：class Main { ... }　　;：不要")),
                                 textSection(
-                                                "セミコロン「 ; 」を付けないケース",
+                                                "ポイント",
                                                 text(
-                                                                "Javaのすべての構文の末尾に「;」を付けるわけではありません。",
                                                                 "",
-                                                                ""),
+                                                                "if 文、while 文、for 文など、;",
+                                                                "をつけずに書く部分もあります。")),
+                                officialReferencesSection(
+                                                OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference(
+                                                                "§3.11",
+                                                                "Separators",
+                                                                "; がJava言語において区切りを表すセパレータの1つであることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-3.html#jls-3.11"),
+                                                jlsReference(
+                                                                "§14.8",
+                                                                "Expression Statements",
+                                                                "メソッド呼び出しなどの式の後ろに ; を書くことで、式文になることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.8"),
+                                                jlsReference(
+                                                                "§14.5",
+                                                                "Statements",
+                                                                "Javaにはさまざまな種類の文があり、すべての文が ; で終わるわけではないことを示しています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.5")));
+        }
+
+        private static List<CodeReadingExplanationSection> blockEndExplanation() {
+                return List.of(
+                                textSection(
+                                                "セパレータ（右波括弧）　separator",
                                                 text(
-                                                                "if (条件) { } や while (条件) { } のように、「;」を付けない部分もあります。コメントにも「;」は必要ありません。",
-                                                                "",
-                                                                "")));
+                                                                "} は、クラスやメソッドの",
+                                                                "中身がここで終わる",
+                                                                "ことを表す記号です。")),
+                                textSection(
+                                                "{ } を書くときのコツ",
+                                                new CodeReadingExplanationEntry(
+                                                                "{ }",
+                                                                "「先に { } を書いてから中身を書く」という手法は、閉じ忘れによる構文エラーを防ぐための",
+                                                                "一般的なプログラミング上の推奨習慣",
+                                                                "です。",
+                                                                false)),
+                                textSection(
+                                                "ポイント",
+                                                new CodeReadingExplanationEntry(
+                                                                "}",
+                                                                "は、その範囲が始まったコードの先頭と",
+                                                                "インデント（字下げ）の位置",
+                                                                "をそろえて書くと、対応する範囲が分かりやすくなります。",
+                                                                false)),
+                                officialReferencesSection(
+                                                OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference(
+                                                                "§3.11",
+                                                                "Separators",
+                                                                "} がJava言語において区切りを表す「セパレータ」の1つであることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-3.html#jls-3.11"),
+                                                jlsReference(
+                                                                "§8.1.7",
+                                                                "Class Body and Member Declarations",
+                                                                "クラス本体（ClassBody）が { で始まり } で終わることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.1.7"),
+                                                jlsReference(
+                                                                "§14.2",
+                                                                "Blocks",
+                                                                "メソッド本体などで使われるブロックが { で始まり } で終わることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.2")));
         }
 
         private static List<CodeReadingExplanationSection> standardExplanation(
@@ -554,6 +638,20 @@ public class CodeReadingLessonCatalog {
                                 "Java SE 21",
                                 "JLS Java SE 21",
                                 sectionNumber,
+                                sectionTitle,
+                                description,
+                                URI.create(uri));
+        }
+
+        private static CodeReadingOfficialReference javaSeApiReference(
+                        String sectionTitle,
+                        String description,
+                        String uri) {
+                return new CodeReadingOfficialReference(
+                                CodeReadingOfficialSource.JAVA_SE_API,
+                                "Java SE 21",
+                                "Java SE 21",
+                                "API",
                                 sectionTitle,
                                 description,
                                 URI.create(uri));
@@ -675,7 +773,7 @@ public class CodeReadingLessonCatalog {
                                                 List.of("class-public", "class-keyword", "class-name", "class-open"),
                                                 List.of("public", "class", "Main", "{"),
                                                 List.of(),
-                                                "外から使えるMainクラスを作る"),
+                                                "Mainというクラスを宣言し、その中身を始める"),
                                 new CodeReadingPart(
                                                 "part-2", 2, "mainメソッドを作る",
                                                 List.of(
@@ -686,7 +784,7 @@ public class CodeReadingLessonCatalog {
                                                                 "main-open"),
                                                 List.of("public", "static", "void", "main", "String[]", "args", "{"),
                                                 List.of("Javaはこのmainメソッドを探して、ここから実行を始めます"),
-                                                "Javaが最初に実行するmainメソッド"),
+                                                "mainメソッドを宣言し、その中身を始める"),
                                 new CodeReadingPart(
                                                 "part-3", 3, "「Hello」を表示する",
                                                 List.of("画面へ文字を表示する命令を書きます。"),

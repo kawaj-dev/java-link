@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -29,6 +30,24 @@ class CodeReadingLessonCatalogTest {
         assertEquals(16, definition.steps().size());
         assertEquals("Hello", definition.consoleOutput());
         assertTrue(catalog.supports(LessonService.HELLO_PROGRAM_LESSON_ID));
+    }
+
+    @Test
+    void summaryUsesConfirmedDescriptionsForAllFourParts() {
+        var parts = catalog.getDefinition(LessonService.HELLO_PROGRAM_LESSON_ID).parts();
+
+        assertEquals(java.util.List.of(
+                        "public class Main {",
+                        "public static void main(String[] args) {",
+                        "System.out.println(\"Hello\");",
+                        "}\n}"),
+                parts.stream().map(part -> part.targetCode()).toList());
+        assertEquals(java.util.List.of(
+                        "Mainというクラスを宣言し、その中身を始める",
+                        "mainメソッドを宣言し、その中身を始める",
+                        "Helloと表示して改行する",
+                        "mainメソッドとMainクラスを順番に終了する"),
+                parts.stream().map(part -> part.reviewSummary()).toList());
     }
 
     @Test
@@ -61,7 +80,7 @@ class CodeReadingLessonCatalogTest {
         assertEquals("アクセス修飾子　access modifier　", sections.get(0).title());
         assertEquals("アクセスできる範囲の違い", sections.get(1).title());
         assertEquals("ポイント", sections.get(2).title());
-        assertEquals("技術的根拠：Javaの公式仕様・API", sections.get(3).title());
+        assertEquals("このページの技術的根拠：Javaの公式仕様・API", sections.get(3).title());
 
         var references = sections.get(3).officialReferences();
         assertEquals(2, references.size());
@@ -94,7 +113,7 @@ class CodeReadingLessonCatalogTest {
         assertEquals("クラス　class　", sections.get(0).title());
         assertEquals("クラス宣言の基本形", sections.get(1).title());
         assertEquals("ポイント", sections.get(2).title());
-        assertEquals("技術的根拠：Javaの公式仕様・API", sections.get(3).title());
+        assertEquals("このページの技術的根拠：Javaの公式仕様・API", sections.get(3).title());
         assertFalse(sections.stream().anyMatch(section -> section.title().contains("家でたとえる")));
 
         assertEquals(
@@ -143,7 +162,7 @@ class CodeReadingLessonCatalogTest {
                         "クラス名　class name",
                         "名前を付けるときのルール",
                         "ポイント",
-                        "技術的根拠：Javaの公式仕様・API"),
+                        "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
 
         assertEquals(java.util.List.of("自分で決めるクラスの名前"),
@@ -230,7 +249,7 @@ class CodeReadingLessonCatalogTest {
                         "戻り値　return value",
                         "戻り値の違い",
                         "ポイント",
-                        "技術的根拠：Javaの公式仕様・API"),
+                        "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("値を返さない", sections.get(0).entries().get(0).emphasis());
         assertEquals(java.util.List.of("void", "int", "String"), sections.get(1).entries().stream()
@@ -271,7 +290,7 @@ class CodeReadingLessonCatalogTest {
                         "メソッド名　method name",
                         "mainメソッドとMainクラスの違い",
                         "ポイント",
-                        "技術的根拠：Javaの公式仕様・API"),
+                        "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("メソッドの名前", sections.get(0).entries().get(0).emphasis());
         assertEquals(java.util.List.of("main", "Main"), sections.get(1).entries().stream()
@@ -316,7 +335,7 @@ class CodeReadingLessonCatalogTest {
                         "配列型　array type",
                         "String[]の意味",
                         "ポイント",
-                        "技術的根拠：Javaの公式仕様・API"),
+                        "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals(
                 "文字列（String）を複数まとめて扱うための型です。",
@@ -362,7 +381,7 @@ class CodeReadingLessonCatalogTest {
                         "引数名　argument name",
                         "String[] と args の関係",
                         "ポイント",
-                        "技術的根拠：Javaの公式仕様・API"),
+                        "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("変数の名前", sections.get(0).entries().get(0).emphasis());
         assertEquals(java.util.List.of("String[]", "args"), sections.get(1).entries().stream()
@@ -400,7 +419,7 @@ class CodeReadingLessonCatalogTest {
                         "セパレータ（左波括弧）　separator",
                         "波括弧のルール",
                         "ポイント",
-                        "技術的根拠：Javaの公式仕様・API"),
+                        "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("中身が、ここから始まる", sections.get(0).entries().get(0).emphasis());
         assertEquals("{ と } はセット", sections.get(1).entries().get(0).label());
@@ -408,6 +427,179 @@ class CodeReadingLessonCatalogTest {
                 sections.get(1).entries().get(0).before());
         assertEquals("閉じ忘れがあると、Javaはプログラムの構造を正しく理解できずエラーになります。",
                 sections.get(2).entries().get(0).before());
+
+        var references = sections.get(3).officialReferences();
+        assertEquals(3, references.size());
+        assertEquals(java.util.List.of("§3.11", "§8.1.7", "§14.2"), references.stream()
+                .map(reference -> reference.sectionNumber()).toList());
+        assertEquals(java.util.List.of(
+                        "Separators",
+                        "Class Body and Member Declarations",
+                        "Blocks"),
+                references.stream().map(reference -> reference.sectionTitle()).toList());
+        assertTrue(references.stream().allMatch(reference ->
+                reference.source().value().equals("jls")
+                        && reference.version().equals("Java SE 21")
+                        && reference.uri().getScheme().equals("https")
+                        && reference.uri().getHost().equals("docs.oracle.com")));
+    }
+
+    @Test
+    void systemOutPrintlnUsesStandardOutputComparisonAndJavaSe21ApiReferences() {
+        var step = catalog.getDefinition(
+                LessonService.HELLO_PROGRAM_LESSON_ID
+        ).getStep("print-command");
+
+        assertEquals("画面に表示して改行する", step.correctCard().text());
+
+        var sections = step.explanationSections();
+        assertEquals(java.util.List.of("text", "table", "table", "official-references"),
+                sections.stream().map(section -> section.sectionType().value()).toList());
+        assertEquals(java.util.List.of(
+                        "標準出力　standard output",
+                        "System.out.println のしくみ",
+                        "println と print の違い",
+                        "このページの技術的根拠：Javaの公式仕様・API"),
+                sections.stream().map(section -> section.title()).toList());
+        assertEquals("最後に改行します", sections.get(0).entries().get(0).emphasis());
+        assertEquals(java.util.List.of("System", "out", "println"), sections.get(1).entries().stream()
+                .map(entry -> entry.label()).toList());
+        assertEquals(java.util.List.of(
+                        "Java標準のクラスです",
+                        "標準出力を表すフィールドです",
+                        "内容を出力して改行するメソッドです"),
+                sections.get(1).entries().stream().map(entry -> entry.before()).toList());
+        assertEquals(java.util.List.of("println", "print"), sections.get(2).entries().stream()
+                .map(entry -> entry.label()).toList());
+        assertEquals(java.util.List.of("表示したあと改行します", "表示したあと改行しません"),
+                sections.get(2).entries().stream().map(entry -> entry.before()).toList());
+
+        var references = sections.get(3).officialReferences();
+        assertEquals(2, references.size());
+        assertEquals(java.util.List.of("System.out", "PrintStream.println(String)"), references.stream()
+                .map(reference -> reference.sectionTitle()).toList());
+        assertTrue(references.stream().allMatch(reference ->
+                reference.source().value().equals("java-se-api")
+                        && reference.version().equals("Java SE 21")
+                        && reference.sourceName().equals("Java SE 21")
+                        && reference.sectionNumber().equals("API")
+                        && reference.uri().getScheme().equals("https")
+                        && reference.uri().getHost().equals("docs.oracle.com")));
+        assertTrue(references.stream().noneMatch(reference ->
+                reference.sectionTitle().contains("String Literals")));
+    }
+
+    @Test
+    void helloStringUsesLiteralExamplesAndJavaSe21OfficialReferences() {
+        var step = catalog.getDefinition(
+                LessonService.HELLO_PROGRAM_LESSON_ID
+        ).getStep("hello-string");
+
+        assertEquals("表示する文字", step.correctCard().text());
+
+        var sections = step.explanationSections();
+        assertEquals(java.util.List.of("text", "table", "text", "official-references"),
+                sections.stream().map(section -> section.sectionType().value()).toList());
+        assertEquals(java.util.List.of(
+                        "文字列リテラル　string literal",
+                        "ダブルクォート \" \" の中",
+                        "println との関係",
+                        "このページの技術的根拠：Javaの公式仕様・API"),
+                sections.stream().map(section -> section.title()).toList());
+        assertEquals("文字列を直接書いたもの", sections.get(0).entries().get(0).emphasis());
+        assertEquals(java.util.List.of("\"Hello\"", "\"こんにちは\"", "\"Javaを勉強中\"", "\"123\""),
+                sections.get(1).entries().stream().map(entry -> entry.label()).toList());
+        assertEquals(java.util.List.of(
+                        "英語を書くことができます。",
+                        "日本語を書くことができます。",
+                        "文字を組み合わせて書くこともできます。",
+                        "数字も文字列として書くことができます。"),
+                sections.get(1).entries().stream().map(entry -> entry.before()).toList());
+        assertEquals("引数", sections.get(2).entries().get(0).emphasis());
+
+        var references = sections.get(3).officialReferences();
+        assertEquals(2, references.size());
+        assertEquals(java.util.List.of("§3.10.5", "API"), references.stream()
+                .map(reference -> reference.sectionNumber()).toList());
+        assertEquals(java.util.List.of("String Literals", "java.lang.String"), references.stream()
+                .map(reference -> reference.sectionTitle()).toList());
+        assertEquals(java.util.List.of("jls", "java-se-api"), references.stream()
+                .map(reference -> reference.source().value()).toList());
+        assertTrue(references.stream().allMatch(reference ->
+                reference.version().equals("Java SE 21")
+                        && reference.uri().getScheme().equals("https")
+                        && reference.uri().getHost().equals("docs.oracle.com")));
+    }
+
+    @Test
+    void semicolonExplainsStatementBoundariesAndJavaSe21References() {
+        var step = catalog.getDefinition(
+                LessonService.HELLO_PROGRAM_LESSON_ID
+        ).getStep("semicolon");
+
+        assertEquals("文の終わり", step.correctCard().text());
+
+        var sections = step.explanationSections();
+        assertEquals(java.util.List.of("text", "table", "text", "official-references"),
+                sections.stream().map(section -> section.sectionType().value()).toList());
+        assertEquals(java.util.List.of(
+                        "セパレータ（セミコロン）　separator",
+                        "; が必要な場合と必要でない場合",
+                        "ポイント",
+                        "このページの技術的根拠：Javaの公式仕様・API"),
+                sections.stream().map(section -> section.title()).toList());
+        assertEquals("文を区切るために使われる記号", sections.get(0).entries().get(0).emphasis());
+        assertEquals(java.util.List.of(
+                        "式文・宣言文",
+                        "return・break など",
+                        "ブロック",
+                        "クラス・メソッドの本体"),
+                sections.get(1).entries().stream().map(entry -> entry.label()).toList());
+        assertEquals(java.util.List.of(
+                        "例：println(...); ／ int x = 1;　　;：必要",
+                        "例：return; ／ break;　　;：必要",
+                        "例：{ ... }　　;：不要",
+                        "例：class Main { ... }　　;：不要"),
+                sections.get(1).entries().stream().map(entry -> entry.before()).toList());
+        assertEquals("if 文、while 文、for 文など、;", sections.get(2).entries().get(0).emphasis());
+
+        var references = sections.get(3).officialReferences();
+        assertEquals(3, references.size());
+        assertEquals(java.util.List.of("§3.11", "§14.8", "§14.5"), references.stream()
+                .map(reference -> reference.sectionNumber()).toList());
+        assertEquals(java.util.List.of("Separators", "Expression Statements", "Statements"),
+                references.stream().map(reference -> reference.sectionTitle()).toList());
+        assertTrue(references.stream().allMatch(reference ->
+                reference.source().value().equals("jls")
+                        && reference.version().equals("Java SE 21")
+                        && reference.uri().getScheme().equals("https")
+                        && reference.uri().getHost().equals("docs.oracle.com")));
+    }
+
+    @Test
+    void bothClosingBracesShareEndExplanationAndOfficialReferences() {
+        var definition = catalog.getDefinition(LessonService.HELLO_PROGRAM_LESSON_ID);
+        var mainClose = definition.getStep("main-close");
+        var classClose = definition.getStep("class-close");
+
+        assertEquals("ここで終わる", mainClose.correctCard().text());
+        assertEquals("ここで終わる", classClose.correctCard().text());
+        assertSame(mainClose.explanationSections(), classClose.explanationSections());
+
+        var sections = mainClose.explanationSections();
+        assertEquals(java.util.List.of("text", "text", "text", "official-references"),
+                sections.stream().map(section -> section.sectionType().value()).toList());
+        assertEquals(java.util.List.of(
+                        "セパレータ（右波括弧）　separator",
+                        "{ } を書くときのコツ",
+                        "ポイント",
+                        "このページの技術的根拠：Javaの公式仕様・API"),
+                sections.stream().map(section -> section.title()).toList());
+        assertEquals("中身がここで終わる", sections.get(0).entries().get(0).emphasis());
+        assertEquals("{ }", sections.get(1).entries().get(0).label());
+        assertEquals("一般的なプログラミング上の推奨習慣", sections.get(1).entries().get(0).emphasis());
+        assertEquals("}", sections.get(2).entries().get(0).label());
+        assertEquals("インデント（字下げ）の位置", sections.get(2).entries().get(0).emphasis());
 
         var references = sections.get(3).officialReferences();
         assertEquals(3, references.size());
@@ -441,11 +633,11 @@ class CodeReadingLessonCatalogTest {
         }
 
         assertEquals(
-                "技術的根拠：Javaの公式仕様・API",
+                "このページの技術的根拠：Javaの公式仕様・API",
                 definition.getStep("class-public").explanationSections().get(3).title()
         );
         assertEquals(
-                "技術的根拠：Javaの公式仕様・API",
+                "このページの技術的根拠：Javaの公式仕様・API",
                 definition.getStep("class-keyword").explanationSections().get(3).title()
         );
         assertEquals(
@@ -456,7 +648,7 @@ class CodeReadingLessonCatalogTest {
                 "println との関係",
                 definition.getStep("hello-string").explanationSections().get(2).title()
         );
-        assertEquals(2, definition.getStep("semicolon").explanationSections().size());
+        assertEquals("ポイント", definition.getStep("semicolon").explanationSections().get(2).title());
     }
 
     @Test
@@ -480,7 +672,7 @@ class CodeReadingLessonCatalogTest {
         assertTrue(helperNames.containsAll(Set.of(
                 "textSection", "tableSection", "diagramSection",
                 "examplesSection", "qaSection", "comparisonSection", "listSection",
-                "officialReferencesSection", "jlsReference",
+                "officialReferencesSection", "jlsReference", "javaSeApiReference",
                 "text", "tableRow", "highlightedTableRow", "diagramRow",
                 "example", "note", "qaEntry", "comparisonEntry", "listItem"
         )));
