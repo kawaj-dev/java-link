@@ -40,7 +40,7 @@ class ExplanationSectionTypeTest {
                 .toList();
 
         assertEquals(
-                List.of("sectionType", "title", "entries", "officialReferences"),
+                List.of("sectionType", "title", "entries", "officialReferences", "tableHeader"),
                 components
         );
         assertFalse(components.contains("layout"));

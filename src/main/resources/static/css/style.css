@@ -3134,6 +3134,368 @@ h1 {
     }
 }
 
+/* 「代入と初期化の違い」は、前後の本文の間に罫線付き3列表を配置します。 */
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-table {
+    gap: 0;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--no-label {
+    display: block;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--no-label + .quiz-reading-access-row--no-label {
+    margin-top: 8px;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--no-label:has(+ .quiz-reading-access-row--three-columns) {
+    margin-bottom: 14px;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--no-label code {
+    display: none;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--no-label span {
+    display: block;
+    color: #29445f;
+    line-height: 1.75;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--three-columns {
+    gap: 0;
+    padding: 0;
+    border-right: 1px solid #d5dde5;
+    border-bottom: 1px solid #dfe5eb;
+    border-left: 1px solid #d5dde5;
+    border-radius: 0;
+    background: #fff;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--no-label + .quiz-reading-access-row--three-columns {
+    border-top: 1px solid #d5dde5;
+    border-radius: 5px 5px 0 0;
+    background: #f3f5f7;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--three-columns:last-child {
+    border-radius: 0 0 5px 5px;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--three-columns > * {
+    min-width: 0;
+    padding: 9px 10px;
+    color: #17324d;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--three-columns > * + * {
+    border-left: 1px solid #dfe5eb;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--three-columns code {
+    font-family: inherit;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--three-columns > span:first-of-type {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    font-weight: 600;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--no-label + .quiz-reading-access-row--three-columns > * {
+    font-family: inherit;
+    font-weight: 700;
+}
+
+@media (max-width: 520px) {
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--three-columns {
+        grid-template-columns: minmax(66px, 0.7fr) minmax(76px, 1.15fr) minmax(0, 1.5fr);
+        font-size: 0.75rem;
+    }
+
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid[data-section-title="代入と初期化の違い"] .quiz-reading-access-row--three-columns > * {
+        padding: 8px 5px;
+    }
+}
+
+/* 整数リテラルの本文と比較内容を、本文＋罫線付き2列表として表示します。 */
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) .quiz-reading-access-table {
+    gap: 0;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) .quiz-reading-access-row--no-label {
+    display: block;
+    margin-bottom: 14px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) .quiz-reading-access-row--no-label code {
+    display: none;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) .quiz-reading-access-row--no-label span {
+    display: block;
+    color: #29445f;
+    line-height: 1.75;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) [role="row"]:not(.quiz-reading-access-row--no-label) {
+    grid-template-columns: minmax(92px, 0.8fr) minmax(0, 1.4fr);
+    gap: 0;
+    padding: 0;
+    border-right: 1px solid #d5dde5;
+    border-bottom: 1px solid #dfe5eb;
+    border-left: 1px solid #d5dde5;
+    border-radius: 0;
+    background: #fff;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) .quiz-reading-access-row--no-label + [role="row"] {
+    border-top: 1px solid #d5dde5;
+    border-radius: 5px 5px 0 0;
+    background: #f3f5f7;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) [role="row"]:last-child {
+    border-radius: 0 0 5px 5px;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) [role="row"]:not(.quiz-reading-access-row--no-label) > * {
+    min-width: 0;
+    padding: 9px 12px;
+    color: #17324d;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) [role="row"]:not(.quiz-reading-access-row--no-label) > * + * {
+    border-left: 1px solid #dfe5eb;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) [role="row"]:not(.quiz-reading-access-row--no-label) code {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    font-weight: 700;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table:is(
+        [data-section-title="リテラルとは"],
+        [data-section-title="ポイント"]
+    ) .quiz-reading-access-row--no-label + [role="row"] > * {
+    font-family: inherit;
+    font-weight: 700;
+}
+
+@media (max-width: 520px) {
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid-layout--table:is(
+            [data-section-title="リテラルとは"],
+            [data-section-title="ポイント"]
+        ) [role="row"]:not(.quiz-reading-access-row--no-label) {
+        grid-template-columns: minmax(82px, 0.8fr) minmax(0, 1.35fr);
+        font-size: 0.78rem;
+    }
+
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid-layout--table:is(
+            [data-section-title="リテラルとは"],
+            [data-section-title="ポイント"]
+        ) [role="row"]:not(.quiz-reading-access-row--no-label) > * {
+        padding: 8px;
+    }
+}
+
+/* 利用側ageの比較は、長いコードを含む罫線付き表として表示します。 */
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="変数を「宣言する」と「使う」の違い"]
+    .quiz-reading-access-row--three-columns {
+    grid-template-columns: minmax(76px, 0.65fr) minmax(190px, 1.45fr) minmax(150px, 1.35fr);
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="変数を「宣言する」と「使う」の違い"]
+    .quiz-reading-access-row--three-columns code {
+    font-family: inherit;
+    font-weight: 700;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="変数を「宣言する」と「使う」の違い"]
+    .quiz-reading-access-row--three-columns > span:first-of-type {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    font-weight: 400;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="変数を「宣言する」と「使う」の違い"]
+    .quiz-reading-access-row--three-columns > span:last-child {
+    font-weight: 400;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid[data-section-title="変数を「宣言する」と「使う」の違い"]
+    .quiz-reading-access-row--three-columns:first-child > * {
+    font-family: inherit;
+    font-weight: 700;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+    .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #d5dde5;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+    .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) > [role="row"] {
+    grid-template-columns: minmax(210px, 1.35fr) minmax(0, 1fr);
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid #dfe5eb;
+    border-radius: 0;
+    background: #fff;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+    .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) > [role="row"]:first-child {
+    background: #f3f5f7;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+    .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) > [role="row"]:last-child {
+    border-bottom: 0;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+    .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) > [role="row"] > * {
+    min-width: 0;
+    padding: 9px 12px;
+    color: #17324d;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+    .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) > [role="row"] > * + * {
+    border-left: 1px solid #dfe5eb;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+    .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) > [role="row"] code {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    font-weight: 700;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+    .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) > [role="row"] span {
+    font-weight: 400;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+    .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) > [role="row"]:first-child > * {
+    font-family: inherit;
+    font-weight: 700;
+}
+
+@media (max-width: 520px) {
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid[data-section-title="変数を「宣言する」と「使う」の違い"]
+        .quiz-reading-access-row--three-columns {
+        grid-template-columns: minmax(48px, 0.55fr) minmax(105px, 1.3fr) minmax(85px, 1.15fr);
+        font-size: 0.68rem;
+    }
+
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+        .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) > [role="row"] {
+        grid-template-columns: minmax(130px, 1.2fr) minmax(0, 1fr);
+        font-size: 0.7rem;
+    }
+
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid-layout--table[data-section-title="ポイント"]
+        .quiz-reading-access-table:not(:has(.quiz-reading-access-row--no-label)) > [role="row"] > * {
+        padding: 8px 6px;
+    }
+}
+
 /* Stage 1 LEARNING: 左から右へつながるシンプルな電球回路 */
 .quiz-code-circuit-bulbs {
     display: grid;
@@ -3758,6 +4120,10 @@ body:has(.quiz-focus-program) .quiz-intro-start .next-button:hover {
     grid-template-columns: minmax(120px, 0.95fr) minmax(0, 1.7fr);
 }
 
+.quiz-reading-access-table > div.quiz-reading-access-row--three-columns {
+    grid-template-columns: minmax(64px, 0.7fr) minmax(64px, 0.8fr) minmax(0, 1.8fr);
+}
+
 .quiz-reading-access-table > div:has(span:empty) {
     grid-template-columns: minmax(0, 1fr);
 }
@@ -3770,31 +4136,192 @@ body:has(.quiz-focus-program) .quiz-intro-start .next-button:hover {
     display: none;
 }
 
-/* classの基本形は、先頭のコード例だけを薄いコード領域に残し、意味を縦に読み進めます。 */
-.quiz-reading-access-table:has(> div:first-child span:empty) {
-    gap: 14px;
+/* classの基本形は、コード例の下に共通TABLEと同じ罫線付き2列表を表示します。 */
+.quiz-reading-learning-aid[data-section-title="クラス宣言の基本形"]
+    .quiz-reading-access-table {
+    gap: 0;
 }
 
-.quiz-reading-access-table:has(> div:first-child span:empty) > div:not(:first-child) {
-    display: block;
+.quiz-reading-learning-aid[data-section-title="クラス宣言の基本形"]
+    .quiz-reading-access-table > div:first-child {
+    margin-bottom: 14px;
+}
+
+.quiz-reading-learning-aid[data-section-title="クラス宣言の基本形"]
+    .quiz-reading-access-table > div:not(:first-child) {
+    gap: 0;
     padding: 0;
+    border-right: 1px solid #d5dde5;
+    border-bottom: 1px solid #dfe5eb;
+    border-left: 1px solid #d5dde5;
     border-radius: 0;
-    background: transparent;
+    background: #fff;
 }
 
-.quiz-reading-access-table:has(> div:first-child span:empty) > div:not(:first-child) code {
-    display: block;
-    margin-bottom: 3px;
+.quiz-reading-learning-aid[data-section-title="クラス宣言の基本形"]
+    .quiz-reading-access-table > div:nth-child(2) {
+    border-top: 1px solid #d5dde5;
+    border-radius: 5px 5px 0 0;
+    background: #f3f5f7;
 }
 
-.quiz-reading-access-table:has(> div:first-child span:empty) > div:not(:first-child) span {
-    display: block;
-    line-height: 1.7;
+.quiz-reading-learning-aid[data-section-title="クラス宣言の基本形"]
+    .quiz-reading-access-table > div:last-child {
+    border-radius: 0 0 5px 5px;
 }
 
-.quiz-reading-access-table:has(> div:first-child span:empty) > div:not(:first-child) span::before {
-    content: "→ ";
-    color: #52708d;
+.quiz-reading-learning-aid[data-section-title="クラス宣言の基本形"]
+    .quiz-reading-access-table > div:not(:first-child) > * {
+    min-width: 0;
+    padding: 9px 12px;
+    color: #17324d;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.quiz-reading-learning-aid[data-section-title="クラス宣言の基本形"]
+    .quiz-reading-access-table > div:not(:first-child) > * + * {
+    border-left: 1px solid #dfe5eb;
+}
+
+.quiz-reading-learning-aid[data-section-title="クラス宣言の基本形"]
+    .quiz-reading-access-table > div:nth-child(2) > * {
+    font-family: inherit;
+    font-weight: 700;
+}
+
+/* Stage 1の基本比較は、共通TABLEと同じ罫線付き2列表で表示します。 */
+.quiz-reading-learning-aid:is(
+        [data-section-title="アクセスできる範囲の違い"],
+        [data-section-title="static修飾子の特徴"],
+        [data-section-title="戻り値の型の違い"],
+        [data-section-title="mainメソッドとMainクラスの違い"],
+        [data-section-title="String[]の意味"],
+        [data-section-title="String[] と args の関係"],
+        [data-section-title="System.out.println のしくみ"],
+        [data-section-title="println と print の違い"],
+        [data-section-title="ダブルクォート \" \" の中"]
+    )
+    .quiz-reading-access-table {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #d5dde5;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.quiz-reading-learning-aid:is(
+        [data-section-title="アクセスできる範囲の違い"],
+        [data-section-title="static修飾子の特徴"],
+        [data-section-title="戻り値の型の違い"],
+        [data-section-title="mainメソッドとMainクラスの違い"],
+        [data-section-title="String[]の意味"],
+        [data-section-title="String[] と args の関係"],
+        [data-section-title="System.out.println のしくみ"],
+        [data-section-title="println と print の違い"],
+        [data-section-title="ダブルクォート \" \" の中"]
+    )
+    .quiz-reading-access-table > div {
+    gap: 0;
+    padding: 0;
+    border-bottom: 1px solid #dfe5eb;
+    border-radius: 0;
+    background: #fff;
+}
+
+.quiz-reading-learning-aid:is(
+        [data-section-title="アクセスできる範囲の違い"],
+        [data-section-title="static修飾子の特徴"],
+        [data-section-title="戻り値の型の違い"],
+        [data-section-title="mainメソッドとMainクラスの違い"],
+        [data-section-title="String[]の意味"],
+        [data-section-title="String[] と args の関係"],
+        [data-section-title="System.out.println のしくみ"],
+        [data-section-title="println と print の違い"],
+        [data-section-title="ダブルクォート \" \" の中"]
+    )
+    .quiz-reading-access-table > div.quiz-reading-access-row--header {
+    background: #f3f5f7;
+}
+
+.quiz-reading-learning-aid:is(
+        [data-section-title="アクセスできる範囲の違い"],
+        [data-section-title="static修飾子の特徴"],
+        [data-section-title="戻り値の型の違い"],
+        [data-section-title="mainメソッドとMainクラスの違い"],
+        [data-section-title="String[]の意味"],
+        [data-section-title="String[] と args の関係"],
+        [data-section-title="System.out.println のしくみ"],
+        [data-section-title="println と print の違い"],
+        [data-section-title="ダブルクォート \" \" の中"]
+    )
+    .quiz-reading-access-table > div:last-child {
+    border-bottom: 0;
+}
+
+.quiz-reading-learning-aid:is(
+        [data-section-title="アクセスできる範囲の違い"],
+        [data-section-title="static修飾子の特徴"],
+        [data-section-title="戻り値の型の違い"],
+        [data-section-title="mainメソッドとMainクラスの違い"],
+        [data-section-title="String[]の意味"],
+        [data-section-title="String[] と args の関係"],
+        [data-section-title="System.out.println のしくみ"],
+        [data-section-title="println と print の違い"],
+        [data-section-title="ダブルクォート \" \" の中"]
+    )
+    .quiz-reading-access-table > div > * {
+    min-width: 0;
+    padding: 9px 12px;
+    color: #17324d;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.quiz-reading-learning-aid:is(
+        [data-section-title="アクセスできる範囲の違い"],
+        [data-section-title="static修飾子の特徴"],
+        [data-section-title="戻り値の型の違い"],
+        [data-section-title="mainメソッドとMainクラスの違い"],
+        [data-section-title="String[]の意味"],
+        [data-section-title="String[] と args の関係"],
+        [data-section-title="System.out.println のしくみ"],
+        [data-section-title="println と print の違い"],
+        [data-section-title="ダブルクォート \" \" の中"]
+    )
+    .quiz-reading-access-table > div > * + * {
+    border-left: 1px solid #dfe5eb;
+}
+
+.quiz-reading-learning-aid:is(
+        [data-section-title="アクセスできる範囲の違い"],
+        [data-section-title="static修飾子の特徴"],
+        [data-section-title="戻り値の型の違い"],
+        [data-section-title="mainメソッドとMainクラスの違い"],
+        [data-section-title="String[]の意味"],
+        [data-section-title="String[] と args の関係"],
+        [data-section-title="System.out.println のしくみ"],
+        [data-section-title="println と print の違い"],
+        [data-section-title="ダブルクォート \" \" の中"]
+    )
+    .quiz-reading-access-table > div.quiz-reading-access-row--header > * {
+    font-family: inherit;
+    font-weight: 700;
+}
+
+.quiz-reading-learning-aid:is(
+        [data-section-title="アクセスできる範囲の違い"],
+        [data-section-title="static修飾子の特徴"],
+        [data-section-title="戻り値の型の違い"],
+        [data-section-title="mainメソッドとMainクラスの違い"],
+        [data-section-title="String[]の意味"],
+        [data-section-title="String[] と args の関係"],
+        [data-section-title="System.out.println のしくみ"],
+        [data-section-title="println と print の違い"],
+        [data-section-title="ダブルクォート \" \" の中"]
+    )
+    .quiz-reading-access-table > div:not(.quiz-reading-access-row--header) > span {
+    font-weight: 400;
 }
 
 .quiz-reading-access-table > div.quiz-reading-access-row--no-label {
@@ -3804,6 +4331,52 @@ body:has(.quiz-focus-program) .quiz-intro-start .next-button:hover {
 .quiz-reading-access-row--no-label > span {
     grid-column: 1;
     text-align: left;
+}
+
+:is(
+        .quiz-reading-learning-aid[data-section-title="名前を付けるときのルール"],
+        [data-explanation-sections]:has(> [data-section-title="変数とは"])
+            > .quiz-reading-learning-aid[data-section-title="ポイント"]
+    )
+    .quiz-reading-section-text p {
+    margin: 0;
+    line-height: 1.75;
+}
+
+:is(
+        .quiz-reading-learning-aid[data-section-title="名前を付けるときのルール"],
+        [data-explanation-sections]:has(> [data-section-title="変数とは"])
+            > .quiz-reading-learning-aid[data-section-title="ポイント"]
+    )
+    .quiz-reading-section-text p + p {
+    margin-top: 16px;
+}
+
+:is(
+        .quiz-reading-learning-aid[data-section-title="名前を付けるときのルール"],
+        [data-explanation-sections]:has(> [data-section-title="変数とは"])
+            > .quiz-reading-learning-aid[data-section-title="ポイント"]
+    )
+    .quiz-reading-section-text p > strong:first-child {
+    display: block;
+    margin-bottom: 4px;
+    color: #0b2c59;
+    font-weight: 700;
+}
+
+:is(
+        .quiz-reading-learning-aid[data-section-title="名前を付けるときのルール"],
+        [data-explanation-sections]:has(> [data-section-title="変数とは"])
+            > .quiz-reading-learning-aid[data-section-title="ポイント"]
+    )
+    .quiz-reading-section-text p > strong:not(:first-child) {
+    font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+}
+
+[data-explanation-sections]:has(> [data-section-title="変数とは"])
+    > .quiz-reading-learning-aid[data-section-title="ポイント"]
+    .quiz-reading-section-text p {
+    white-space: pre-line;
 }
 
 .quiz-reading-name-examples > div {
@@ -3942,6 +4515,11 @@ body:has(.quiz-focus-program) .quiz-intro-start .next-button:hover {
         grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
         gap: 8px;
         padding: 8px;
+    }
+
+    .quiz-reading-access-table > div.quiz-reading-access-row--three-columns {
+        grid-template-columns: minmax(52px, 0.7fr) minmax(52px, 0.8fr) minmax(0, 1.5fr);
+        font-size: 0.78rem;
     }
 
     .quiz-reading-name-examples > div {
@@ -6051,6 +6629,151 @@ body:has(.quiz-focus-learning) .quiz-reading-access-row--focus {
     box-shadow: inset 3px 0 #1685ff;
 }
 
+/* Stage 2のデータ型一覧は、3列の対応を罫線で追える標準的な表として表示します。 */
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table .quiz-reading-access-table:has(.quiz-reading-access-row--three-columns):not(:has(.quiz-reading-access-row--no-label)) {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #d5dde5;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table .quiz-reading-access-table:has(.quiz-reading-access-row--three-columns):not(:has(.quiz-reading-access-row--no-label)) > div {
+    gap: 0;
+    padding: 0;
+    border-bottom: 1px solid #dfe5eb;
+    border-radius: 0;
+    background: #fff;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table .quiz-reading-access-table:has(.quiz-reading-access-row--three-columns):not(:has(.quiz-reading-access-row--no-label)) > div:last-child {
+    border-bottom: 0;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table .quiz-reading-access-table:has(.quiz-reading-access-row--three-columns):not(:has(.quiz-reading-access-row--no-label)) > div:first-child {
+    background: #f3f5f7;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table .quiz-reading-access-table:has(.quiz-reading-access-row--three-columns):not(:has(.quiz-reading-access-row--no-label)) > div > * {
+    min-width: 0;
+    padding: 9px 12px;
+    color: #17324d;
+    font-family: inherit;
+    font-weight: 400;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table .quiz-reading-access-table:has(.quiz-reading-access-row--three-columns):not(:has(.quiz-reading-access-row--no-label)) > div > * + * {
+    border-left: 1px solid #dfe5eb;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table .quiz-reading-access-table:has(.quiz-reading-access-row--three-columns):not(:has(.quiz-reading-access-row--no-label)) > div > span:first-of-type,
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--table .quiz-reading-access-table:has(.quiz-reading-access-row--three-columns):not(:has(.quiz-reading-access-row--no-label)) > div:first-child > * {
+    font-weight: 700;
+}
+
+@media (max-width: 520px) {
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid-layout--table .quiz-reading-access-table:has(.quiz-reading-access-row--three-columns):not(:has(.quiz-reading-access-row--no-label)) > div.quiz-reading-access-row--three-columns {
+        grid-template-columns: minmax(50px, 0.7fr) minmax(58px, 0.8fr) minmax(0, 1.5fr);
+    }
+
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid-layout--table .quiz-reading-access-table:has(.quiz-reading-access-row--three-columns):not(:has(.quiz-reading-access-row--no-label)) > div > * {
+        padding: 8px 6px;
+    }
+}
+
+/* セミコロン一覧は、全Stageで共通の罫線付き3列表として表示します。 */
+.quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+    .quiz-reading-access-table {
+    gap: 0;
+    overflow: hidden;
+    border: 1px solid #d5dde5;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+    .quiz-reading-access-row--three-columns {
+    grid-template-columns: minmax(150px, 1fr) minmax(180px, 1.35fr) minmax(56px, 0.45fr);
+    gap: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid #dfe5eb;
+    border-radius: 0;
+    background: #fff;
+}
+
+.quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+    .quiz-reading-access-row--three-columns:first-child {
+    background: #f3f5f7;
+}
+
+.quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+    .quiz-reading-access-row--three-columns:last-child {
+    border-bottom: 0;
+}
+
+.quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+    .quiz-reading-access-row--three-columns > * {
+    min-width: 0;
+    padding: 9px 12px;
+    color: #17324d;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+}
+
+.quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+    .quiz-reading-access-row--three-columns > * + * {
+    border-left: 1px solid #dfe5eb;
+}
+
+.quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+    .quiz-reading-access-row--three-columns code {
+    font-family: inherit;
+    font-weight: 700;
+}
+
+.quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+    .quiz-reading-access-row--three-columns > span:first-of-type {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    font-weight: 400;
+}
+
+.quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+    .quiz-reading-access-row--three-columns > span:last-child {
+    font-weight: 400;
+}
+
+.quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+    .quiz-reading-access-row--three-columns:first-child > * {
+    font-family: inherit;
+    font-weight: 700;
+}
+
+@media (max-width: 520px) {
+    .quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+        .quiz-reading-access-row--three-columns {
+        grid-template-columns: minmax(88px, 0.95fr) minmax(105px, 1.25fr) minmax(42px, 0.45fr);
+        font-size: 0.72rem;
+    }
+
+    .quiz-reading-learning-aid[data-section-title="; が必要な場合と必要でない場合"]
+        .quiz-reading-access-row--three-columns > * {
+        padding: 8px 6px;
+    }
+}
+
 body:has(.quiz-focus-learning) .quiz-reading-concept-flow {
     color: #294867;
     background: #f3f7fc;
@@ -6071,6 +6794,50 @@ body:has(.quiz-focus-learning) .quiz-reading-qa p:nth-child(2) {
 
 body:has(.quiz-focus-learning) .quiz-reading-qa strong {
     color: #075fbd;
+}
+
+/* Stage 2の比較説明は長いコードも扱うため、ラベル幅を内容に合わせて安全に折り返します。 */
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--comparison .quiz-reading-qa p {
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.6fr);
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--comparison .quiz-reading-qa p.quiz-reading-comparison-row--three-columns {
+    grid-template-columns: minmax(0, 0.65fr) minmax(0, 1.35fr) minmax(0, 1.4fr);
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--comparison .quiz-reading-qa p:has(strong:empty) {
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--comparison .quiz-reading-qa p:has(strong:empty) strong {
+    display: none;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--comparison .quiz-reading-qa strong {
+    overflow-wrap: anywhere;
+}
+
+.quiz-focus-learning[data-lesson-id="variable-program-reading"]
+    .quiz-reading-learning-aid-layout--comparison .quiz-reading-qa span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+@media (max-width: 520px) {
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid-layout--comparison .quiz-reading-qa p {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .quiz-focus-learning[data-lesson-id="variable-program-reading"]
+        .quiz-reading-learning-aid-layout--comparison .quiz-reading-qa p.quiz-reading-comparison-row--three-columns {
+        grid-template-columns: minmax(0, 1fr);
+    }
 }
 
 body:has(.quiz-focus-learning) .java-glossary-open {

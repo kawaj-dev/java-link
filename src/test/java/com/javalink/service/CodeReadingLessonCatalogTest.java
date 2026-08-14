@@ -1,6 +1,7 @@
 package com.javalink.service;
 
 import com.javalink.model.CodeReadingLessonDefinition;
+import com.javalink.model.CodeReadingExplanationSection;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -17,6 +18,197 @@ class CodeReadingLessonCatalogTest {
 
     private final CodeReadingLessonCatalog catalog =
             new CodeReadingLessonCatalog();
+
+    @Test
+    void Stage2は5Part21Stepと実行結果20を持つ() {
+        var definition = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID);
+
+        assertEquals("Stage 2", definition.stageName());
+        assertEquals("変数を使って年齢を表示しよう", definition.learningGoal());
+        assertEquals(5, definition.parts().size());
+        assertEquals(21, definition.steps().size());
+        assertEquals("20", definition.consoleOutput());
+        assertTrue(definition.completedCode().contains("int age = 20;"));
+        assertTrue(definition.completedCode().contains("System.out.println(age);"));
+    }
+
+    @Test
+    void Stage2はStage1説明を再利用し新規stepを役割別に持つ() {
+        var stage1 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE1_LESSON_ID);
+        var stage2 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID);
+
+        assertEquals(stage1.getStep("class-public").explanationSections(),
+                stage2.getStep("class-public").explanationSections());
+        assertSame(stage1.getStep("semicolon").explanationSections(),
+                stage2.getStep("declaration-semicolon").explanationSections());
+        assertEquals("変数名", stage2.getStep("age-declaration").technicalTerm());
+        assertEquals("変数の利用", stage2.getStep("age-use").technicalTerm());
+    }
+
+    @Test
+    void intの共通データ型表は3列で全行を同じ見た目にする() {
+        var table = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID)
+                .getStep("int-type").explanationSections().get(2);
+
+        assertEquals("table", table.sectionType().value());
+        assertEquals(java.util.List.of("分類", "型名", "格納するデータ"),
+                java.util.List.of(table.entries().get(0).label(),
+                        table.entries().get(0).before(), table.entries().get(0).emphasis()));
+        assertEquals(10, table.entries().size());
+        assertTrue(table.entries().stream().noneMatch(entry -> entry.highlighted()));
+    }
+
+    @Test
+    void 全Stageのセミコロンは同じ罫線付き3列表を共有する() {
+        var stage1 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE1_LESSON_ID);
+        var stage2 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID);
+        var stage1Semicolon = stage1.getStep("semicolon").explanationSections();
+        var declaration = stage2.getStep("declaration-semicolon").explanationSections();
+        var print = stage2.getStep("print-semicolon").explanationSections();
+        var table = declaration.get(1);
+
+        assertSame(stage1Semicolon, declaration);
+        assertSame(declaration, print);
+        assertEquals("table", table.sectionType().value());
+        assertEquals("; が必要な場合と必要でない場合", table.title());
+        assertEquals(java.util.List.of(
+                        java.util.List.of("種類", "例", ";"),
+                        java.util.List.of("式文・宣言文", "println(...); / int x = 1;", "必要"),
+                        java.util.List.of("return・break など", "return; / break;", "必要"),
+                        java.util.List.of("ブロック", "{ ... }", "不要"),
+                        java.util.List.of("クラス・メソッドの本体", "class Main { ... }", "不要")),
+                table.entries().stream()
+                        .map(entry -> java.util.List.of(entry.label(), entry.before(), entry.emphasis()))
+                        .toList());
+        assertTrue(table.entries().stream().noneMatch(entry -> entry.highlighted()));
+    }
+
+    @Test
+    void Stage2の新規説明は確定文言と登録順を維持する() {
+        var stage2 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID);
+
+        var intSections = stage2.getStep("int-type").explanationSections();
+        assertEquals(java.util.List.of(
+                        "整数型　integral type", "型（データ型）とは", "よく使う基本のデータ型", "",
+                        "このページの技術的根拠：Javaの公式仕様・API"),
+                intSections.stream().map(section -> section.title()).toList());
+        assertEquals("int は、小数点のない整数を扱うためのデータ型です。",
+                sectionText(intSections.get(0)));
+        assertEquals("型（データ型）は、扱うデータの種類を決めるものです。"
+                        + "型は、「この箱（変数）にはどんな種類のものを入れるのか」を決める表示のようなものです。",
+                sectionText(intSections.get(1)));
+
+        var declarationSections = stage2.getStep("age-declaration").explanationSections();
+        assertEquals("変数につけた名前です。", sectionText(declarationSections.get(0)));
+        assertTrue(sectionText(declarationSections.get(1)).contains("あとから別の値に変えることができます。"));
+        assertEquals(java.util.List.of("", "値を入れておく箱", ""),
+                declarationSections.get(1).entries().stream().map(entry -> entry.emphasis()).toList());
+        assertEquals("📦 「", declarationSections.get(1).entries().get(1).before());
+        assertEquals("」と考えるとイメージしやすくなります。",
+                declarationSections.get(1).entries().get(1).after());
+        assertEquals("text", declarationSections.get(2).sectionType().value());
+        assertFalse(declarationSections.get(2).tableHeader());
+        assertEquals("ポイント", declarationSections.get(2).title());
+        assertEquals(java.util.List.of(
+                        "1. 基本的に自由",
+                        "2. 予約語は使えない",
+                        "3. 小文字から始めるのが慣習",
+                        "4. 複数の単語は2語目から大文字"),
+                declarationSections.get(2).entries().stream().map(entry -> entry.label()).toList());
+        assertEquals(java.util.List.of(
+                        "変数名は自分で決められます。",
+                        "int や class などのJavaの予約語（keyword）は、変数名として使えません。",
+                        "Javaでは、変数名を小文字から始めるのが一般的です。",
+                        "複数の単語をつなげる場合は、2つ目以降の単語の先頭を大文字にします。\n例：myAge"),
+                declarationSections.get(2).entries().stream()
+                        .map(entry -> entry.before() + entry.emphasis() + entry.after())
+                        .toList());
+        assertEquals(java.util.List.of("", "int や class", "", "myAge"),
+                declarationSections.get(2).entries().stream().map(entry -> entry.emphasis()).toList());
+
+        var assignmentSections = stage2.getStep("assignment").explanationSections();
+        assertEquals("変数を宣言するときに最初の値を入れることを「初期化」といいます。",
+                assignmentSections.get(1).entries().get(0).before());
+        assertEquals("初期化と代入では、どちらも = が使われます。",
+                assignmentSections.get(1).entries().get(1).before());
+        assertEquals(java.util.List.of("種類", "コード", "意味"),
+                java.util.List.of(
+                        assignmentSections.get(1).entries().get(2).label(),
+                        assignmentSections.get(1).entries().get(2).before(),
+                        assignmentSections.get(1).entries().get(2).emphasis()));
+        assertEquals("新しい変数を宣言するときに、最初の値を入れる",
+                assignmentSections.get(1).entries().get(3).emphasis());
+        assertEquals("すでにある変数の値を、新しい値に変える",
+                assignmentSections.get(1).entries().get(4).emphasis());
+
+        var literalSections = stage2.getStep("integer-literal").explanationSections();
+        assertEquals("リテラルとは、プログラムの中に値を直接書いたものです。",
+                literalSections.get(1).entries().get(0).before());
+        assertEquals(java.util.List.of("書き方", "種類"),
+                java.util.List.of(
+                        literalSections.get(1).entries().get(1).label(),
+                        literalSections.get(1).entries().get(1).before()));
+        assertEquals(java.util.List.of("20", "整数リテラル"),
+                java.util.List.of(
+                        literalSections.get(1).entries().get(2).label(),
+                        literalSections.get(1).entries().get(2).before()));
+        assertEquals(java.util.List.of("\"Hello\"", "文字列リテラル"),
+                java.util.List.of(
+                        literalSections.get(1).entries().get(3).label(),
+                        literalSections.get(1).entries().get(3).before()));
+        assertEquals("書き方によって、Javaが扱うデータの種類が変わります。",
+                literalSections.get(2).entries().get(0).before());
+        assertEquals(java.util.List.of("書き方", "データの種類"),
+                java.util.List.of(
+                        literalSections.get(2).entries().get(1).label(),
+                        literalSections.get(2).entries().get(1).before()));
+        assertEquals(java.util.List.of("20", "整数"),
+                java.util.List.of(
+                        literalSections.get(2).entries().get(2).label(),
+                        literalSections.get(2).entries().get(2).before()));
+        assertEquals(java.util.List.of("\"20\"", "文字列"),
+                java.util.List.of(
+                        literalSections.get(2).entries().get(3).label(),
+                        literalSections.get(2).entries().get(3).before()));
+
+        var useSections = stage2.getStep("age-use").explanationSections();
+        assertEquals("変数を「宣言する」と「使う」の違い", useSections.get(1).title());
+        assertEquals("table", useSections.get(1).sectionType().value());
+        assertEquals(java.util.List.of("種類", "コード", "意味"),
+                java.util.List.of(
+                        useSections.get(1).entries().get(0).label(),
+                        useSections.get(1).entries().get(0).before(),
+                        useSections.get(1).entries().get(0).emphasis()));
+        assertEquals(java.util.List.of("宣言する", "int age = 20;", "変数を宣言して、最初の値を保存する"),
+                java.util.List.of(
+                        useSections.get(1).entries().get(1).label(),
+                        useSections.get(1).entries().get(1).before(),
+                        useSections.get(1).entries().get(1).emphasis()));
+        assertEquals(java.util.List.of("使う", "System.out.println(age);", "変数に保存されている値を使う"),
+                java.util.List.of(
+                        useSections.get(1).entries().get(2).label(),
+                        useSections.get(1).entries().get(2).before(),
+                        useSections.get(1).entries().get(2).emphasis()));
+        assertEquals("table", useSections.get(2).sectionType().value());
+        assertEquals(java.util.List.of("コード", "値の使い方"),
+                java.util.List.of(
+                        useSections.get(2).entries().get(0).label(),
+                        useSections.get(2).entries().get(0).before()));
+        assertEquals(java.util.List.of("System.out.println(\"Hello\");", "直接書いた値を使う"),
+                java.util.List.of(
+                        useSections.get(2).entries().get(1).label(),
+                        useSections.get(2).entries().get(1).before()));
+        assertEquals(java.util.List.of("System.out.println(age);", "変数に保存されている値を使う"),
+                java.util.List.of(
+                        useSections.get(2).entries().get(2).label(),
+                        useSections.get(2).entries().get(2).before()));
+    }
+
+    private static String sectionText(CodeReadingExplanationSection section) {
+        return section.entries().stream()
+                .map(entry -> entry.before() + entry.emphasis() + entry.after())
+                .collect(java.util.stream.Collectors.joining());
+    }
 
     @Test
     void Stage1固有情報を一つの教材定義から取得できる() {
@@ -79,6 +271,21 @@ class CodeReadingLessonCatalogTest {
         var sections = step.explanationSections();
         assertEquals("アクセス修飾子　access modifier　", sections.get(0).title());
         assertEquals("アクセスできる範囲の違い", sections.get(1).title());
+        assertTrue(sections.get(1).tableHeader());
+        assertEquals(
+                java.util.List.of("書き方", "public", "protected", "（指定なし）", "private"),
+                sections.get(1).entries().stream().map(entry -> entry.label()).toList()
+        );
+        assertEquals(
+                java.util.List.of(
+                        "アクセスできる範囲",
+                        "🌎 ほかの場所からも使える",
+                        "📦 同じパッケージ＋子クラス",
+                        "📦 同じパッケージだけ",
+                        "🔒 自分のクラスだけ"
+                ),
+                sections.get(1).entries().stream().map(entry -> entry.before()).toList()
+        );
         assertEquals("ポイント", sections.get(2).title());
         assertEquals("このページの技術的根拠：Javaの公式仕様・API", sections.get(3).title());
 
@@ -118,15 +325,17 @@ class CodeReadingLessonCatalogTest {
 
         assertEquals(
                 java.util.List.of(
-                        "class クラス名 {　　}",
+                        "class クラス名 {\n}",
+                        "書き方",
                         "class",
                         "クラス名",
-                        "{ ～ }"),
+                        "{ }"),
                 sections.get(1).entries().stream().map(entry -> entry.label()).toList()
         );
         assertEquals(
                 java.util.List.of(
                         "",
+                        "意味",
                         "クラスを作る",
                         "作るクラスの名前（自分で決めることができます）",
                         "クラスの中身を書く範囲"),
@@ -173,10 +382,18 @@ class CodeReadingLessonCatalogTest {
                         "public class Main と書いた場合、ファイル名は Main.java"),
                 sections.get(1).entries().stream().map(entry -> entry.emphasis()).toList());
         assertEquals(java.util.List.of(
-                        "1. 自由に決めてOK：",
-                        "2. 大文字で始めるのが慣習：",
-                        "3. ファイル名と同じにする："),
+                        "1. 自由に決めてOK",
+                        "2. 大文字で始めるのが慣習",
+                        "3. ファイル名と同じにする"),
                 sections.get(1).entries().stream().map(entry -> entry.label()).toList());
+        assertFalse(sections.get(1).tableHeader());
+        assertEquals(java.util.List.of(
+                        "予約語でなければ、好きな名前を付けられます。",
+                        "Main や Test のように、大文字で書き始めることが推奨されています。",
+                        "public class Main と書いた場合、ファイル名は Main.java にします。"),
+                sections.get(1).entries().stream()
+                        .map(entry -> entry.before() + entry.emphasis() + entry.after())
+                        .toList());
         assertEquals(1, sections.get(2).entries().size());
         assertEquals("class", sections.get(2).entries().get(0).emphasis());
 
@@ -208,6 +425,14 @@ class CodeReadingLessonCatalogTest {
                 sections.stream().map(section -> section.sectionType().value()).toList());
         assertEquals("static修飾子　static modifier", sections.get(0).title());
         assertEquals("static修飾子の特徴", sections.get(1).title());
+        assertEquals(java.util.List.of(
+                        java.util.List.of("書き方", "特徴"),
+                        java.util.List.of("static", "インスタンス（実体）を作らなくても使える"),
+                        java.util.List.of("（なし）", "インスタンス（実体）を作ってから使う")),
+                sections.get(1).entries().stream()
+                        .map(entry -> java.util.List.of(entry.label(), entry.before()))
+                        .toList());
+        assertTrue(sections.get(1).entries().stream().noneMatch(entry -> entry.highlighted()));
         assertEquals("ポイント", sections.get(2).title());
         assertEquals(
                 "Javaのプログラムを実行するとき、開始地点となる main メソッドにも、インスタンスを作らずに呼び出せるように static が付いています。",
@@ -247,14 +472,14 @@ class CodeReadingLessonCatalogTest {
                 sections.stream().map(section -> section.sectionType().value()).toList());
         assertEquals(java.util.List.of(
                         "戻り値　return value",
-                        "戻り値の違い",
+                        "戻り値の型の違い",
                         "ポイント",
                         "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("値を返さない", sections.get(0).entries().get(0).emphasis());
-        assertEquals(java.util.List.of("void", "int", "String"), sections.get(1).entries().stream()
+        assertEquals(java.util.List.of("戻り値の型", "void", "int", "String"), sections.get(1).entries().stream()
                 .map(entry -> entry.label()).toList());
-        assertEquals(java.util.List.of("値を返さない", "int 型の値を返す", "String 型の値を返す"),
+        assertEquals(java.util.List.of("意味", "値を返さない", "int型の値を返す", "String型の値を返す"),
                 sections.get(1).entries().stream().map(entry -> entry.before()).toList());
         assertEquals(
                 "画面に表示するだけの処理など、結果を返す必要がない場合に使います。",
@@ -293,9 +518,10 @@ class CodeReadingLessonCatalogTest {
                         "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("メソッドの名前", sections.get(0).entries().get(0).emphasis());
-        assertEquals(java.util.List.of("main", "Main"), sections.get(1).entries().stream()
+        assertEquals(java.util.List.of("書き方", "main", "Main"), sections.get(1).entries().stream()
                 .map(entry -> entry.label()).toList());
         assertEquals(java.util.List.of(
+                        "意味",
                         "Javaが最初に実行するメソッドの名前",
                         "自分で決めるクラスの名前"),
                 sections.get(1).entries().stream().map(entry -> entry.before()).toList());
@@ -341,9 +567,10 @@ class CodeReadingLessonCatalogTest {
                 "文字列（String）を複数まとめて扱うための型です。",
                 sections.get(0).entries().get(0).before()
         );
-        assertEquals(java.util.List.of("String", "[]"), sections.get(1).entries().stream()
+        assertEquals(java.util.List.of("書き方", "String", "[]"), sections.get(1).entries().stream()
                 .map(entry -> entry.label()).toList());
         assertEquals(java.util.List.of(
+                        "意味",
                         "文字列を表す型です。",
                         "複数の値をまとめて扱う配列であることを表します。"),
                 sections.get(1).entries().stream().map(entry -> entry.before()).toList());
@@ -384,9 +611,9 @@ class CodeReadingLessonCatalogTest {
                         "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("変数の名前", sections.get(0).entries().get(0).emphasis());
-        assertEquals(java.util.List.of("String[]", "args"), sections.get(1).entries().stream()
+        assertEquals(java.util.List.of("書き方", "String[]", "args"), sections.get(1).entries().stream()
                 .map(entry -> entry.label()).toList());
-        assertEquals(java.util.List.of("受け取る値の型です", "受け取る変数の名前です"),
+        assertEquals(java.util.List.of("意味", "受け取る値の型です", "受け取る変数の名前です"),
                 sections.get(1).entries().stream().map(entry -> entry.before()).toList());
         assertEquals(java.util.List.of("args", "args", ""),
                 sections.get(2).entries().stream().map(entry -> entry.emphasis()).toList());
@@ -422,6 +649,7 @@ class CodeReadingLessonCatalogTest {
                         "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("中身が、ここから始まる", sections.get(0).entries().get(0).emphasis());
+        assertFalse(sections.get(1).tableHeader());
         assertEquals("{ と } はセット", sections.get(1).entries().get(0).label());
         assertEquals("{ で始まった範囲は、対応する } で終わります。",
                 sections.get(1).entries().get(0).before());
@@ -462,17 +690,26 @@ class CodeReadingLessonCatalogTest {
                         "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("最後に改行します", sections.get(0).entries().get(0).emphasis());
-        assertEquals(java.util.List.of("System", "out", "println"), sections.get(1).entries().stream()
+        assertTrue(sections.get(1).tableHeader());
+        assertTrue(sections.get(2).tableHeader());
+        assertEquals(java.util.List.of("書き方", "System", "out", "println"), sections.get(1).entries().stream()
                 .map(entry -> entry.label()).toList());
         assertEquals(java.util.List.of(
+                        "意味",
                         "Java標準のクラスです",
                         "標準出力を表すフィールドです",
                         "内容を出力して改行するメソッドです"),
                 sections.get(1).entries().stream().map(entry -> entry.before()).toList());
-        assertEquals(java.util.List.of("println", "print"), sections.get(2).entries().stream()
+        assertEquals(java.util.List.of("書き方", "println", "print"), sections.get(2).entries().stream()
                 .map(entry -> entry.label()).toList());
-        assertEquals(java.util.List.of("表示したあと改行します", "表示したあと改行しません"),
+        assertEquals(java.util.List.of("違い", "表示したあと改行します", "表示したあと改行しません"),
                 sections.get(2).entries().stream().map(entry -> entry.before()).toList());
+
+        var stage2Sections = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID)
+                .getStep("print-command").explanationSections();
+        assertEquals(sections, stage2Sections);
+        assertTrue(stage2Sections.get(1).tableHeader());
+        assertTrue(stage2Sections.get(2).tableHeader());
 
         var references = sections.get(3).officialReferences();
         assertEquals(2, references.size());
@@ -507,9 +744,11 @@ class CodeReadingLessonCatalogTest {
                         "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("文字列を直接書いたもの", sections.get(0).entries().get(0).emphasis());
-        assertEquals(java.util.List.of("\"Hello\"", "\"こんにちは\"", "\"Javaを勉強中\"", "\"123\""),
+        assertTrue(sections.get(1).tableHeader());
+        assertEquals(java.util.List.of("書き方", "\"Hello\"", "\"こんにちは\"", "\"Javaを勉強中\"", "\"123\""),
                 sections.get(1).entries().stream().map(entry -> entry.label()).toList());
         assertEquals(java.util.List.of(
+                        "意味",
                         "英語を書くことができます。",
                         "日本語を書くことができます。",
                         "文字を組み合わせて書くこともできます。",
@@ -550,17 +789,22 @@ class CodeReadingLessonCatalogTest {
                 sections.stream().map(section -> section.title()).toList());
         assertEquals("文を区切るために使われる記号", sections.get(0).entries().get(0).emphasis());
         assertEquals(java.util.List.of(
+                        "種類",
                         "式文・宣言文",
                         "return・break など",
                         "ブロック",
                         "クラス・メソッドの本体"),
                 sections.get(1).entries().stream().map(entry -> entry.label()).toList());
         assertEquals(java.util.List.of(
-                        "例：println(...); ／ int x = 1;　　;：必要",
-                        "例：return; ／ break;　　;：必要",
-                        "例：{ ... }　　;：不要",
-                        "例：class Main { ... }　　;：不要"),
+                        "例",
+                        "println(...); / int x = 1;",
+                        "return; / break;",
+                        "{ ... }",
+                        "class Main { ... }"),
                 sections.get(1).entries().stream().map(entry -> entry.before()).toList());
+        assertEquals(java.util.List.of(";", "必要", "必要", "不要", "不要"),
+                sections.get(1).entries().stream().map(entry -> entry.emphasis()).toList());
+        assertTrue(sections.get(1).entries().stream().noneMatch(entry -> entry.highlighted()));
         assertEquals("if 文、while 文、for 文など、;", sections.get(2).entries().get(0).emphasis());
 
         var references = sections.get(3).officialReferences();

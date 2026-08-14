@@ -39,7 +39,7 @@ public class QuizController {
             "shuffledOptions";
     public static final String READING_ITEMS_ATTRIBUTE = "readingItems";
 
-    private final String lessonId;
+    private final CodeReadingLessonCatalog lessonCatalog;
     private final CodeReadingCourseService courseService;
     private final CodeReadingPageViewModelService pageViewModelService;
     private final CodeReadingService codeReadingService;
@@ -59,52 +59,61 @@ public class QuizController {
         this.codeReadingService = codeReadingService;
         this.lessonViewModelService = lessonViewModelService;
         this.lessonRunService = lessonRunService;
-        this.lessonId = lessonCatalog.getDefaultDefinition().lessonId();
+        this.lessonCatalog = lessonCatalog;
     }
 
     /** 現在のセッション状態に対応する画面を表示します。 */
     @GetMapping("/quiz")
-    public String showQuiz(Model model, HttpSession session) {
-        addPageModel(model, session);
+    public String showQuiz(
+            @RequestParam(name = "lessonId", required = false) String lessonId,
+            Model model,
+            HttpSession session
+    ) {
+        addPageModel(model, session, resolveLessonId(lessonId));
         return "quiz";
     }
 
     /** 導入画面からPart 1の学習を開始します。 */
     @PostMapping("/quiz/start")
-    public String start(HttpSession session) {
+    public String start(@RequestParam(name = "lessonId", required = false) String lessonId, HttpSession session) {
+        lessonId = resolveLessonId(lessonId);
         courseService.startLearning(session, lessonId);
-        return "redirect:/quiz";
+        return redirectToQuiz(lessonId);
     }
 
     /** 現在の項目へ回答し、正解後も確認のため同じ項目に留まります。 */
     @PostMapping("/quiz/answer")
     public String answer(
             @RequestParam("selectedOption") String selectedOption,
+            @RequestParam(name = "lessonId", required = false) String lessonId,
             HttpSession session
     ) {
+        lessonId = resolveLessonId(lessonId);
         courseService.answerCurrentItem(
                 session,
                 lessonId,
                 selectedOption
         );
-        return "redirect:/quiz";
+        return redirectToQuiz(lessonId);
     }
 
     /** 正解内容を確認してから、同じPart内の次の用語へ進みます。 */
     @PostMapping("/quiz/item/next")
-    public String moveToNextItem(HttpSession session) {
+    public String moveToNextItem(@RequestParam(name = "lessonId", required = false) String lessonId, HttpSession session) {
+        lessonId = resolveLessonId(lessonId);
         courseService.moveToNextItem(session, lessonId);
-        return "redirect:/quiz";
+        return redirectToQuiz(lessonId);
     }
 
     /** 学習者自身の判断で、現在のPartを理解済みとして次へ進みます。 */
     @PostMapping("/quiz/part/understood")
-    public String markCurrentPartUnderstood(HttpSession session) {
+    public String markCurrentPartUnderstood(@RequestParam(name = "lessonId", required = false) String lessonId, HttpSession session) {
+        lessonId = resolveLessonId(lessonId);
         courseService.markCurrentPartUnderstoodAndAdvance(
                 session,
                 lessonId
         );
-        return "redirect:/quiz";
+        return redirectToQuiz(lessonId);
     }
 
     /** JavaScript演出用に、Serviceが判定・保存した回答結果を返します。 */
@@ -113,8 +122,10 @@ public class QuizController {
     public CodeReadingAnswerResponse answerInteractive(
             @RequestParam("selectedOption") String selectedOption,
             @RequestParam("targetStepId") String targetStepId,
+            @RequestParam(name = "lessonId", required = false) String lessonId,
             HttpSession session
     ) {
+        lessonId = resolveLessonId(lessonId);
         return courseService.answerCircuitStep(
                 session,
                 lessonId,
@@ -128,51 +139,63 @@ public class QuizController {
     public String answerCircuit(
             @RequestParam("selectedOption") String selectedOption,
             @RequestParam("targetStepId") String targetStepId,
+            @RequestParam(name = "lessonId", required = false) String lessonId,
             HttpSession session
     ) {
+        lessonId = resolveLessonId(lessonId);
         courseService.answerCircuitStep(
                 session,
                 lessonId,
                 targetStepId,
                 selectedOption
         );
-        return "redirect:/quiz";
+        return redirectToQuiz(lessonId);
     }
 
     /** 完了したPartから次のPart、またはまとめ画面へ進みます。 */
     @PostMapping("/quiz/part/next")
-    public String moveToNextPart(HttpSession session) {
+    public String moveToNextPart(@RequestParam(name = "lessonId", required = false) String lessonId, HttpSession session) {
+        lessonId = resolveLessonId(lessonId);
         courseService.moveToNextPart(session, lessonId);
-        return "redirect:/quiz";
+        return redirectToQuiz(lessonId);
     }
 
     /** 完了済み教材を安全に疑似実行します。 */
     @PostMapping("/quiz/run")
-    public String run(Model model, HttpSession session) {
+    public String run(@RequestParam(name = "lessonId", required = false) String lessonId, Model model, HttpSession session) {
+        lessonId = resolveLessonId(lessonId);
         ProgramRunResult result = lessonRunService.runLesson(
                 session,
                 lessonId
         );
-        addPageModel(model, session);
+        addPageModel(model, session, lessonId);
         model.addAttribute(PROGRAM_RUN_RESULT_ATTRIBUTE, result);
         return "quiz";
     }
 
     /** 問題進捗と画面フェーズを初期化して導入へ戻します。 */
     @PostMapping("/quiz/reset")
-    public String reset(HttpSession session) {
+    public String reset(@RequestParam(name = "lessonId", required = false) String lessonId, HttpSession session) {
+        lessonId = resolveLessonId(lessonId);
         courseService.reset(session, lessonId);
-        return "redirect:/quiz";
+        return redirectToQuiz(lessonId);
     }
 
-    private void addPageModel(Model model, HttpSession session) {
+    private void addPageModel(Model model, HttpSession session, String lessonId) {
         CodeReadingPageViewModel page =
                 pageViewModelService.create(session, lessonId);
         model.addAttribute(PAGE_VIEW_MODEL_ATTRIBUTE, page);
+        model.addAttribute("lessonId", lessonId);
+        model.addAttribute(
+                "interactiveAnswerUrl",
+                CodeReadingLessonCatalog.STAGE1_LESSON_ID.equals(lessonId)
+                        ? "/quiz/answer/interactive"
+                        : "/quiz/answer/interactive?lessonId=" + lessonId
+        );
         model.addAttribute("phase", page.phase());
 
         if (page.phase() == CodeReadingPhase.LEARNING) {
-            addLearningModel(model, session, page);
+            addLearningModel(model, session, page, lessonId);
         }
         if (page.phase() == CodeReadingPhase.SUMMARY) {
             LessonViewModel lessonViewModel =
@@ -184,10 +207,25 @@ public class QuizController {
         }
     }
 
+    private String resolveLessonId(String lessonId) {
+        String resolved = lessonId == null || lessonId.isBlank()
+                ? lessonCatalog.getDefaultDefinition().lessonId()
+                : lessonId;
+        lessonCatalog.getDefinition(resolved);
+        return resolved;
+    }
+
+    private String redirectToQuiz(String lessonId) {
+        return CodeReadingLessonCatalog.STAGE1_LESSON_ID.equals(lessonId)
+                ? "redirect:/quiz"
+                : "redirect:/quiz?lessonId=" + lessonId;
+    }
+
     private void addLearningModel(
             Model model,
             HttpSession session,
-            CodeReadingPageViewModel page
+            CodeReadingPageViewModel page,
+            String lessonId
     ) {
         LessonViewModel lessonViewModel =
                 lessonViewModelService.createViewModel(session, lessonId);

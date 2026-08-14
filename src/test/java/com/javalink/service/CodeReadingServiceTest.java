@@ -117,7 +117,10 @@ class CodeReadingServiceTest {
         var accessTable = publicItem.explanationSections().stream()
                 .filter(section -> section.sectionType().value().equals("table"))
                 .findFirst().orElseThrow();
-        assertEquals(4, accessTable.entries().size());
+        assertTrue(accessTable.tableHeader());
+        assertEquals(5, accessTable.entries().size());
+        assertEquals("書き方", accessTable.entries().get(0).label());
+        assertEquals("アクセスできる範囲", accessTable.entries().get(0).before());
         assertTrue(accessTable.entries().stream().anyMatch(entry ->
                 entry.label().equals("public")
         ));
@@ -128,8 +131,12 @@ class CodeReadingServiceTest {
                 .findFirst().orElseThrow();
         assertEquals("クラス宣言の基本形", classDeclaration.title());
         assertEquals(
-                java.util.List.of("class クラス名 {　　}", "class", "クラス名", "{ ～ }"),
+                java.util.List.of("class クラス名 {\n}", "書き方", "class", "クラス名", "{ }"),
                 classDeclaration.entries().stream().map(entry -> entry.label()).toList()
+        );
+        assertEquals(
+                java.util.List.of("", "意味", "クラスを作る", "作るクラスの名前（自分で決めることができます）", "クラスの中身を書く範囲"),
+                classDeclaration.entries().stream().map(entry -> entry.before()).toList()
         );
         assertFalse(classItem.explanationSections().stream()
                 .anyMatch(section -> section.title().equals("🏠 家でたとえると・・・")));

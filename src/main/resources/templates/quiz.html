@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='class-explanation-2')}"
-          href="/css/style.css?v=class-explanation-2">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='stage2-reading-10')}"
+          href="/css/style.css?v=stage2-reading-10">
     <script th:if="${phase.name() == 'LEARNING'}" defer
-            th:src="@{/js/quiz-reading.js(v='official-references-2')}"
-            src="/js/quiz-reading.js?v=official-references-2"></script>
+            th:src="@{/js/quiz-reading.js(v='stage2-reading-10')}"
+            src="/js/quiz-reading.js?v=stage2-reading-10"></script>
 </head>
 <body>
 <main class="quiz-page quiz-focus-page">
@@ -23,6 +23,10 @@
         <h2 th:text="${codeReadingPage.learningGoal}">
             「Hello」と表示するプログラムを読めるようになろう
         </h2>
+        <p class="quiz-focus-learning-objective"
+           th:if="${lessonId == 'variable-program-reading'}">
+            変数に値を入れ、その値を使うコードを読めるようになろう
+        </p>
     </header>
 
     <!-- 導入：完成コードの全体像を見るだけの画面です。 -->
@@ -37,23 +41,25 @@
             </div>
             <div class="quiz-ide-editor">
                 <div class="quiz-ide-line-numbers" aria-hidden="true">
-                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span
+                        th:if="${lessonId != 'hello-program-reading'}">6</span>
                 </div>
-                <pre class="quiz-full-code quiz-intro-code"><code>public class Main {
+                <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId == 'hello-program-reading'}"><code>public class Main {
     public static void main(String[] args) {
         System.out.println("Hello");
     }
 }</code></pre>
+                <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId != 'hello-program-reading'}"><code th:text="${codeReadingPage.completedCode}"></code></pre>
             </div>
         </div>
-        <form class="quiz-intro-start" th:action="@{/quiz/start}" method="post">
+        <form class="quiz-intro-start" th:action="@{/quiz/start(lessonId=${lessonId})}" method="post">
             <button class="next-button" type="submit">スタート</button>
         </form>
     </section>
 
     <!-- 学習：現在のstepIdから求めたPartだけを表示します。 -->
     <section th:if="${phase.name() == 'LEARNING'}" class="quiz-focus-learning"
-             th:attr="aria-label=|Part ${codeReadingPage.partNumber} / ${codeReadingPage.totalPartCount} ${codeReadingPage.currentPart.title}|">
+             th:attr="aria-label=|Part ${codeReadingPage.partNumber} / ${codeReadingPage.totalPartCount} ${codeReadingPage.currentPart.title}|,data-lesson-id=${lessonId}">
         <header class="quiz-focus-learning-header">
             <p class="quiz-focus-learning-heading">
                 <span class="quiz-focus-learning-part-number"
@@ -64,7 +70,7 @@
             </p>
             <form class="quiz-understood-form"
                   th:if="${not codeReadingPage.partCompleted}"
-                  th:action="@{/quiz/part/understood}" method="post">
+                  th:action="@{/quiz/part/understood(lessonId=${lessonId})}" method="post">
                 <button class="quiz-understood-link" type="submit">
                     理解済み　次のPartへ <span aria-hidden="true">→</span>
                 </button>
@@ -100,7 +106,7 @@
             </div>
 
             <section class="quiz-reading-circuit-panel" aria-label="コード回路"
-                     th:attr="data-interactive-answer-url=@{/quiz/answer/interactive},data-part-id=${codeReadingPage.currentPart.id}">
+                     th:attr="data-interactive-answer-url=${interactiveAnswerUrl},data-part-id=${codeReadingPage.currentPart.id}">
                 <div class="quiz-code-circuit"
                      th:attr="aria-label=|コード全体の進捗|">
                     <article class="quiz-code-circuit-group"
@@ -118,7 +124,7 @@
                                       th:if="${status.index > 0}" aria-hidden="true"></span>
                                 <span class="quiz-code-circuit-node">
                                     <span class="quiz-part-bulb" aria-hidden="true"></span>
-                                    <form th:action="@{/quiz/answer/circuit}" method="post"
+                                    <form th:action="@{/quiz/answer/circuit(lessonId=${lessonId})}" method="post"
                                           data-quiz-answer-form="true">
                                         <input type="hidden" name="targetStepId" th:value="${bulb.stepId}">
                                         <button class="quiz-circuit-code-button" type="submit"
@@ -162,7 +168,7 @@
                             <section class="quiz-reading-learning-aid"
                                      th:each="section : ${item.explanationSections}"
                                      th:classappend="| quiz-reading-learning-aid-layout--${section.sectionType.value}|"
-                                     th:attr="data-section-type=${section.sectionType.value}">
+                                     th:attr="data-section-type=${section.sectionType.value},data-section-title=${section.title}">
                                 <h5 th:if="${not section.title.isEmpty()}"
                                     th:text="${section.title}">小見出し</h5>
 
@@ -171,16 +177,17 @@
      th:if="${section.sectionType.value == 'table'}">
 
     <div role="row"
-         th:each="entry : ${section.entries}"
-         th:classappend="${entry.highlighted
-             ? ' quiz-reading-access-row--focus'
-             : ''}">
+         th:each="entry, entryStat : ${section.entries}"
+         th:classappend="|${section.tableHeader and entryStat.first ? ' quiz-reading-access-row--header' : ''}${entry.highlighted ? ' quiz-reading-access-row--focus' : ''}${not entry.emphasis.isEmpty() ? ' quiz-reading-access-row--three-columns' : ''}${entry.label.isEmpty() and entry.emphasis.isEmpty() ? ' quiz-reading-access-row--no-label' : ''}|">
 
         <code role="cell"
               th:text="${entry.label}">public</code>
 
         <span role="cell"
               th:text="${entry.before}">どこからでも</span>
+
+        <span role="cell" th:if="${not entry.emphasis.isEmpty()}"
+              th:text="${entry.emphasis}">説明</span>
     </div>
 
 </div>
@@ -211,9 +218,12 @@
 
                                 <div class="quiz-reading-qa"
                                      th:if="${section.sectionType.value == 'qa' or section.sectionType.value == 'comparison'}">
-                                    <p th:each="entry : ${section.entries}">
+                                    <p th:each="entry : ${section.entries}"
+                                       th:classappend="${not entry.emphasis.isEmpty()} ? 'quiz-reading-comparison-row--three-columns' : ''">
                                         <strong th:text="${entry.label}">Q.</strong>
                                         <span th:text="${entry.before}">質問</span>
+                                        <span th:if="${not entry.emphasis.isEmpty()}"
+                                              th:text="${entry.emphasis}">説明</span>
                                     </p>
                                 </div>
 
@@ -281,14 +291,14 @@
                     <li th:each="note : ${codeReadingPage.completionNotes}"
                         th:text="${note}">補足説明</li>
                 </ul>
-                <form th:action="@{/quiz/part/next}" method="post">
+                <form th:action="@{/quiz/part/next(lessonId=${lessonId})}" method="post">
                     <button class="next-button" type="submit">次のコードへ</button>
                 </form>
             </section>
         </div>
 
         <section class="reset-area">
-            <form th:action="@{/quiz/reset}" method="post">
+            <form th:action="@{/quiz/reset(lessonId=${lessonId})}" method="post">
                 <button class="reset-button" type="submit">最初からやり直す</button>
             </form>
         </section>
@@ -296,7 +306,7 @@
 
     <!-- まとめ：単語ではなくコードの意味のまとまりで読み直します。 -->
     <section th:if="${phase.name() == 'SUMMARY'}" class="quiz-final-review"
-             aria-label="Stage 1 まとめ">
+             th:attr="aria-label=|${codeReadingPage.stageName} まとめ|">
         <div class="quiz-summary-development-flow">
         <div class="quiz-ide-window quiz-summary-ide-window">
             <div class="quiz-ide-tabbar">
@@ -307,20 +317,22 @@
             </div>
             <div class="quiz-ide-editor">
                 <div class="quiz-ide-line-numbers" aria-hidden="true">
-                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span
+                        th:if="${lessonId != 'hello-program-reading'}">6</span>
                 </div>
-                <pre class="quiz-full-code quiz-intro-code"><code>public class Main {
+                <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId == 'hello-program-reading'}"><code>public class Main {
     public static void main(String[] args) {
         System.out.println("Hello");
     }
 }</code></pre>
+                <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId != 'hello-program-reading'}"><code th:text="${codeReadingPage.completedCode}"></code></pre>
             </div>
         </div>
 
         <section class="quiz-run-panel quiz-summary-run-panel"
                  th:if="${programRunResult == null or programRunResult.success == false}"
                  aria-label="プログラムの実行">
-            <form th:action="@{/quiz/run}" method="post">
+            <form th:action="@{/quiz/run(lessonId=${lessonId})}" method="post">
                 <button class="run-button" type="submit"
                         th:disabled="${codeReadingPage.runEnabled == false}"
                         th:attr="aria-disabled=${codeReadingPage.runEnabled == false}">
@@ -346,7 +358,8 @@
                  th:attr="data-console-output=${programRunResult.consoleOutput}">
             <div class="quiz-terminal-header"><h2 id="console-title">TERMINAL</h2></div>
             <div class="quiz-summary-terminal-body">
-                <p class="quiz-summary-terminal-primary" data-terminal-primary>Hello</p>
+                <p class="quiz-summary-terminal-primary" data-terminal-primary
+                   th:text="${programRunResult != null ? programRunResult.consoleOutput : 'Hello'}">Hello</p>
                 <p class="quiz-summary-run-complete" data-run-complete hidden>
                     ✓ プログラムが正常に実行されました
                 </p>
@@ -362,7 +375,9 @@
         </dl>
 
         <section class="reset-area">
-            <form th:action="@{/quiz/reset}" method="post">
+            <a class="next-button" th:if="${lessonId == 'hello-program-reading'}"
+               th:href="@{/quiz(lessonId='variable-program-reading')}">Stage 2へ →</a>
+            <form th:action="@{/quiz/reset(lessonId=${lessonId})}" method="post">
                 <button class="reset-button" type="submit">最初からやり直す</button>
             </form>
         </section>

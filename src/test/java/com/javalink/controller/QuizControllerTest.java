@@ -52,6 +52,31 @@ class QuizControllerTest {
     }
 
     @Test
+    void Stage2導入画面から独立した教材を開始できる() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+
+        mockMvc.perform(get("/quiz")
+                        .param("lessonId", "variable-program-reading")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Stage 2")))
+                .andExpect(content().string(containsString("変数を使って年齢を表示しよう")))
+                .andExpect(content().string(containsString("int age = 20;")));
+
+        mockMvc.perform(post("/quiz/start")
+                        .param("lessonId", "variable-program-reading")
+                        .session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/quiz?lessonId=variable-program-reading"));
+
+        mockMvc.perform(get("/quiz")
+                        .param("lessonId", "variable-program-reading")
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Part 1 / 5")));
+    }
+
+    @Test
     void 初回GETは導入画面と完成コードだけを表示する() throws Exception {
         mockMvc.perform(get("/quiz"))
                 .andExpect(status().isOk())
@@ -260,8 +285,13 @@ class QuizControllerTest {
                 .andExpect(jsonPath("$.technicalExplanation").doesNotExist())
                 .andExpect(jsonPath("$.beginnerExplanations").doesNotExist())
                 .andExpect(jsonPath("$.explanationSections[1].sectionType").value("table"))
+                .andExpect(jsonPath("$.explanationSections[1].tableHeader").value(true))
                 .andExpect(jsonPath("$.explanationSections[1].kind").doesNotExist())
-                .andExpect(jsonPath("$.explanationSections[1].entries[1].label")
+                .andExpect(jsonPath("$.explanationSections[1].entries[0].label")
+                        .value("書き方"))
+                .andExpect(jsonPath("$.explanationSections[1].entries[0].before")
+                        .value("アクセスできる範囲"))
+                .andExpect(jsonPath("$.explanationSections[1].entries[2].label")
                         .value("protected"))
                 .andExpect(jsonPath("$.explanationSections[3].sectionType")
                         .value("official-references"))

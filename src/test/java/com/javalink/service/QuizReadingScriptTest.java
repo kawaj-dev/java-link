@@ -64,6 +64,8 @@ class QuizReadingScriptTest {
         assertFalse(script.contains("data-explanation-beginner"));
         assertTrue(script.contains("createExplanationSection"));
         assertTrue(script.contains("createAccessTable"));
+        assertTrue(script.contains("quiz-reading-access-row--header"));
+        assertTrue(script.contains("section.tableHeader === true"));
         assertTrue(script.contains("createDiagram"));
         assertTrue(script.contains("createQa"));
 
@@ -76,8 +78,10 @@ class QuizReadingScriptTest {
         assertTrue(template.contains("rel=\"noopener noreferrer\""));
         assertTrue(template.contains("reference.description"));
         assertTrue(template.contains("${reference.sourceName} ${reference.sectionNumber} — ${reference.sectionTitle}"));
-        assertTrue(template.contains("style.css(v='class-explanation-2')"));
-        assertTrue(template.contains("quiz-reading.js(v='official-references-2')"));
+        assertTrue(template.contains("quiz-reading-access-row--header"));
+        assertTrue(template.contains("section.tableHeader and entryStat.first"));
+        assertTrue(template.contains("style.css(v='stage2-reading-10')"));
+        assertTrue(template.contains("quiz-reading.js(v='stage2-reading-10')"));
         assertFalse(template.contains("continuous-circuit-1"));
     }
 

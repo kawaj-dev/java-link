@@ -164,6 +164,7 @@
         const wrapper = document.createElement("section");
         wrapper.className = `quiz-reading-learning-aid quiz-reading-learning-aid-layout--${sectionType}`;
         wrapper.dataset.sectionType = sectionType;
+        wrapper.dataset.sectionTitle = section.title || "";
 
         if (section.title) {
             const heading = document.createElement("h5");
@@ -172,7 +173,7 @@
         }
 
         if (sectionType === "table") {
-            wrapper.append(createAccessTable(section.entries));
+            wrapper.append(createAccessTable(section.entries, section.tableHeader === true));
         } else if (sectionType === "diagram") {
             wrapper.append(createDiagram(section.entries));
         } else if (sectionType === "examples") {
@@ -217,18 +218,22 @@
         return list;
     }
 
-    function createAccessTable(entries) {
+    function createAccessTable(entries, hasHeader) {
         const table = document.createElement("div");
         table.className = "quiz-reading-access-table";
         table.setAttribute("role", "table");
-        entries.forEach((entry) => {
+        entries.forEach((entry, index) => {
             const row = document.createElement("div");
             row.setAttribute("role", "row");
+            if (hasHeader && index === 0) row.classList.add("quiz-reading-access-row--header");
             if (entry.highlighted) row.classList.add("quiz-reading-access-row--focus");
+            if (entry.emphasis) row.classList.add("quiz-reading-access-row--three-columns");
+            if (!entry.label && !entry.emphasis) row.classList.add("quiz-reading-access-row--no-label");
             row.append(
                 textElement("code", entry.label, "cell"),
                 textElement("span", entry.before, "cell")
             );
+            if (entry.emphasis) row.append(textElement("span", entry.emphasis, "cell"));
             table.append(row);
         });
         return table;
@@ -267,7 +272,11 @@
         qa.className = "quiz-reading-qa";
         entries.forEach((entry) => {
             const row = document.createElement("p");
-            row.append(textElement("strong", entry.label), document.createTextNode(` ${entry.before}`));
+            row.append(textElement("strong", entry.label), textElement("span", entry.before));
+            if (entry.emphasis) {
+                row.classList.add("quiz-reading-comparison-row--three-columns");
+                row.append(textElement("span", entry.emphasis));
+            }
             qa.append(row);
         });
         return qa;

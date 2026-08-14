@@ -10,7 +10,8 @@ public record CodeReadingExplanationSection(
         ExplanationSectionType sectionType,
         String title,
         List<CodeReadingExplanationEntry> entries,
-        List<CodeReadingOfficialReference> officialReferences
+        List<CodeReadingOfficialReference> officialReferences,
+        boolean tableHeader
 ) {
 
     public CodeReadingExplanationSection {
