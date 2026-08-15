@@ -20,6 +20,207 @@ class CodeReadingLessonCatalogTest {
             new CodeReadingLessonCatalog();
 
     @Test
+    void Stage3は7Part33Stepと実行結果30を持つ() {
+        var definition = catalog.getDefinition(
+                CodeReadingLessonCatalog.STAGE3_LESSON_ID
+        );
+
+        assertEquals("Stage 3", definition.stageName());
+        assertEquals("演算子を使って計算しよう", definition.learningGoal());
+        assertEquals(7, definition.parts().size());
+        assertEquals(33, definition.steps().size());
+        var closingPart = definition.parts().get(6);
+        assertEquals("part-7", closingPart.id());
+        assertEquals("プログラムを閉じる", closingPart.title());
+        assertEquals("}\n}", closingPart.targetCode());
+        assertEquals(java.util.List.of("main-close", "class-close"), closingPart.stepIds());
+        assertEquals(java.util.List.of("}", "}"), closingPart.displayTokens());
+        assertEquals(java.util.List.of("main-close", "class-close"),
+                definition.circuits().get(6).stepIds());
+        assertEquals("30", definition.consoleOutput());
+        assertEquals("""
+                public class Main {
+                    public static void main(String[] args) {
+                        int a = 10;
+                        int b = 20;
+                        int c = a + b;
+                        System.out.println(c);
+                    }
+                }
+                """.strip(), definition.completedCode().strip());
+    }
+
+    @Test
+    void 全Stageは共通用語の説明Sectionインスタンスを再利用する() {
+        var stage1 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE1_LESSON_ID);
+        var stage2 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID);
+        var stage3 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE3_LESSON_ID);
+
+        var publicSections = stage1.getStep("class-public").explanationSections();
+        assertSame(publicSections, stage1.getStep("main-public").explanationSections());
+        assertSame(publicSections, stage2.getStep("class-public").explanationSections());
+        assertSame(publicSections, stage2.getStep("main-public").explanationSections());
+        assertSame(publicSections, stage3.getStep("class-public").explanationSections());
+        assertSame(publicSections, stage3.getStep("main-public").explanationSections());
+
+        assertSame(stage1.getStep("class-keyword").explanationSections(),
+                stage2.getStep("class-keyword").explanationSections());
+        assertSame(stage1.getStep("class-keyword").explanationSections(),
+                stage3.getStep("class-keyword").explanationSections());
+        assertSame(stage1.getStep("class-name").explanationSections(),
+                stage2.getStep("class-name").explanationSections());
+        assertSame(stage1.getStep("class-name").explanationSections(),
+                stage3.getStep("class-name").explanationSections());
+
+        var blockStartSections = stage1.getStep("class-open").explanationSections();
+        assertSame(blockStartSections, stage1.getStep("main-open").explanationSections());
+        assertSame(blockStartSections, stage2.getStep("class-open").explanationSections());
+        assertSame(blockStartSections, stage2.getStep("main-open").explanationSections());
+        assertSame(blockStartSections, stage3.getStep("class-open").explanationSections());
+        assertSame(blockStartSections, stage3.getStep("main-open").explanationSections());
+
+        assertSame(stage1.getStep("static").explanationSections(),
+                stage2.getStep("static").explanationSections());
+        assertSame(stage1.getStep("static").explanationSections(),
+                stage3.getStep("static").explanationSections());
+        assertSame(stage1.getStep("void").explanationSections(),
+                stage2.getStep("void").explanationSections());
+        assertSame(stage1.getStep("void").explanationSections(),
+                stage3.getStep("void").explanationSections());
+        assertSame(stage1.getStep("main").explanationSections(),
+                stage2.getStep("main").explanationSections());
+        assertSame(stage1.getStep("main").explanationSections(),
+                stage3.getStep("main").explanationSections());
+        assertSame(stage1.getStep("string-array").explanationSections(),
+                stage2.getStep("string-array").explanationSections());
+        assertSame(stage1.getStep("string-array").explanationSections(),
+                stage3.getStep("string-array").explanationSections());
+        assertSame(stage1.getStep("args").explanationSections(),
+                stage2.getStep("args").explanationSections());
+        assertSame(stage1.getStep("args").explanationSections(),
+                stage3.getStep("args").explanationSections());
+        assertSame(stage2.getStep("int-type").explanationSections(),
+                stage3.getStep("a-int").explanationSections());
+        assertSame(stage3.getStep("a-int").explanationSections(),
+                stage3.getStep("b-int").explanationSections());
+        assertSame(stage3.getStep("b-int").explanationSections(),
+                stage3.getStep("c-int").explanationSections());
+        assertSame(stage2.getStep("age-declaration").explanationSections(),
+                stage3.getStep("a-name").explanationSections());
+        assertSame(stage3.getStep("a-name").explanationSections(),
+                stage3.getStep("b-name").explanationSections());
+        assertSame(stage3.getStep("b-name").explanationSections(),
+                stage3.getStep("c-name").explanationSections());
+        assertSame(stage2.getStep("assignment").explanationSections(),
+                stage3.getStep("a-assignment").explanationSections());
+        assertSame(stage3.getStep("a-assignment").explanationSections(),
+                stage3.getStep("b-assignment").explanationSections());
+        assertSame(stage3.getStep("b-assignment").explanationSections(),
+                stage3.getStep("c-assignment").explanationSections());
+        assertSame(stage2.getStep("integer-literal").explanationSections(),
+                stage3.getStep("a-literal").explanationSections());
+        assertSame(stage3.getStep("a-literal").explanationSections(),
+                stage3.getStep("b-literal").explanationSections());
+        assertSame(stage2.getStep("age-use").explanationSections(),
+                stage3.getStep("a-use").explanationSections());
+        assertSame(stage3.getStep("a-use").explanationSections(),
+                stage3.getStep("b-use").explanationSections());
+        assertSame(stage2.getStep("age-use").explanationSections(),
+                stage3.getStep("c-use").explanationSections());
+        assertSame(stage3.getStep("a-use").explanationSections(),
+                stage3.getStep("c-use").explanationSections());
+        assertEquals(java.util.List.of(
+                        "変数の値を使う",
+                        "変数の値を使う",
+                        "変数の値を使う",
+                        "変数の値を使う"),
+                java.util.List.of(
+                        stage2.getStep("age-use").correctCard().text(),
+                        stage3.getStep("a-use").correctCard().text(),
+                        stage3.getStep("b-use").correctCard().text(),
+                        stage3.getStep("c-use").correctCard().text()));
+        assertTrue(stage3.getStep("c-use").explanationSections().stream()
+                .noneMatch(section -> "計算結果を表示する".equals(section.title())));
+        assertSame(stage1.getStep("print-command").explanationSections(),
+                stage2.getStep("print-command").explanationSections());
+        assertSame(stage2.getStep("print-command").explanationSections(),
+                stage3.getStep("print-command").explanationSections());
+        assertEquals(stage2.getStep("print-command").correctCard().text(),
+                stage3.getStep("print-command").correctCard().text());
+        assertEquals("画面に表示して改行する",
+                stage3.getStep("print-command").correctCard().text());
+        assertSame(stage1.getStep("semicolon").explanationSections(),
+                stage3.getStep("a-semicolon").explanationSections());
+        assertSame(stage3.getStep("a-semicolon").explanationSections(),
+                stage3.getStep("b-semicolon").explanationSections());
+        assertSame(stage3.getStep("b-semicolon").explanationSections(),
+                stage3.getStep("c-semicolon").explanationSections());
+        assertSame(stage3.getStep("c-semicolon").explanationSections(),
+                stage3.getStep("print-semicolon").explanationSections());
+        assertSame(stage1.getStep("main-close").explanationSections(),
+                stage1.getStep("class-close").explanationSections());
+        assertSame(stage1.getStep("main-close").explanationSections(),
+                stage2.getStep("main-close").explanationSections());
+        assertSame(stage2.getStep("main-close").explanationSections(),
+                stage2.getStep("class-close").explanationSections());
+        assertSame(stage2.getStep("main-close").explanationSections(),
+                stage3.getStep("main-close").explanationSections());
+        assertSame(stage3.getStep("main-close").explanationSections(),
+                stage3.getStep("class-close").explanationSections());
+        assertEquals("ここで終わる", stage3.getStep("main-close").correctCard().text());
+        assertEquals("ここで終わる", stage3.getStep("class-close").correctCard().text());
+    }
+
+    @Test
+    void 算術演算子説明は2つの明示的な4列表と公式根拠を持つ() {
+        var addition = catalog.getDefinition(CodeReadingLessonCatalog.STAGE3_LESSON_ID)
+                .getStep("addition");
+        var sections = addition.explanationSections();
+        var plusTable = sections.get(1);
+        var table = sections.get(2);
+
+        assertEquals("左右の数値を足す", addition.correctCard().text());
+        assertEquals(5, sections.size());
+        assertEquals("算術演算子　arithmetic operator", sections.get(0).title());
+        assertEquals(java.util.List.of("数値を使って計算するときに使う記号です。"),
+                sections.get(0).entries().stream().map(entry -> entry.before()).toList());
+        assertEquals("+ 演算子の2つの働き（数値の加算と文字列の結合）", plusTable.title());
+        assertTrue(plusTable.tableHeader());
+        assertEquals(java.util.List.of(
+                        java.util.List.of("働き", "コード例", "結果", "ルール"),
+                        java.util.List.of("数値の加算", "10 + 20", "30", "両方が数値なら、足し算をします。"),
+                        java.util.List.of("文字列の結合", "\"10\" + \"20\"", "\"1020\"",
+                                "両方が文字列なら、文字をそのままつなぎます。"),
+                        java.util.List.of("文字列の結合", "10 + \"20\"", "\"1020\"",
+                                "片方が String なら、もう片方も文字列に変換してつなぎます。")),
+                plusTable.entries().stream().map(entry -> java.util.List.of(
+                        entry.label(), entry.before(), entry.emphasis(), entry.after())).toList());
+        assertTrue(sections.stream().noneMatch(section -> "+ の2つの働き".equals(section.title())));
+        assertEquals("代表的な算術演算子", table.title());
+        assertTrue(table.tableHeader());
+        assertEquals(java.util.List.of(
+                        java.util.List.of("演算子", "機能", "計算例", "結果"),
+                        java.util.List.of("+", "加算演算子（足し算）", "10 + 3", "13"),
+                        java.util.List.of("-", "減算演算子（引き算）", "10 - 3", "7"),
+                        java.util.List.of("*", "乗算演算子（掛け算）", "10 * 3", "30"),
+                        java.util.List.of("/", "除算演算子（割り算）", "10 / 3", "3"),
+                        java.util.List.of("%", "剰余演算子（割り算の余り）", "10 % 3", "1")),
+                table.entries().stream().map(entry -> java.util.List.of(
+                        entry.label(), entry.before(), entry.emphasis(), entry.after())).toList());
+        assertEquals("int同士の割り算では、小数部分は切り捨てられ、結果は0に近い方の整数になります。",
+                sections.get(3).entries().get(0).before());
+        assertEquals("10 / 3 → 3", sections.get(3).entries().get(1).before());
+        assertTrue(sections.stream().noneMatch(section -> "a + b の計算".equals(section.title())));
+        assertEquals("official-references", sections.get(4).sectionType().value());
+        assertEquals(java.util.List.of("§15.18", "§15.18.1", "§15.18.2", "§15.17", "§15.17.2", "§15.17.3"),
+                sections.get(4).officialReferences().stream().map(reference -> reference.sectionNumber()).toList());
+        var remainder = sections.get(4).officialReferences().get(5);
+        assertEquals("Remainder Operator %", remainder.sectionTitle());
+        assertEquals("https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.17.3",
+                remainder.uri().toString());
+    }
+
+    @Test
     void Stage2は5Part21Stepと実行結果20を持つ() {
         var definition = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID);
 
@@ -46,15 +247,36 @@ class CodeReadingLessonCatalogTest {
     }
 
     @Test
-    void intの共通データ型表は3列で全行を同じ見た目にする() {
-        var table = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID)
-                .getStep("int-type").explanationSections().get(2);
+    void Stage2とStage3のintは同じ明示ヘッダー付き3列表を共有する() {
+        var stage2 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID);
+        var stage3 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE3_LESSON_ID);
+        var sections = stage2.getStep("int-type").explanationSections();
+        var table = sections.get(2);
+
+        assertSame(sections, stage3.getStep("a-int").explanationSections());
+        assertSame(sections, stage3.getStep("b-int").explanationSections());
+        assertSame(sections, stage3.getStep("c-int").explanationSections());
+        assertSame(table, stage3.getStep("a-int").explanationSections().get(2));
 
         assertEquals("table", table.sectionType().value());
-        assertEquals(java.util.List.of("分類", "型名", "格納するデータ"),
-                java.util.List.of(table.entries().get(0).label(),
-                        table.entries().get(0).before(), table.entries().get(0).emphasis()));
+        assertTrue(table.tableHeader());
         assertEquals(10, table.entries().size());
+        assertEquals(java.util.List.of(
+                        java.util.List.of("分類", "型名", "格納するデータ"),
+                        java.util.List.of("整数", "byte", "とても小さな整数"),
+                        java.util.List.of("整数", "short", "小さな整数"),
+                        java.util.List.of("整数", "int", "一般的な整数"),
+                        java.util.List.of("整数", "long", "大きな整数"),
+                        java.util.List.of("小数", "float", "精度の低い小数"),
+                        java.util.List.of("小数", "double", "精度の高い小数"),
+                        java.util.List.of("文字", "char", "1つの文字"),
+                        java.util.List.of("真偽", "boolean", "true または false"),
+                        java.util.List.of("文字列", "String", "文字の並び")),
+                table.entries().stream()
+                        .map(entry -> java.util.List.of(entry.label(), entry.before(), entry.emphasis()))
+                        .toList());
+        assertTrue(table.entries().stream()
+                .allMatch(entry -> entry.after().isEmpty() && entry.detail().isEmpty()));
         assertTrue(table.entries().stream().noneMatch(entry -> entry.highlighted()));
     }
 
@@ -136,6 +358,10 @@ class CodeReadingLessonCatalogTest {
                         assignmentSections.get(1).entries().get(2).label(),
                         assignmentSections.get(1).entries().get(2).before(),
                         assignmentSections.get(1).entries().get(2).emphasis()));
+        assertTrue(assignmentSections.get(1).entries().get(2).tableHeader());
+        assertTrue(assignmentSections.get(1).entries().stream()
+                .filter(entry -> !entry.tableHeader())
+                .noneMatch(entry -> entry.label().equals("初期化") && entry.highlighted()));
         assertEquals("新しい変数を宣言するときに、最初の値を入れる",
                 assignmentSections.get(1).entries().get(3).emphasis());
         assertEquals("すでにある変数の値を、新しい値に変える",
@@ -148,6 +374,8 @@ class CodeReadingLessonCatalogTest {
                 java.util.List.of(
                         literalSections.get(1).entries().get(1).label(),
                         literalSections.get(1).entries().get(1).before()));
+        assertTrue(literalSections.get(1).entries().get(1).tableHeader());
+        assertTrue(literalSections.get(2).entries().get(1).tableHeader());
         assertEquals(java.util.List.of("20", "整数リテラル"),
                 java.util.List.of(
                         literalSections.get(1).entries().get(2).label(),
@@ -179,6 +407,7 @@ class CodeReadingLessonCatalogTest {
                         useSections.get(1).entries().get(0).label(),
                         useSections.get(1).entries().get(0).before(),
                         useSections.get(1).entries().get(0).emphasis()));
+        assertTrue(useSections.get(1).entries().get(0).tableHeader());
         assertEquals(java.util.List.of("宣言する", "int age = 20;", "変数を宣言して、最初の値を保存する"),
                 java.util.List.of(
                         useSections.get(1).entries().get(1).label(),
@@ -190,18 +419,24 @@ class CodeReadingLessonCatalogTest {
                         useSections.get(1).entries().get(2).before(),
                         useSections.get(1).entries().get(2).emphasis()));
         assertEquals("table", useSections.get(2).sectionType().value());
-        assertEquals(java.util.List.of("コード", "値の使い方"),
+        assertEquals("値を直接使う場合と、変数を使う場合", useSections.get(2).title());
+        assertEquals(java.util.List.of("書き方", "値の使い方"),
                 java.util.List.of(
                         useSections.get(2).entries().get(0).label(),
                         useSections.get(2).entries().get(0).before()));
-        assertEquals(java.util.List.of("System.out.println(\"Hello\");", "直接書いた値を使う"),
+        assertTrue(useSections.get(2).entries().get(0).tableHeader());
+        assertEquals(java.util.List.of("20", "値を直接書いて使う"),
                 java.util.List.of(
                         useSections.get(2).entries().get(1).label(),
                         useSections.get(2).entries().get(1).before()));
-        assertEquals(java.util.List.of("System.out.println(age);", "変数に保存されている値を使う"),
+        assertEquals(java.util.List.of("age", "変数に保存されている値を使う"),
                 java.util.List.of(
                         useSections.get(2).entries().get(2).label(),
                         useSections.get(2).entries().get(2).before()));
+        assertEquals("変数名を書いた場所では、その変数に保存されている値が使われます。",
+                useSections.get(2).entries().get(3).before());
+        assertTrue(useSections.stream().noneMatch(section -> section.title().equals("ポイント")));
+        assertTrue(useSections.stream().noneMatch(section -> section.title().equals("計算で使う変数")));
     }
 
     private static String sectionText(CodeReadingExplanationSection section) {

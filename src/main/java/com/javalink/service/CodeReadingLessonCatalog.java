@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.net.URI;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * コードリーディング教材に必要なLesson、問題、説明、表示構造を一元管理します。
@@ -28,19 +31,56 @@ public class CodeReadingLessonCatalog {
 
         public static final String STAGE1_LESSON_ID = "hello-program-reading";
         public static final String STAGE2_LESSON_ID = "variable-program-reading";
+        public static final String STAGE3_LESSON_ID = "operator-program-reading";
         private static final String OFFICIAL_REFERENCES_TITLE =
                         "このページの技術的根拠：Javaの公式仕様・API";
+        private static final String DISPLAY_AND_NEWLINE_CARD = "画面に表示して改行する";
+        private static final String VARIABLE_VALUE_USE_CARD = "変数の値を使う";
+        private static final String PUBLIC_CARD = "ほかの場所からも使える";
+        private static final String CLASS_CARD = "クラスを作る";
+        private static final String CLASS_NAME_CARD = "クラスの名前";
+        private static final String BLOCK_START_CARD = "ここから始まる";
+        private static final String STATIC_CARD = "インスタンスを作らなくても使える";
+        private static final String VOID_CARD = "戻り値を返さない";
+        private static final String MAIN_CARD = "プログラム開始メソッド";
+        private static final String STRING_ARRAY_CARD = "文字列の配列";
+        private static final String ARGS_CARD = "変数の名前";
         private static final String DEFAULT_LESSON_ID = STAGE1_LESSON_ID;
+        private static final List<CodeReadingExplanationSection> PUBLIC_EXPLANATION =
+                        publicExplanation();
+        private static final List<CodeReadingExplanationSection> CLASS_EXPLANATION =
+                        classExplanation();
+        private static final List<CodeReadingExplanationSection> CLASS_NAME_EXPLANATION =
+                        classNameExplanation();
+        private static final List<CodeReadingExplanationSection> BLOCK_START_EXPLANATION =
+                        blockStartExplanation();
+        private static final List<CodeReadingExplanationSection> STATIC_EXPLANATION =
+                        staticExplanation();
+        private static final List<CodeReadingExplanationSection> VOID_EXPLANATION =
+                        voidExplanation();
+        private static final List<CodeReadingExplanationSection> MAIN_EXPLANATION =
+                        mainExplanation();
+        private static final List<CodeReadingExplanationSection> STRING_ARRAY_EXPLANATION =
+                        stringArrayExplanation();
+        private static final List<CodeReadingExplanationSection> ARGS_EXPLANATION =
+                        argsExplanation();
+        private static final List<CodeReadingExplanationSection> SYSTEM_OUT_PRINTLN_EXPLANATION =
+                        systemOutPrintlnExplanation();
         private static final List<CodeReadingExplanationSection> SEMICOLON_EXPLANATION =
                         createSemicolonExplanation();
+        private static final List<CodeReadingExplanationSection> BLOCK_END_EXPLANATION =
+                        blockEndExplanation();
+        private final List<CodeReadingLessonDefinition> definitionsInOrder;
         private final Map<String, CodeReadingLessonDefinition> definitions;
 
         public CodeReadingLessonCatalog() {
                 CodeReadingLessonDefinition stage1 = createStage1();
                 CodeReadingLessonDefinition stage2 = createStage2();
-                definitions = Map.of(
-                                stage1.lessonId(), stage1,
-                                stage2.lessonId(), stage2);
+                CodeReadingLessonDefinition stage3 = createStage3(stage2);
+                definitionsInOrder = List.of(stage1, stage2, stage3);
+                definitions = definitionsInOrder.stream().collect(Collectors.toUnmodifiableMap(
+                                CodeReadingLessonDefinition::lessonId,
+                                Function.identity()));
         }
 
         public CodeReadingLessonDefinition getDefinition(String lessonId) {
@@ -62,9 +102,21 @@ public class CodeReadingLessonCatalog {
         }
 
         public List<Lesson> getLessons() {
-                return definitions.values().stream()
+                return definitionsInOrder.stream()
                                 .map(CodeReadingLessonDefinition::toLesson)
                                 .toList();
+        }
+
+        public Optional<CodeReadingLessonDefinition> getNextDefinition(String lessonId) {
+                for (int index = 0; index < definitionsInOrder.size(); index++) {
+                        if (definitionsInOrder.get(index).lessonId().equals(lessonId)) {
+                                return index + 1 < definitionsInOrder.size()
+                                                ? Optional.of(definitionsInOrder.get(index + 1))
+                                                : Optional.empty();
+                        }
+                }
+                throw new IllegalArgumentException(
+                                "コードリーディング教材が見つかりません。lessonId: " + lessonId);
         }
 
         public boolean supports(String lessonId) {
@@ -111,45 +163,66 @@ public class CodeReadingLessonCatalog {
                                 "20");
         }
 
+        private static CodeReadingLessonDefinition createStage3(CodeReadingLessonDefinition stage2) {
+                return new CodeReadingLessonDefinition(
+                                STAGE3_LESSON_ID,
+                                "Stage 3",
+                                "演算子を使って計算しよう",
+                                """
+                                                public class Main {
+                                                    public static void main(String[] args) {
+                                                        int a = 10;
+                                                        int b = 20;
+                                                        int c = a + b;
+                                                        System.out.println(c);
+                                                    }
+                                                }
+                                                """,
+                                createStage3Steps(stage2),
+                                createStage3Parts(),
+                                createStage3Circuits(),
+                                createStage3CodeLines(),
+                                "30");
+        }
+
         private static List<CodeReadingStepDefinition> createStage1Steps() {
-                List<CodeReadingExplanationSection> blockEndExplanation = blockEndExplanation();
                 return List.of(
-                                richStep("class-public", 1, "public", "public", "accessible", "ほかの場所からも使える",
+                                richStep("class-public", 1, "public", "public", "accessible", PUBLIC_CARD,
                                                 "アクセス修飾子",
-                                                publicExplanation()),
-                                richStep("class-keyword", 2, "class", "class", "declare-class", "クラスを作る",
+                                                PUBLIC_EXPLANATION),
+                                richStep("class-keyword", 2, "class", "class", "declare-class", CLASS_CARD,
                                                 "クラスを作るキーワード",
-                                                classExplanation()),
-                                richStep("class-name", 3, "Main", "Main", "main-class-name", "クラスの名前",
+                                                CLASS_EXPLANATION),
+                                richStep("class-name", 3, "Main", "Main", "main-class-name", CLASS_NAME_CARD,
                                                 "クラス名",
-                                                classNameExplanation()),
-                                richStep("class-open", 4, "{", "{", "block-start", "ここから始まる",
-                                                "開始波かっこ", blockStartExplanation()),
-                                richStep("main-public", 5, "public", "public", "accessible", "ほかの場所からも使える",
-                                                "アクセス修飾子", publicExplanation()),
-                                richStep("static", 6, "static", "static", "without-instance", "インスタンスを作らなくても使える",
-                                                "static修飾子", staticExplanation()),
-                                richStep("void", 7, "void", "void", "no-return", "戻り値を返さない",
-                                                "戻り値の型", voidExplanation()),
-                                richStep("main", 8, "main", "main", "program-entry", "プログラム開始メソッド",
-                                                "メソッド名", mainExplanation()),
-                                richStep("string-array", 9, "String[]", "String[]", "multiple-strings", "文字列の配列",
-                                                "引数の型", stringArrayExplanation()),
-                                richStep("args", 10, "args", "args", "argument-variable", "変数の名前",
-                                                "引数名", argsExplanation()),
-                                richStep("main-open", 11, "{", "{", "block-start", "ここから始まる",
-                                                "開始波かっこ", blockStartExplanation()),
+                                                CLASS_NAME_EXPLANATION),
+                                richStep("class-open", 4, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("main-public", 5, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("static", 6, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("void", 7, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("main", 8, "main", "main", "program-entry", MAIN_CARD,
+                                                "メソッド名", MAIN_EXPLANATION),
+                                richStep("string-array", 9, "String[]", "String[]", "multiple-strings", STRING_ARRAY_CARD,
+                                                "引数の型", STRING_ARRAY_EXPLANATION),
+                                richStep("args", 10, "args", "args", "argument-variable", ARGS_CARD,
+                                                "引数名", ARGS_EXPLANATION),
+                                richStep("main-open", 11, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
                                 richStep("print-command", 12, "System.out.println", "System.out.println",
-                                                "display-and-newline", "画面に表示して改行する",
-                                                "標準出力", systemOutPrintlnExplanation()),
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力", SYSTEM_OUT_PRINTLN_EXPLANATION),
                                 richStep("hello-string", 13, "\"Hello\"", "\"Hello\"", "display-text", "表示する文字",
                                                 "文字列リテラル", helloStringExplanation()),
                                 richStep("semicolon", 14, ";", ";", "command-end", "文の終わり",
                                                 "セミコロン", semicolonExplanation()),
                                 richStep("main-close", 15, "}", "}", "close-main", "ここで終わる",
-                                                "終了波かっこ", blockEndExplanation),
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
                                 richStep("class-close", 16, "}", "}", "close-class", "ここで終わる",
-                                                "終了波かっこ", blockEndExplanation));
+                                                "終了波かっこ", BLOCK_END_EXPLANATION));
         }
 
         private static CodeReadingStepDefinition step(
@@ -758,31 +831,30 @@ public class CodeReadingLessonCatalog {
         }
 
         private static List<CodeReadingStepDefinition> createStage2Steps() {
-                List<CodeReadingExplanationSection> blockEnd = blockEndExplanation();
                 List<CodeReadingExplanationSection> semicolon = semicolonExplanation();
                 return List.of(
-                                richStep("class-public", 1, "public", "public", "accessible", "ほかの場所からも使える",
-                                                "アクセス修飾子", publicExplanation()),
-                                richStep("class-keyword", 2, "class", "class", "declare-class", "クラスを作る",
-                                                "クラスを作るキーワード", classExplanation()),
-                                richStep("class-name", 3, "Main", "Main", "main-class-name", "クラスの名前",
-                                                "クラス名", classNameExplanation()),
-                                richStep("class-open", 4, "{", "{", "block-start", "ここから始まる",
-                                                "開始波括弧", blockStartExplanation()),
-                                richStep("main-public", 5, "public", "public", "accessible", "ほかの場所からも使える",
-                                                "アクセス修飾子", publicExplanation()),
-                                richStep("static", 6, "static", "static", "without-instance", "インスタンスを作らなくても使える",
-                                                "static修飾子", staticExplanation()),
-                                richStep("void", 7, "void", "void", "no-return", "戻り値を返さない",
-                                                "戻り値の型", voidExplanation()),
-                                richStep("main", 8, "main", "main", "program-entry", "プログラム開始メソッド",
-                                                "メソッド名", mainExplanation()),
-                                richStep("string-array", 9, "String[]", "String[]", "multiple-strings", "文字列の配列",
-                                                "引数の型", stringArrayExplanation()),
-                                richStep("args", 10, "args", "args", "argument-variable", "変数の名前",
-                                                "引数名", argsExplanation()),
-                                richStep("main-open", 11, "{", "{", "block-start", "ここから始まる",
-                                                "開始波括弧", blockStartExplanation()),
+                                richStep("class-public", 1, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("class-keyword", 2, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("class-name", 3, "Main", "Main", "main-class-name", CLASS_NAME_CARD,
+                                                "クラス名", CLASS_NAME_EXPLANATION),
+                                richStep("class-open", 4, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波括弧", BLOCK_START_EXPLANATION),
+                                richStep("main-public", 5, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("static", 6, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("void", 7, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("main", 8, "main", "main", "program-entry", MAIN_CARD,
+                                                "メソッド名", MAIN_EXPLANATION),
+                                richStep("string-array", 9, "String[]", "String[]", "multiple-strings", STRING_ARRAY_CARD,
+                                                "引数の型", STRING_ARRAY_EXPLANATION),
+                                richStep("args", 10, "args", "args", "argument-variable", ARGS_CARD,
+                                                "引数名", ARGS_EXPLANATION),
+                                richStep("main-open", 11, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波括弧", BLOCK_START_EXPLANATION),
                                 richStep("int-type", 12, "int", "int", "integer-type", "整数を扱うデータ型",
                                                 "整数型", intExplanation()),
                                 richStep("age-declaration", 13, "age", "age", "variable-name", "変数の名前",
@@ -794,15 +866,97 @@ public class CodeReadingLessonCatalog {
                                 richStep("declaration-semicolon", 16, ";", ";", "command-end", "文の終わり",
                                                 "セミコロン", semicolon),
                                 richStep("print-command", 17, "System.out.println", "System.out.println", "display-and-newline",
-                                                "画面に表示して改行する", "標準出力", systemOutPrintlnExplanation()),
-                                richStep("age-use", 18, "age", "age", "use-variable-value", "変数の値を使う",
+                                                DISPLAY_AND_NEWLINE_CARD, "標準出力", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("age-use", 18, "age", "age", "use-variable-value", VARIABLE_VALUE_USE_CARD,
                                                 "変数の利用", variableUseExplanation()),
                                 richStep("print-semicolon", 19, ";", ";", "command-end", "文の終わり",
                                                 "セミコロン", semicolon),
                                 richStep("main-close", 20, "}", "}", "close-main", "ここで終わる",
-                                                "終了波括弧", blockEnd),
+                                                "終了波括弧", BLOCK_END_EXPLANATION),
                                 richStep("class-close", 21, "}", "}", "close-class", "ここで終わる",
-                                                "終了波括弧", blockEnd));
+                                                "終了波括弧", BLOCK_END_EXPLANATION));
+        }
+
+        private static List<CodeReadingStepDefinition> createStage3Steps(CodeReadingLessonDefinition stage2) {
+                List<CodeReadingExplanationSection> variableName =
+                                sharedExplanation(stage2, "age-declaration");
+                List<CodeReadingExplanationSection> integerType =
+                                sharedExplanation(stage2, "int-type");
+                List<CodeReadingExplanationSection> assignment =
+                                sharedExplanation(stage2, "assignment");
+                List<CodeReadingExplanationSection> integerLiteral =
+                                sharedExplanation(stage2, "integer-literal");
+                List<CodeReadingExplanationSection> semicolon = semicolonExplanation();
+                List<CodeReadingExplanationSection> operand =
+                                sharedExplanation(stage2, "age-use");
+                return List.of(
+                                richStep("class-public", 1, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("class-keyword", 2, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("class-name", 3, "Main", "Main", "main-class-name", CLASS_NAME_CARD,
+                                                "クラス名", CLASS_NAME_EXPLANATION),
+                                richStep("class-open", 4, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波括弧", BLOCK_START_EXPLANATION),
+                                richStep("main-public", 5, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("static", 6, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("void", 7, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("main", 8, "main", "main", "program-entry", MAIN_CARD,
+                                                "メソッド名", MAIN_EXPLANATION),
+                                richStep("string-array", 9, "String[]", "String[]", "multiple-strings", STRING_ARRAY_CARD,
+                                                "引数の型", STRING_ARRAY_EXPLANATION),
+                                richStep("args", 10, "args", "args", "argument-variable", ARGS_CARD,
+                                                "引数名", ARGS_EXPLANATION),
+                                richStep("main-open", 11, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波括弧", BLOCK_START_EXPLANATION),
+                                richStep("a-int", 12, "int", "int", "integer-type", "整数を扱うデータ型",
+                                                "整数型", integerType),
+                                richStep("a-name", 13, "a", "a", "variable-name", "変数の名前",
+                                                "変数名", variableName),
+                                richStep("a-assignment", 14, "=", "=", "assignment", "右側の値を左側に入れる",
+                                                "代入演算子", assignment),
+                                richStep("a-literal", 15, "10", "10", "integer-value", "整数の値",
+                                                "整数リテラル", integerLiteral),
+                                richStep("a-semicolon", 16, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", semicolon),
+                                richStep("b-int", 17, "int", "int", "integer-type", "整数を扱うデータ型",
+                                                "整数型", integerType),
+                                richStep("b-name", 18, "b", "b", "variable-name", "変数の名前",
+                                                "変数名", variableName),
+                                richStep("b-assignment", 19, "=", "=", "assignment", "右側の値を左側に入れる",
+                                                "代入演算子", assignment),
+                                richStep("b-literal", 20, "20", "20", "integer-value", "整数の値",
+                                                "整数リテラル", integerLiteral),
+                                richStep("b-semicolon", 21, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", semicolon),
+                                richStep("c-int", 22, "int", "int", "integer-type", "整数を扱うデータ型",
+                                                "整数型", integerType),
+                                richStep("c-name", 23, "c", "c", "variable-name", "変数の名前",
+                                                "変数名", variableName),
+                                richStep("c-assignment", 24, "=", "=", "assignment", "右側の値を左側に入れる",
+                                                "代入演算子", assignment),
+                                richStep("a-use", 25, "a", "a", "use-variable-value", VARIABLE_VALUE_USE_CARD,
+                                                "変数の利用", operand),
+                                richStep("addition", 26, "+", "+", "addition", "左右の数値を足す",
+                                                "算術演算子", arithmeticOperatorExplanation()),
+                                richStep("b-use", 27, "b", "b", "use-variable-value", VARIABLE_VALUE_USE_CARD,
+                                                "変数の利用", operand),
+                                richStep("c-semicolon", 28, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", semicolon),
+                                richStep("print-command", 29, "System.out.println", "System.out.println", "display-and-newline",
+                                                DISPLAY_AND_NEWLINE_CARD, "標準出力",
+                                                SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("c-use", 30, "c", "c", "use-variable-value", VARIABLE_VALUE_USE_CARD,
+                                                "変数の利用", operand),
+                                richStep("print-semicolon", 31, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", semicolon),
+                                richStep("main-close", 32, "}", "}", "close-main", "ここで終わる",
+                                                "終了波括弧", BLOCK_END_EXPLANATION),
+                                richStep("class-close", 33, "}", "}", "close-class", "ここで終わる",
+                                                "終了波括弧", BLOCK_END_EXPLANATION));
         }
 
         private static List<CodeReadingExplanationSection> intExplanation() {
@@ -863,7 +1017,7 @@ public class CodeReadingLessonCatalog {
                                 tableSection("代入と初期化の違い",
                                                 tableRow("", "変数を宣言するときに最初の値を入れることを「初期化」といいます。"),
                                                 tableRow("", "初期化と代入では、どちらも = が使われます。"),
-                                                tableRow3("種類", "コード", "意味"),
+                                                tableHeaderRow3("種類", "コード", "意味"),
                                                 tableRow3("初期化", "int age = 20;", "新しい変数を宣言するときに、最初の値を入れる"),
                                                 tableRow3("代入", "age = 21;", "すでにある変数の値を、新しい値に変える")),
                                 textSection("ポイント",
@@ -883,12 +1037,12 @@ public class CodeReadingLessonCatalog {
                                 textSection("整数リテラル　integer literal", text("プログラムの中に直接書かれた、整数の値です。")),
                                 tableSection("リテラルとは",
                                                 tableRow3("", "リテラルとは、プログラムの中に値を直接書いたものです。", ""),
-                                                tableRow3("書き方", "種類", ""),
+                                                tableHeaderRow("書き方", "種類"),
                                                 tableRow3("20", "整数リテラル", ""),
                                                 tableRow3("\"Hello\"", "文字列リテラル", "")),
                                 tableSection("ポイント",
                                                 tableRow3("", "書き方によって、Javaが扱うデータの種類が変わります。", ""),
-                                                tableRow3("書き方", "データの種類", ""),
+                                                tableHeaderRow("書き方", "データの種類"),
                                                 tableRow3("20", "整数", ""),
                                                 tableRow3("\"20\"", "文字列", "")),
                                 officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
@@ -904,13 +1058,14 @@ public class CodeReadingLessonCatalog {
                 return List.of(
                                 variableUseOverviewSection(),
                                 tableSection("変数を「宣言する」と「使う」の違い",
-                                                tableRow3("種類", "コード", "意味"),
+                                                tableHeaderRow3("種類", "コード", "意味"),
                                                 tableRow3("宣言する", "int age = 20;", "変数を宣言して、最初の値を保存する"),
                                                 tableRow3("使う", "System.out.println(age);", "変数に保存されている値を使う")),
-                                tableSection("ポイント",
-                                                tableRow("コード", "値の使い方"),
-                                                tableRow("System.out.println(\"Hello\");", "直接書いた値を使う"),
-                                                tableRow("System.out.println(age);", "変数に保存されている値を使う")),
+                                tableSection("値を直接使う場合と、変数を使う場合",
+                                                tableHeaderRow("書き方", "値の使い方"),
+                                                tableRow("20", "値を直接書いて使う"),
+                                                tableRow("age", "変数に保存されている値を使う"),
+                                                tableRow("", "変数名を書いた場所では、その変数に保存されている値が使われます。")),
                                 officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
                                                 jlsReference("§6.5.6", "Meaning of Expression Names", "式の中の変数名が表す意味を定めています。",
                                                                 "https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.5.6"),
@@ -927,7 +1082,7 @@ public class CodeReadingLessonCatalog {
         }
 
         private static CodeReadingExplanationSection basicDataTypesSection() {
-                return tableSection("よく使う基本のデータ型",
+                return tableSectionWithHeader("よく使う基本のデータ型",
                                 tableRow3("分類", "型名", "格納するデータ"),
                                 tableRow3("整数", "byte", "とても小さな整数"),
                                 tableRow3("整数", "short", "小さな整数"),
@@ -963,8 +1118,72 @@ public class CodeReadingLessonCatalog {
                 return new CodeReadingExplanationEntry(first, second, third, "", false);
         }
 
+        private static CodeReadingExplanationEntry tableRow4(
+                        String first,
+                        String second,
+                        String third,
+                        String fourth) {
+                return new CodeReadingExplanationEntry(first, second, third, fourth, false);
+        }
+
+        private static CodeReadingExplanationEntry tableHeaderRow(String first, String second) {
+                return new CodeReadingExplanationEntry(first, second, "", "", "", true, false);
+        }
+
+        private static CodeReadingExplanationEntry tableHeaderRow3(String first, String second, String third) {
+                return new CodeReadingExplanationEntry(first, second, third, "", "", true, false);
+        }
+
         private static CodeReadingExplanationEntry highlightedTableRow3(String first, String second, String third) {
                 return new CodeReadingExplanationEntry(first, second, third, "", true);
+        }
+
+        private static List<CodeReadingExplanationSection> sharedExplanation(
+                        CodeReadingLessonDefinition definition,
+                        String stepId) {
+                return definition.getStep(stepId).explanationSections();
+        }
+
+        private static List<CodeReadingExplanationSection> arithmeticOperatorExplanation() {
+                return List.of(
+                                textSection("算術演算子　arithmetic operator",
+                                                text("数値を使って計算するときに使う記号です。")),
+                                tableSectionWithHeader("+ 演算子の2つの働き（数値の加算と文字列の結合）",
+                                                tableRow4("働き", "コード例", "結果", "ルール"),
+                                                tableRow4("数値の加算", "10 + 20", "30", "両方が数値なら、足し算をします。"),
+                                                tableRow4("文字列の結合", "\"10\" + \"20\"", "\"1020\"",
+                                                                "両方が文字列なら、文字をそのままつなぎます。"),
+                                                tableRow4("文字列の結合", "10 + \"20\"", "\"1020\"",
+                                                                "片方が String なら、もう片方も文字列に変換してつなぎます。")),
+                                tableSectionWithHeader("代表的な算術演算子",
+                                                tableRow4("演算子", "機能", "計算例", "結果"),
+                                                tableRow4("+", "加算演算子（足し算）", "10 + 3", "13"),
+                                                tableRow4("-", "減算演算子（引き算）", "10 - 3", "7"),
+                                                tableRow4("*", "乗算演算子（掛け算）", "10 * 3", "30"),
+                                                tableRow4("/", "除算演算子（割り算）", "10 / 3", "3"),
+                                                tableRow4("%", "剰余演算子（割り算の余り）", "10 % 3", "1")),
+                                textSection("",
+                                                text("int同士の割り算では、小数部分は切り捨てられ、結果は0に近い方の整数になります。"),
+                                                text("10 / 3 → 3")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.18", "Additive Operators",
+                                                                "加算演算子と減算演算子の全体的な規則を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.18"),
+                                                jlsReference("§15.18.1", "String Concatenation Operator +",
+                                                                "文字列を + で結合するときの動作を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.18.1"),
+                                                jlsReference("§15.18.2", "Additive Operators (+ and -) for Numeric Types",
+                                                                "数値に対する加算演算子 + と減算演算子 - の動作を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.18.2"),
+                                                jlsReference("§15.17", "Multiplicative Operators",
+                                                                "乗算、除算、剰余の演算子と、整数除算の動作を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.17"),
+                                                jlsReference("§15.17.2", "Division Operator /",
+                                                                "整数同士の除算が0に向かって丸められることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.17.2"),
+                                                jlsReference("§15.17.3", "Remainder Operator %",
+                                                                "剰余演算子 % の動作を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.17.3")));
         }
 
         private static List<CodeReadingCircuitDefinition> createStage1Circuits() {
@@ -1125,6 +1344,85 @@ public class CodeReadingLessonCatalog {
                                                 List.of("System.out.println", "age", ";"), List.of(),
                                                 "ageに保存されている値を表示して改行する"),
                                 new CodeReadingPart("part-5", 5, "プログラムを閉じる", List.of(), "}\n}",
+                                                List.of("main-close", "class-close"), List.of("}", "}"), List.of(),
+                                                "mainメソッドとMainクラスを順番に終了する"));
+        }
+
+        private static List<CodeReadingCircuitDefinition> createStage3Circuits() {
+                return List.of(
+                                new CodeReadingCircuitDefinition("class-declaration", "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{")),
+                                new CodeReadingCircuitDefinition("main-method", "public static void main(String[] args) {",
+                                                List.of("main-public", "static", "void", "main", "string-array", "args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{")),
+                                new CodeReadingCircuitDefinition("variable-a", "int a = 10;",
+                                                List.of("a-int", "a-name", "a-assignment", "a-literal", "a-semicolon"),
+                                                List.of("int", "a", "=", "10", ";")),
+                                new CodeReadingCircuitDefinition("variable-b", "int b = 20;",
+                                                List.of("b-int", "b-name", "b-assignment", "b-literal", "b-semicolon"),
+                                                List.of("int", "b", "=", "20", ";")),
+                                new CodeReadingCircuitDefinition("addition", "int c = a + b;",
+                                                List.of("c-int", "c-name", "c-assignment", "a-use", "addition", "b-use", "c-semicolon"),
+                                                List.of("int", "c", "=", "a", "+", "b", ";")),
+                                new CodeReadingCircuitDefinition("result-output", "System.out.println(c);",
+                                                List.of("print-command", "c-use", "print-semicolon"),
+                                                List.of("System.out.println", "c", ";")),
+                                new CodeReadingCircuitDefinition("block-closes", "mainメソッド終了 }　Mainクラス終了 }",
+                                                List.of("main-close", "class-close"),
+                                                List.of("mainメソッド終了 }", "Mainクラス終了 }")));
+        }
+
+        private static Map<String, List<CodeReadingCodeLineDefinition>> createStage3CodeLines() {
+                return Map.of(
+                                "part-1", List.of(line(
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"), "", "")),
+                                "part-2", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("main-public"), token("static"), token("void"), token("main"),
+                                                                new CodeReadingCodeTokenDefinition("string-array", "(", ""),
+                                                                new CodeReadingCodeTokenDefinition("args", "", ")"), token("main-open")),
+                                                "", "quiz-reading-code-line--part-2")),
+                                "part-3", List.of(line(
+                                                List.of("a-int", "a-name", "a-assignment", "a-literal", "a-semicolon"), "", "")),
+                                "part-4", List.of(line(
+                                                List.of("b-int", "b-name", "b-assignment", "b-literal", "b-semicolon"), "", "")),
+                                "part-5", List.of(line(
+                                                List.of("c-int", "c-name", "c-assignment", "a-use", "addition", "b-use", "c-semicolon"), "", "")),
+                                "part-6", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("print-command"),
+                                                                new CodeReadingCodeTokenDefinition("c-use", "(", ")"),
+                                                                token("print-semicolon")),
+                                                "", "")),
+                                "part-7", List.of(line(List.of("main-close", "class-close"), "", "")));
+        }
+
+        private static List<CodeReadingPart> createStage3Parts() {
+                return List.of(
+                                new CodeReadingPart("part-1", 1, "クラスを作る", List.of(), "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{"), List.of(),
+                                                "Mainというクラスを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-2", 2, "mainメソッドを作る", List.of(), "public static void main(String[] args) {",
+                                                List.of("main-public", "static", "void", "main", "string-array", "args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{"), List.of(),
+                                                "mainメソッドを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-3", 3, "変数 a を作る", List.of("整数を保存する変数aを作ります。"), "int a = 10;",
+                                                List.of("a-int", "a-name", "a-assignment", "a-literal", "a-semicolon"),
+                                                List.of("int", "a", "=", "10", ";"), List.of(),
+                                                "int型の変数aを宣言し、10で初期化する"),
+                                new CodeReadingPart("part-4", 4, "変数 b を作る", List.of("整数を保存する変数bを作ります。"), "int b = 20;",
+                                                List.of("b-int", "b-name", "b-assignment", "b-literal", "b-semicolon"),
+                                                List.of("int", "b", "=", "20", ";"), List.of(),
+                                                "int型の変数bを宣言し、20で初期化する"),
+                                new CodeReadingPart("part-5", 5, "足し算する", List.of("変数aと変数bに保存した値を足します。"), "int c = a + b;",
+                                                List.of("c-int", "c-name", "c-assignment", "a-use", "addition", "b-use", "c-semicolon"),
+                                                List.of("int", "c", "=", "a", "+", "b", ";"), List.of(),
+                                                "aとbの値を足し、結果を変数cに保存する"),
+                                new CodeReadingPart("part-6", 6, "結果を表示する", List.of("変数cに保存した計算結果を表示します。"), "System.out.println(c);",
+                                                List.of("print-command", "c-use", "print-semicolon"),
+                                                List.of("System.out.println", "c", ";"), List.of(),
+                                                "変数cに保存されている計算結果30を表示して改行する"),
+                                new CodeReadingPart("part-7", 7, "プログラムを閉じる", List.of(), "}\n}",
                                                 List.of("main-close", "class-close"), List.of("}", "}"), List.of(),
                                                 "mainメソッドとMainクラスを順番に終了する"));
         }

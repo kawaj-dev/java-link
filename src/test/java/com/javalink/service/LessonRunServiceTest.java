@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockHttpSession;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -67,6 +68,21 @@ class LessonRunServiceTest {
     }
 
     @Test
+    void Stage3完了後は計算結果30を返す() {
+        MockHttpSession session = completedSession(
+                CodeReadingLessonCatalog.STAGE3_LESSON_ID
+        );
+
+        ProgramRunResult result = lessonRunService.runLesson(
+                session,
+                CodeReadingLessonCatalog.STAGE3_LESSON_ID
+        );
+
+        assertTrue(result.success());
+        assertEquals("30", result.consoleOutput());
+    }
+
+    @Test
     void 別教材の完了IDだけでは実行できない() {
         MockHttpSession session = new MockHttpSession();
         LessonProgress progress =
@@ -92,13 +108,17 @@ class LessonRunServiceTest {
     }
 
     private MockHttpSession completedSession() {
+        return completedSession(LESSON_ID);
+    }
+
+    private MockHttpSession completedSession(String lessonId) {
         MockHttpSession session = new MockHttpSession();
-        Lesson lesson = lessonService.getLesson(LESSON_ID);
+        Lesson lesson = lessonService.getLesson(lessonId);
         for (LessonStep step : lesson.steps()) {
             if (step.required()) {
                 lessonProgressService.addCompletedStep(
                         session,
-                        LESSON_ID,
+                        lessonId,
                         step.id()
                 );
             }

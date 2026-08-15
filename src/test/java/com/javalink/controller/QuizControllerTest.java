@@ -6,6 +6,7 @@ import com.javalink.model.CodeReadingPhase;
 import com.javalink.model.LessonProgress;
 import com.javalink.service.CodeReadingCourseService;
 import com.javalink.service.CodeReadingFlowService;
+import com.javalink.service.CodeReadingLessonCatalog;
 import com.javalink.service.LessonProgressService;
 import com.javalink.service.LessonService;
 import org.junit.jupiter.api.Test;
@@ -47,6 +48,9 @@ class QuizControllerTest {
     @Autowired
     private LessonProgressService progressService;
 
+    @Autowired
+    private CodeReadingFlowService flowService;
+
     QuizControllerTest(@Autowired WebApplicationContext context) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
     }
@@ -74,6 +78,23 @@ class QuizControllerTest {
                         .session(session))
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Part 1 / 5")));
+    }
+
+    @Test
+    void Stage3導入画面は完成コードと学習テーマを表示する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+
+        mockMvc.perform(get("/quiz")
+                        .param("lessonId", CodeReadingLessonCatalog.STAGE3_LESSON_ID)
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Stage 3")))
+                .andExpect(content().string(containsString("演算子を使って計算しよう")))
+                .andExpect(content().string(containsString(
+                        "変数に入れた値を使って、計算するコードを読めるようになろう"
+                )))
+                .andExpect(content().string(containsString("int c = a + b;")))
+                .andExpect(content().string(containsString("System.out.println(c);")));
     }
 
     @Test
@@ -800,6 +821,139 @@ class QuizControllerTest {
                 .andExpect(content().string(containsString("プログラムが正常に実行されました")))
                 .andExpect(content().string(not(containsString("▶ Run"))))
                 .andExpect(content().string(containsString("/js/quiz-summary-run.js")));
+    }
+
+    @Test
+    void Stage1完了画面は再挑戦とStage2への2操作だけを表示する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        flowService.showSummary(session, LESSON_ID);
+
+        mockMvc.perform(get("/quiz").session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("このStageをもう一度")))
+                .andExpect(content().string(containsString("Stage 2へ →")))
+                .andExpect(content().string(not(containsString("Stage 1からやり直す"))))
+                .andExpect(content().string(not(containsString("最初からやり直す"))));
+    }
+
+    @Test
+    void Stage2完了画面は再挑戦とStage3への遷移とStage1からの再開を表示する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        flowService.showSummary(
+                session,
+                CodeReadingLessonCatalog.STAGE2_LESSON_ID
+        );
+
+        mockMvc.perform(get("/quiz")
+                        .param(
+                                "lessonId",
+                                CodeReadingLessonCatalog.STAGE2_LESSON_ID
+                        )
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("このStageをもう一度")))
+                .andExpect(content().string(containsString("Stage 1からやり直す")))
+                .andExpect(content().string(containsString("Stage 3へ →")))
+                .andExpect(content().string(not(containsString("最初からやり直す"))));
+    }
+
+    @Test
+    void Stage3完了画面は存在しないStage4への遷移を表示しない() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        flowService.showSummary(
+                session,
+                CodeReadingLessonCatalog.STAGE3_LESSON_ID
+        );
+
+        mockMvc.perform(get("/quiz")
+                        .param("lessonId", CodeReadingLessonCatalog.STAGE3_LESSON_ID)
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("このStageをもう一度")))
+                .andExpect(content().string(containsString("Stage 1からやり直す")))
+                .andExpect(content().string(not(containsString("Stage 4へ →"))));
+    }
+
+    @Test
+    void Stage3をもう一度はStage1とStage2の進捗を維持する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        courseService.startLearning(session, LESSON_ID);
+        courseService.startLearning(
+                session,
+                CodeReadingLessonCatalog.STAGE2_LESSON_ID
+        );
+        courseService.startLearning(
+                session,
+                CodeReadingLessonCatalog.STAGE3_LESSON_ID
+        );
+
+        mockMvc.perform(post("/quiz/reset")
+                        .param(
+                                "lessonId",
+                                CodeReadingLessonCatalog.STAGE3_LESSON_ID
+                        )
+                        .session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl(
+                        "/quiz?lessonId="
+                                + CodeReadingLessonCatalog.STAGE3_LESSON_ID
+                ));
+
+        assertEquals(
+                CodeReadingPhase.LEARNING,
+                flowService.getState(session, LESSON_ID).phase()
+        );
+        assertEquals(
+                CodeReadingPhase.LEARNING,
+                flowService.getState(
+                        session,
+                        CodeReadingLessonCatalog.STAGE2_LESSON_ID
+                ).phase()
+        );
+        assertEquals(
+                CodeReadingPhase.INTRO,
+                flowService.getState(
+                        session,
+                        CodeReadingLessonCatalog.STAGE3_LESSON_ID
+                ).phase()
+        );
+    }
+
+    @Test
+    void Stage1からやり直すは全Stageを初期化してStage1へ戻る() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        courseService.startLearning(session, LESSON_ID);
+        courseService.startLearning(
+                session,
+                CodeReadingLessonCatalog.STAGE2_LESSON_ID
+        );
+        courseService.startLearning(
+                session,
+                CodeReadingLessonCatalog.STAGE3_LESSON_ID
+        );
+
+        mockMvc.perform(post("/quiz/reset-all").session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/quiz"));
+
+        assertEquals(
+                CodeReadingPhase.INTRO,
+                flowService.getState(session, LESSON_ID).phase()
+        );
+        assertEquals(
+                CodeReadingPhase.INTRO,
+                flowService.getState(
+                        session,
+                        CodeReadingLessonCatalog.STAGE2_LESSON_ID
+                ).phase()
+        );
+        assertEquals(
+                CodeReadingPhase.INTRO,
+                flowService.getState(
+                        session,
+                        CodeReadingLessonCatalog.STAGE3_LESSON_ID
+                ).phase()
+        );
     }
 
     @Test

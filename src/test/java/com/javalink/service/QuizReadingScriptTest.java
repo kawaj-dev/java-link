@@ -79,10 +79,27 @@ class QuizReadingScriptTest {
         assertTrue(template.contains("reference.description"));
         assertTrue(template.contains("${reference.sourceName} ${reference.sectionNumber} — ${reference.sectionTitle}"));
         assertTrue(template.contains("quiz-reading-access-row--header"));
-        assertTrue(template.contains("section.tableHeader and entryStat.first"));
-        assertTrue(template.contains("style.css(v='stage2-reading-10')"));
-        assertTrue(template.contains("quiz-reading.js(v='stage2-reading-10')"));
+        assertTrue(template.contains("(section.tableHeader and entryStat.first) or entry.tableHeader"));
+        assertTrue(script.contains("entry.tableHeader === true"));
+        assertTrue(template.contains("style.css(v='stage3-reading-6')"));
+        assertTrue(template.contains("quiz-reading.js(v='stage3-reading-6')"));
         assertFalse(template.contains("continuous-circuit-1"));
+    }
+
+    @Test
+    void 共通Explanationのtable表示はStage2限定CSSに依存しない() throws IOException {
+        String style = readStyle();
+
+        assertFalse(style.contains("[data-lesson-id=\"variable-program-reading\"]\n"
+                + "    .quiz-reading-learning-aid[data-section-title=\"代入と初期化の違い\"]"));
+        assertFalse(style.contains("[data-lesson-id=\"variable-program-reading\"]\n"
+                + "    .quiz-reading-learning-aid-layout--table:is("));
+        assertFalse(style.contains("[data-lesson-id=\"variable-program-reading\"]\n"
+                + "    .quiz-reading-learning-aid[data-section-title=\"変数を「宣言する」と「使う」の違い\"]"));
+        assertTrue(style.contains(".quiz-focus-learning\n"
+                + "    .quiz-reading-learning-aid[data-section-title=\"代入と初期化の違い\"]"));
+        assertTrue(style.contains(".quiz-focus-learning\n"
+                + "    .quiz-reading-learning-aid[data-section-title=\"変数を「宣言する」と「使う」の違い\"]"));
     }
 
     private String readScript() throws IOException {
@@ -97,6 +114,15 @@ class QuizReadingScriptTest {
     private String readTemplate() throws IOException {
         try (InputStream stream = getClass().getResourceAsStream(
                 "/templates/quiz.html"
+        )) {
+            assertNotNull(stream);
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    private String readStyle() throws IOException {
+        try (InputStream stream = getClass().getResourceAsStream(
+                "/static/css/style.css"
         )) {
             assertNotNull(stream);
             return new String(stream.readAllBytes(), StandardCharsets.UTF_8);

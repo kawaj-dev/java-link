@@ -181,6 +181,15 @@ public class QuizController {
         return redirectToQuiz(lessonId);
     }
 
+    /** すべてのStageの進捗を初期化してStage 1の導入へ戻します。 */
+    @PostMapping("/quiz/reset-all")
+    public String resetAll(HttpSession session) {
+        lessonCatalog.getLessons().forEach(lesson ->
+                courseService.reset(session, lesson.id())
+        );
+        return "redirect:/quiz";
+    }
+
     private void addPageModel(Model model, HttpSession session, String lessonId) {
         CodeReadingPageViewModel page =
                 pageViewModelService.create(session, lessonId);
@@ -203,6 +212,18 @@ public class QuizController {
             model.addAttribute(
                     LESSON_VIEW_MODEL_ATTRIBUTE,
                     lessonViewModel
+            );
+            boolean firstStage = CodeReadingLessonCatalog.STAGE1_LESSON_ID
+                    .equals(lessonId);
+            var nextStage = lessonCatalog.getNextDefinition(lessonId);
+            model.addAttribute("summaryFirstStage", firstStage);
+            model.addAttribute(
+                    "summaryNextLessonId",
+                    nextStage.map(definition -> definition.lessonId()).orElse(null)
+            );
+            model.addAttribute(
+                    "summaryNextStageName",
+                    nextStage.map(definition -> definition.stageName()).orElse(null)
             );
         }
     }

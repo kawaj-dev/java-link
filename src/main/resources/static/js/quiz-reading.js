@@ -225,15 +225,25 @@
         entries.forEach((entry, index) => {
             const row = document.createElement("div");
             row.setAttribute("role", "row");
-            if (hasHeader && index === 0) row.classList.add("quiz-reading-access-row--header");
+            if ((hasHeader && index === 0) || entry.tableHeader === true) {
+                row.classList.add("quiz-reading-access-row--header");
+            }
             if (entry.highlighted) row.classList.add("quiz-reading-access-row--focus");
-            if (entry.emphasis) row.classList.add("quiz-reading-access-row--three-columns");
+            if (entry.detail) {
+                row.classList.add("quiz-reading-access-row--five-columns");
+            } else if (entry.after) {
+                row.classList.add("quiz-reading-access-row--four-columns");
+            } else if (entry.emphasis) {
+                row.classList.add("quiz-reading-access-row--three-columns");
+            }
             if (!entry.label && !entry.emphasis) row.classList.add("quiz-reading-access-row--no-label");
             row.append(
                 textElement("code", entry.label, "cell"),
                 textElement("span", entry.before, "cell")
             );
             if (entry.emphasis) row.append(textElement("span", entry.emphasis, "cell"));
+            if (entry.after) row.append(textElement("span", entry.after, "cell"));
+            if (entry.detail) row.append(textElement("span", entry.detail, "cell"));
             table.append(row);
         });
         return table;
