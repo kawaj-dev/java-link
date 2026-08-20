@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 public class HomeController {
 
     /**
-     * 2つの学習メニューを表示します。
+     * 「コードを左から読む」を中心としたトップ画面を表示します。
      *
      * @return 表示するHTMLの名前
      */
