@@ -1,6 +1,7 @@
 package com.javalink.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -18,12 +19,15 @@ class HomeControllerTest {
     private MockMvc mockMvc;
 
     @Test
-    void トップ画面に二つの既存学習リンクとコンセプトを表示する() throws Exception {
+    void トップ画面にコードリーディングへの導線とコンセプトだけを表示する() throws Exception {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("home"))
                 .andExpect(content().string(containsString("href=\"/quiz\"")))
-                .andExpect(content().string(containsString("href=\"/stage1\"")))
+                .andExpect(content().string(not(containsString("href=\"/stage1\""))))
+                .andExpect(content().string(not(containsString("Javaタウンをつくろう"))))
+                .andExpect(content().string(not(containsString("home-menu-card--town"))))
+                .andExpect(content().string(not(containsString("どちらの学習からでも自由に始められます。"))))
                 .andExpect(content().string(containsString("src=\"/images/JavaLink_icon.png\"")))
                 .andExpect(content().string(containsString("home-title-java\">Java")))
                 .andExpect(content().string(containsString("home-title-link\">Link")))
@@ -34,7 +38,7 @@ class HomeControllerTest {
                 .andExpect(content().string(containsString("home-nav-icon--help")))
                 .andExpect(content().string(containsString("home-nav-icon--user")))
                 .andExpect(content().string(containsString("home-card-icon--book")))
-                .andExpect(content().string(containsString("home-card-icon--town")))
+                .andExpect(content().string(containsString("コードを左から読む")))
                 .andExpect(content().string(containsString("読んで、")))
                 .andExpect(content().string(containsString("つなげて、")))
                 .andExpect(content().string(containsString("動かそう。")))
