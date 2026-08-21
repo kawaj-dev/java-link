@@ -15,6 +15,9 @@ Java Link は、Java初心者向けの学習Webアプリです。
 
 Java Linkは、開発者自身が初心者である「今」だからこそ作れる教材を目指しています。
 
+<p align="center">
+  <img src="docs/images/java-link-home.png" alt="Java Link トップ画面" width="900">
+</p>
 
 ---
 
@@ -61,6 +64,10 @@ AIの回答やWeb上の情報、市販のテキストを説明の根拠とする
 ## ① コードを左から読む
 
 Javaコードを左から順番に読み進めながら、コードの意味や役割を理解し、それぞれのつながりからJava全体の仕組みを学ぶ学習モードです。
+
+<p align="center">
+  <img src="docs/images/code-reading.png" alt="コードを左から読む 学習画面" width="900">
+</p>
 
 ### 目的
 
