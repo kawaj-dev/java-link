@@ -125,7 +125,9 @@ class QuizReadingScriptTest {
                 "/static/css/style.css"
         )) {
             assertNotNull(stream);
-            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8)
+                    .replace("\r\n", "\n")
+                    .replace('\r', '\n');
         }
     }
 }
