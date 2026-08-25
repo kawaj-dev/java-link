@@ -13,4 +13,8 @@ docs/*
 !docs/images/
 !docs/images/**
 
+# 設計書だけ公開する
+!docs/02_設計書/
+!docs/02_設計書/**
+
 開発メモ.md
