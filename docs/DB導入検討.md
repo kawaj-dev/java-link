@@ -187,31 +187,62 @@ DB設計時には別のデータとして管理することを検討する。
 
 ## 8. DB・永続化技術の選定
 
-現時点では、
-使用するDBや永続化技術を確定しない。
+Java Linkの学習進捗を永続化するため、
+使用するDBとJavaからDBを利用する方法について検討した。
 
-今後、次の候補を比較して決定する。
+### 8.1 DB
 
-### DB
+DBには、PostgreSQLを採用する。
 
-- H2 Database
-- PostgreSQL
-- MySQL など
+Java Linkでは今後、
 
-### JavaからDBを利用する方法
+- 利用者ごとの学習進捗
+- ログイン機能
+- 学習履歴
 
-- JDBC
-- Spring Data JPA
+などを扱うことを想定している。
 
-Java LinkはSpring Bootを使用しているため、
-既存構成との相性や学習目的も含めて選定する。
+そのため、学習・開発用途だけではなく、
+継続的に利用するWebアプリのデータを管理できる
+リレーショナルデータベースとしてPostgreSQLを採用する。
 
 H2 Databaseについては、
-開発・学習環境として利用することも候補とする。
+必要に応じて開発・テスト用途で利用する可能性はあるが、
+Java Linkの学習進捗を永続化するDBとしてはPostgreSQLを使用する。
 
-H2 ConsoleはDBそのものではなく、
-H2 Databaseの内容をブラウザから確認・操作するための画面として区別する。
+### 8.2 JavaからDBを利用する方法
 
+Java LinkからPostgreSQLへアクセスする方法には、
+Spring Data JPAを採用する。
+
+Java LinkはSpring Bootを使用しているため、
+Spring Data JPAを利用し、
+Repositoryを通じてデータアクセス処理を管理する構成とする。
+
+これにより、
+
+- 学習進捗の保存
+- 学習進捗の取得
+- 利用者と進捗データの関連付け
+
+などのデータアクセス処理を、
+Serviceの処理と分離して管理する。
+
+JDBCを利用してSQLやDAOを直接実装する方法もあるが、
+Java LinkではSpring Bootの構成との相性や、
+今後の機能拡張を考慮してSpring Data JPAを採用する。
+
+### 8.3 採用する構成
+
+現時点では、DB・永続化技術について次の構成を採用する。
+
+```text
+Java Link
+   ↓
+Spring Data JPA
+   ↓
+PostgreSQL
+```
 
 ## 9. 第一段階の実装範囲
 
@@ -231,8 +262,13 @@ DB導入の第一段階では、
 
 ## 10. 今後の検討事項
 
-- DB製品の選定
-- JDBC / Spring Data JPAの選定
+### 決定済み
+
+- DB製品：PostgreSQL
+- 永続化技術：Spring Data JPA
+
+### 今後検討する事項
+
 - ログイン機能の方式
 - 利用者データの設計
 - 学習進捗データのテーブル設計
