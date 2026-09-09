@@ -1536,6 +1536,143 @@ h1 {
     font-size: 1.28em;
 }
 
+/* ログイン画面 */
+.login-body {
+    min-width: 0;
+    color: #102c49;
+    background:
+        radial-gradient(circle at 50% 0, rgba(45, 131, 208, 0.28), transparent 42%),
+        linear-gradient(180deg, #071a35 0, #0b4d8b 310px, #f4fbfd 620px);
+}
+
+.login-site-header {
+    display: flex;
+    width: min(1120px, calc(100% - 48px));
+    min-height: 64px;
+    align-items: center;
+    margin: 0 auto;
+}
+
+.login-page {
+    display: grid;
+    width: min(100% - 32px, 460px);
+    min-height: calc(100vh - 64px);
+    place-items: start center;
+    margin: 0 auto;
+    padding: 64px 0 80px;
+}
+
+.login-card {
+    width: 100%;
+    padding: 38px 40px;
+    border: 1px solid rgba(255, 255, 255, 0.8);
+    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.97);
+    box-shadow: 0 20px 48px rgba(7, 37, 76, 0.18);
+}
+
+.login-label {
+    margin: 0 0 8px;
+    color: #087dff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.14em;
+    text-align: center;
+}
+
+.login-card h1 {
+    margin: 0;
+    color: #0d3154;
+    font-size: clamp(1.8rem, 6vw, 2.35rem);
+    text-align: center;
+}
+
+.login-description {
+    margin: 10px 0 28px;
+    color: #587084;
+    text-align: center;
+}
+
+.login-form {
+    display: grid;
+    gap: 10px;
+}
+
+.login-form label {
+    margin-top: 7px;
+    color: #294a65;
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.login-form input {
+    width: 100%;
+    min-height: 46px;
+    padding: 10px 12px;
+    border: 1px solid #b9cbd8;
+    border-radius: 9px;
+    color: #102c49;
+    background: #ffffff;
+    font: inherit;
+}
+
+.login-form input:focus-visible {
+    border-color: #087dff;
+    outline: 3px solid rgba(8, 125, 255, 0.18);
+}
+
+.login-form button {
+    min-height: 46px;
+    margin-top: 18px;
+    border: 0;
+    border-radius: 999px;
+    color: #ffffff;
+    background: linear-gradient(90deg, #087dff, #055fe2);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.login-form button:hover,
+.login-form button:focus-visible {
+    filter: brightness(0.9);
+}
+
+.login-form button:focus-visible,
+.login-register-guide a:focus-visible {
+    outline: 3px solid #ffd75a;
+    outline-offset: 3px;
+}
+
+.login-register-guide {
+    margin: 24px 0 0;
+    color: #587084;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.login-register-guide a {
+    margin-left: 7px;
+    color: #086fe2;
+    font-weight: 700;
+}
+
+@media (max-width: 430px) {
+    .login-site-header {
+        width: min(100% - 28px, 1120px);
+        min-height: 62px;
+    }
+
+    .login-page {
+        width: min(100% - 24px, 460px);
+        padding-top: 40px;
+    }
+
+    .login-card {
+        padding: 30px 22px;
+    }
+}
+
 /* 既存画面を邪魔しない、小さなトップページリンクです。 */
 .page-home-navigation {
     margin-bottom: 18px;
