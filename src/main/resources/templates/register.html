@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アカウント作成 | Java Link</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="login-body">
+<header class="login-site-header">
+    <a class="home-logo" href="/" aria-label="Java Linkトップ">
+        <img class="home-logo-image" src="/images/JavaLink_icon.png" alt="">
+        <span>Java Link</span>
+    </a>
+</header>
+
+<main class="login-page">
+    <section class="login-card" aria-labelledby="registration-title">
+        <p class="login-label">CREATE ACCOUNT</p>
+        <h1 id="registration-title">アカウント作成</h1>
+        <p class="login-description">Java Linkで学習を始めましょう。</p>
+
+        <form class="login-form">
+            <label for="display-name">表示名</label>
+            <input id="display-name" name="displayName" type="text" autocomplete="name">
+
+            <label for="email">メールアドレス</label>
+            <input id="email" name="email" type="email" autocomplete="email">
+
+            <label for="password">パスワード</label>
+            <input id="password" name="password" type="password" autocomplete="new-password">
+
+            <button type="button">アカウントを作成</button>
+        </form>
+
+        <p class="login-register-guide">
+            <a href="/login">ログイン画面へ戻る</a>
+        </p>
+    </section>
+</main>
+</body>
+</html>
