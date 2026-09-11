@@ -20,7 +20,7 @@
         <h1 id="registration-title">アカウント作成</h1>
         <p class="login-description">Java Linkで学習を始めましょう。</p>
 
-        <form class="login-form">
+        <form class="login-form" action="/register" method="post">
             <label for="display-name">表示名</label>
             <input id="display-name" name="displayName" type="text" autocomplete="name">
 
@@ -30,8 +30,15 @@
             <label for="password">パスワード</label>
             <input id="password" name="password" type="password" autocomplete="new-password">
 
-            <button type="button">アカウントを作成</button>
+            <button type="submit">アカウントを作成</button>
         </form>
+
+        <p class="login-error"
+           th:if="${registrationError != null}"
+           th:text="${registrationError}"
+           role="alert">
+            登録できませんでした。
+        </p>
 
         <p class="login-register-guide">
             <a href="/login">ログイン画面へ戻る</a>
