@@ -33,11 +33,14 @@ class RegistrationControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(view().name("register"))
                 .andExpect(content().string(containsString("表示名")))
-                .andExpect(content().string(containsString("name=\"displayName\"")))
+                .andExpect(content().string(containsString(
+                        "name=\"displayName\" type=\"text\" autocomplete=\"name\" required")))
                 .andExpect(content().string(containsString("メールアドレス")))
-                .andExpect(content().string(containsString("type=\"email\"")))
+                .andExpect(content().string(containsString(
+                        "name=\"email\" type=\"email\" autocomplete=\"email\" required")))
                 .andExpect(content().string(containsString("パスワード")))
-                .andExpect(content().string(containsString("type=\"password\"")))
+                .andExpect(content().string(containsString(
+                        "name=\"password\" type=\"password\" autocomplete=\"new-password\" required")))
                 .andExpect(content().string(containsString(">アカウントを作成</button>")))
                 .andExpect(content().string(containsString("href=\"/login\"")))
                 .andExpect(content().string(containsString("ログイン画面へ戻る")));
