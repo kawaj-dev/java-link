@@ -49,6 +49,8 @@ public class RegistrationController {
             return "redirect:/login";
         } catch (IllegalArgumentException exception) {
             model.addAttribute("registrationError", exception.getMessage());
+            model.addAttribute("displayName", displayName);
+            model.addAttribute("email", email);
             return "register";
         }
     }
