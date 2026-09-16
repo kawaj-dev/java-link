@@ -1,6 +1,7 @@
 package com.javalink.controller;
 
 import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -76,6 +77,12 @@ class LoginControllerTest {
                 .andExpect(view().name("login"))
                 .andExpect(model().attribute(
                         "loginError",
-                        "メールアドレスまたはパスワードが正しくありません。"));
+                        "メールアドレスまたはパスワードが正しくありません。"))
+                .andExpect(model().attribute("email", "learner@example.com"))
+                .andExpect(model().attributeDoesNotExist("password"))
+                .andExpect(content().string(containsString(
+                        "value=\"learner@example.com\"")))
+                .andExpect(content().string(not(
+                        containsString("value=\"incorrect\""))));
     }
 }
