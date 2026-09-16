@@ -50,6 +50,7 @@ public class LoginController {
         }
 
         model.addAttribute("loginError", LOGIN_ERROR_MESSAGE);
+        model.addAttribute("email", email);
         return "login";
     }
 }
