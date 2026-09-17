@@ -77,7 +77,7 @@ class RegistrationControllerTest {
                 .andExpect(view().name("register"))
                 .andExpect(model().attribute(
                         "registrationError",
-                        "Email is already registered."))
+                        "このメールアドレスはすでに登録されています。"))
                 .andExpect(model().attribute("displayName", "Java Learner"))
                 .andExpect(model().attribute("email", "learner@example.com"))
                 .andExpect(model().attributeDoesNotExist("password"))

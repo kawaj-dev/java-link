@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class RegistrationController {
 
+    private static final String DUPLICATE_EMAIL_ERROR_MESSAGE =
+            "このメールアドレスはすでに登録されています。";
+
     private final UserRegistrationService userRegistrationService;
 
     public RegistrationController(UserRegistrationService userRegistrationService) {
@@ -48,7 +51,10 @@ public class RegistrationController {
             userRegistrationService.register(displayName, email, password);
             return "redirect:/login";
         } catch (IllegalArgumentException exception) {
-            model.addAttribute("registrationError", exception.getMessage());
+            model.addAttribute(
+                    "registrationError",
+                    DUPLICATE_EMAIL_ERROR_MESSAGE
+            );
             model.addAttribute("displayName", displayName);
             model.addAttribute("email", email);
             return "register";
