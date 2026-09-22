@@ -1,8 +1,11 @@
 package com.javalink.controller;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -16,6 +19,7 @@ import java.util.Optional;
 
 import com.javalink.entity.UserAccount;
 import com.javalink.service.UserAuthenticationService;
+import org.springframework.mock.web.MockHttpSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -47,17 +51,22 @@ class LoginControllerTest {
 
     @Test
     void ログイン成功時は入力値をServiceへ渡してトップ画面へ移動する() throws Exception {
+        UserAccount userAccount = mock(UserAccount.class);
+        given(userAccount.getId()).willReturn(42L);
         given(userAuthenticationService.authenticate(
                 "learner@example.com",
                 "password"))
-                .willReturn(Optional.of(new UserAccount()));
+                .willReturn(Optional.of(userAccount));
+        MockHttpSession session = new MockHttpSession();
 
         mockMvc.perform(post("/login")
+                        .session(session)
                         .param("email", "learner@example.com")
                         .param("password", "password"))
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
 
+        assertEquals(42L, session.getAttribute(LoginController.AUTHENTICATED_USER_ID));
         verify(userAuthenticationService).authenticate(
                 "learner@example.com",
                 "password");
@@ -69,8 +78,10 @@ class LoginControllerTest {
                 "learner@example.com",
                 "incorrect"))
                 .willReturn(Optional.empty());
+        MockHttpSession session = new MockHttpSession();
 
         mockMvc.perform(post("/login")
+                        .session(session)
                         .param("email", "learner@example.com")
                         .param("password", "incorrect"))
                 .andExpect(status().isOk())
@@ -84,5 +95,7 @@ class LoginControllerTest {
                         "value=\"learner@example.com\"")))
                 .andExpect(content().string(not(
                         containsString("value=\"incorrect\""))));
+
+        assertNull(session.getAttribute(LoginController.AUTHENTICATED_USER_ID));
     }
 }

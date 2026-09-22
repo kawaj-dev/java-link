@@ -1,6 +1,10 @@
 package com.javalink.controller;
 
+import java.util.Optional;
+
+import com.javalink.entity.UserAccount;
 import com.javalink.service.UserAuthenticationService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestParam;
  */
 @Controller
 public class LoginController {
+
+    public static final String AUTHENTICATED_USER_ID = "AUTHENTICATED_USER_ID";
 
     private static final String LOGIN_ERROR_MESSAGE =
             "メールアドレスまたはパスワードが正しくありません。";
@@ -44,8 +50,12 @@ public class LoginController {
     public String login(
             @RequestParam("email") String email,
             @RequestParam("password") String password,
-            Model model) {
-        if (userAuthenticationService.authenticate(email, password).isPresent()) {
+            Model model,
+            HttpSession session) {
+        Optional<UserAccount> authenticatedUser =
+                userAuthenticationService.authenticate(email, password);
+        if (authenticatedUser.isPresent()) {
+            session.setAttribute(AUTHENTICATED_USER_ID, authenticatedUser.get().getId());
             return "redirect:/";
         }
 
