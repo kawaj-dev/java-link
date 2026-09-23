@@ -1,11 +1,11 @@
 package com.javalink.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -18,7 +18,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.Optional;
 
 import com.javalink.entity.UserAccount;
+import com.javalink.service.AuthenticatedUserService;
 import com.javalink.service.UserAuthenticationService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.mock.web.MockHttpSession;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,9 @@ class LoginControllerTest {
 
     @MockitoBean
     private UserAuthenticationService userAuthenticationService;
+
+    @MockitoBean
+    private AuthenticatedUserService authenticatedUserService;
 
     @Test
     void ログイン画面に必要な入力欄と案内を表示する() throws Exception {
@@ -52,7 +57,6 @@ class LoginControllerTest {
     @Test
     void ログイン成功時は入力値をServiceへ渡してトップ画面へ移動する() throws Exception {
         UserAccount userAccount = mock(UserAccount.class);
-        given(userAccount.getId()).willReturn(42L);
         given(userAuthenticationService.authenticate(
                 "learner@example.com",
                 "password"))
@@ -66,7 +70,7 @@ class LoginControllerTest {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/"));
 
-        assertEquals(42L, session.getAttribute(LoginController.AUTHENTICATED_USER_ID));
+        verify(authenticatedUserService).storeAuthenticatedUser(session, userAccount);
         verify(userAuthenticationService).authenticate(
                 "learner@example.com",
                 "password");
@@ -96,6 +100,8 @@ class LoginControllerTest {
                 .andExpect(content().string(not(
                         containsString("value=\"incorrect\""))));
 
-        assertNull(session.getAttribute(LoginController.AUTHENTICATED_USER_ID));
+        verify(authenticatedUserService, never()).storeAuthenticatedUser(
+                any(HttpSession.class),
+                any(UserAccount.class));
     }
 }
