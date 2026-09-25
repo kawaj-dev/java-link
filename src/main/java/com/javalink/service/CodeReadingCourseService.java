@@ -19,19 +19,22 @@ public class CodeReadingCourseService {
     private final CodeReadingPartService partService;
     private final CodeReadingFlowService flowService;
     private final CodeReadingLessonCatalog lessonCatalog;
+    private final LearningProgressSyncService learningProgressSyncService;
 
     public CodeReadingCourseService(
             LessonEngine lessonEngine,
             LessonProgressService lessonProgressService,
             CodeReadingPartService partService,
             CodeReadingFlowService flowService,
-            CodeReadingLessonCatalog lessonCatalog
+            CodeReadingLessonCatalog lessonCatalog,
+            LearningProgressSyncService learningProgressSyncService
     ) {
         this.lessonEngine = lessonEngine;
         this.lessonProgressService = lessonProgressService;
         this.partService = partService;
         this.flowService = flowService;
         this.lessonCatalog = lessonCatalog;
+        this.learningProgressSyncService = learningProgressSyncService;
     }
 
     /** 導入画面からPart 1の先頭へ移ります。 */
@@ -51,11 +54,18 @@ public class CodeReadingCourseService {
             String lessonId,
             String selectedOptionId
     ) {
-        return lessonEngine.answerCurrentStep(
+        LessonEngine.AnswerResult result = lessonEngine.answerCurrentStep(
                 session,
                 lessonId,
                 selectedOptionId
         );
+        if (result.correct() && result.progress().isCompleted()) {
+            learningProgressSyncService.saveIfAuthenticated(
+                    session,
+                    result.progress()
+            );
+        }
+        return result;
     }
 
     /** 正解確認後、同じPart内に次項目がある場合だけ移ります。 */
@@ -83,7 +93,7 @@ public class CodeReadingCourseService {
             return progress;
         }
 
-        return lessonEngine.moveToNextStep(session, lessonId);
+        return moveToNextStepAndSync(session, lessonId, progress);
     }
 
     /**
@@ -180,7 +190,7 @@ public class CodeReadingCourseService {
         }
 
         if (!targetStepId.equals(progress.getCurrentStepId())) {
-            lessonEngine.moveToNextStep(session, lessonId);
+            moveToNextStepAndSync(session, lessonId, progress);
         }
         LessonEngine.AnswerResult result = answerCurrentItem(
                 session,
@@ -262,8 +272,25 @@ public class CodeReadingCourseService {
             return new PartTransitionResult(progress, true, true);
         }
 
-        LessonProgress moved = lessonEngine.moveToNextStep(session, lessonId);
+        LessonProgress moved = moveToNextStepAndSync(
+                session,
+                lessonId,
+                progress
+        );
         return new PartTransitionResult(moved, true, false);
+    }
+
+    private LessonProgress moveToNextStepAndSync(
+            HttpSession session,
+            String lessonId,
+            LessonProgress progress
+    ) {
+        String previousStepId = progress.getCurrentStepId();
+        LessonProgress moved = lessonEngine.moveToNextStep(session, lessonId);
+        if (!previousStepId.equals(moved.getCurrentStepId())) {
+            learningProgressSyncService.saveIfAuthenticated(session, moved);
+        }
+        return moved;
     }
 
     /** 問題進捗と画面フェーズを両方とも初期状態へ戻します。 */
