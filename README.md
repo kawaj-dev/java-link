@@ -149,13 +149,41 @@ Javaコードを左から順番に読み進めながら、それぞれの部分�
 
 ## DB・ログイン・学習進捗保存
 
-現在、利用者ごとの学習進捗を保存・再開できるようにするため、DB・ログイン機能の導入に向けた実装を進めています。
+ユーザー登録からログイン、学習進捗のPostgreSQLへの保存までを実装しています。
 
-- 🔄 PostgreSQL / Spring Data JPA を使用したデータ永続化
+- ✅ PostgreSQL / Spring Data JPAによるユーザー情報・学習進捗の永続化
 
-- 🔄 Spring Securityを使用したログイン機能
+- ✅ メールアドレスとパスワードによるユーザー登録・ログイン
 
-- 🔄 利用者ごとの学習進捗の保存・再開
+- ✅ BCryptによるパスワードのハッシュ化と、メールアドレスの重複防止
+
+- ✅ ログイン成功時にユーザーIDだけをHttpSessionへ保存し、必要なときにユーザー情報を取得
+
+- ✅ ログイン済みユーザーが次のStepへ進んだとき、またはLessonを完了したときの進捗保存
+
+- ✅ 未ログインの場合は、従来どおりHttpSessionだけで学習可能
+
+- 🔄 DBに保存した進捗の復元と「続きから再開」
+
+### ログインから学習進捗保存まで
+
+```mermaid
+flowchart LR
+    Login[ログイン]
+    Session[ユーザーIDを<br/>HttpSessionへ保存]
+    Learning[学習]
+    Progress[次のStep確定<br/>またはLesson完了]
+    Link[認証済みユーザーと<br/>進捗を関連付け]
+    DB[(PostgreSQLへ保存)]
+
+    Login --> Session
+    Session --> Learning
+    Learning --> Progress
+    Progress --> Link
+    Link --> DB
+```
+
+現在は進捗の保存まで実装済みです。DBからの進捗復元、続きから再開するUI、完了した個々のStepや回答状態のDB保存、ログアウト、アクセス制御、Spring Securityによる正式な認証状態管理は未実装です。
 
 ---
 
@@ -163,11 +191,14 @@ Javaコードを左から順番に読み進めながら、それぞれの部分�
 
 Java Linkは、Spring Bootを使用したWebアプリケーションです。
 
-Javaコードは役割ごとに `controller`、`service`、`model` に分けています。
+Javaコードは役割ごとに `controller`、`service`、`model`、`entity`、`repository`、`config` に分けています。
 
 - **Controller**：ブラウザからのリクエストを受け取り、Serviceの処理や画面表示につなぐ
 - **Service**：学習進行、回答処理、進捗管理など、役割ごとに処理を分担する
 - **Model**：教材、学習ステップ、進捗、画面表示などで使用するデータを表現する
+- **Entity**：ユーザー情報と永続化する学習進捗を表現する
+- **Repository**：Spring Data JPAを利用してPostgreSQLへの保存・取得を行う
+- **Config**：パスワードのハッシュ化など、アプリケーションで共通して使用する設定を管理する
 - **Templates**：Thymeleafを使用して画面を表示する
 - **Static**：CSS、JavaScript、画像などの静的ファイルを配置する
 
@@ -192,6 +223,15 @@ Java Linkでは、学習の進行や画面表示を実現するために、次�
 * **HTTPセッションを利用した学習進捗管理**
   現在のStep、完了したStep、回答状態などをセッションに保存し、学習途中の状態を管理しています。
 
+* **Spring Data JPAによるデータ永続化**
+  PostgreSQLへユーザー情報とLesson単位の学習進捗を保存しています。メールアドレスはDBのUNIQUE制約でも重複を防ぎ、ユーザーとLessonの組み合わせごとに1件の進捗を管理しています。
+
+* **ユーザー登録・ログイン処理**
+  パスワードは `spring-security-crypto` のBCryptでハッシュ化して保存し、ログイン時はメールアドレスとパスワードを照合します。ログイン成功後はUserAccountのIDだけをHttpSessionに保持します。
+
+* **学習フローとDB進捗保存の連携**
+  ログイン済みユーザーが次のStepへ進んだときは更新後のStep IDを、Lessonを完了したときは最終Step IDと完了状態をDBへ保存します。未ログインユーザーはHttpSessionだけで学習を続けられます。
+
 * **JavaScriptによる学習画面の動的な更新**
   回答結果に応じた電球の点灯、説明・進捗表示の更新、次のStepの有効化に加え、まとめ画面ではコンパイルから実行結果表示までの流れを視覚的に表現しています。
 
@@ -214,6 +254,11 @@ Java Linkでは、学習の進行や画面表示を実現するために、次�
 - HTML
 - CSS
 - JavaScript
+- PostgreSQL
+- Spring Data JPA
+- Hibernate
+- H2（テスト）
+- BCrypt（spring-security-crypto）
 - Maven
 - Git
 - GitHub
@@ -243,8 +288,11 @@ Codexで作成・変更したファイルは、差分とテスト結果を確認
 
 # 今後の展開
 
-- ログイン機能の追加
-- 学習進捗の保存・再開機能の追加
+- DBに保存した学習進捗の復元
+- 前回のStepから「続きから再開」する機能
+- 「最初から／続きから」を選択するUI
+- ログアウト・アクセス制御の追加
+- Spring Securityによる正式な認証状態管理への移行
 - コードを組み立てながら理解する学習機能への発展
 - 学習Stage・教材内容の充実
 - UI / UX の改善
