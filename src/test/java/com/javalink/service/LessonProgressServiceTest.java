@@ -11,10 +11,12 @@ import org.springframework.mock.web.MockHttpSession;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -89,6 +91,48 @@ class LessonProgressServiceTest {
                         LessonProgressService.LESSON_PROGRESS_MAP
                 );
         assertEquals(progress, stored.get(MAIN_LESSON_ID));
+    }
+
+    @Test
+    void 保存済み進捗だけを新規生成せず取得できる() {
+        LessonProgress stored =
+                progressService.getProgress(session, MAIN_LESSON_ID);
+
+        Optional<LessonProgress> result =
+                progressService.findStoredProgress(session, MAIN_LESSON_ID);
+
+        assertTrue(result.isPresent());
+        assertSame(stored, result.orElseThrow());
+    }
+
+    @Test
+    void 未保存の教材では進捗を生成せず空を返す() {
+        Optional<LessonProgress> result =
+                progressService.findStoredProgress(session, MAIN_LESSON_ID);
+
+        assertTrue(result.isEmpty());
+        @SuppressWarnings("unchecked")
+        Map<String, LessonProgress> stored =
+                (Map<String, LessonProgress>) session.getAttribute(
+                        LessonProgressService.LESSON_PROGRESS_MAP
+                );
+        assertFalse(stored.containsKey(MAIN_LESSON_ID));
+    }
+
+    @Test
+    void 別教材の保存済み進捗へ影響せず対象教材の未保存を返す() {
+        LessonProgress secondProgress =
+                progressService.getProgress(session, SECOND_LESSON_ID);
+
+        Optional<LessonProgress> result =
+                progressService.findStoredProgress(session, MAIN_LESSON_ID);
+
+        assertTrue(result.isEmpty());
+        assertSame(
+                secondProgress,
+                progressService.findStoredProgress(session, SECOND_LESSON_ID)
+                        .orElseThrow()
+        );
     }
 
     @Test

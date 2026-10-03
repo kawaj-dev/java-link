@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 教材ごとの学習進捗をHTTPセッションで管理します。
@@ -41,6 +42,22 @@ public class LessonProgressService {
                 lessonId,
                 this::createInitialProgress
         );
+    }
+
+    /**
+     * 指定教材について、セッションに保存済みの進捗だけを取得します。
+     * 進捗がない場合も初期状態は作成しません。
+     *
+     * @param session  HTTPセッション
+     * @param lessonId 教材ID
+     * @return 保存済み進捗。未保存の場合は空
+     */
+    public Optional<LessonProgress> findStoredProgress(
+            HttpSession session,
+            String lessonId
+    ) {
+        validateSessionAndLesson(session, lessonId);
+        return Optional.ofNullable(getProgressMap(session).get(lessonId));
     }
 
     /**

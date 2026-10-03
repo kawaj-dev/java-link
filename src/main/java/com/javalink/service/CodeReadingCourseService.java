@@ -20,6 +20,7 @@ public class CodeReadingCourseService {
     private final CodeReadingFlowService flowService;
     private final CodeReadingLessonCatalog lessonCatalog;
     private final LearningProgressSyncService learningProgressSyncService;
+    private final LearningProgressRestoreService learningProgressRestoreService;
 
     public CodeReadingCourseService(
             LessonEngine lessonEngine,
@@ -27,7 +28,8 @@ public class CodeReadingCourseService {
             CodeReadingPartService partService,
             CodeReadingFlowService flowService,
             CodeReadingLessonCatalog lessonCatalog,
-            LearningProgressSyncService learningProgressSyncService
+            LearningProgressSyncService learningProgressSyncService,
+            LearningProgressRestoreService learningProgressRestoreService
     ) {
         this.lessonEngine = lessonEngine;
         this.lessonProgressService = lessonProgressService;
@@ -35,17 +37,45 @@ public class CodeReadingCourseService {
         this.flowService = flowService;
         this.lessonCatalog = lessonCatalog;
         this.learningProgressSyncService = learningProgressSyncService;
+        this.learningProgressRestoreService = learningProgressRestoreService;
     }
 
-    /** 導入画面からPart 1の先頭へ移ります。 */
+    /** セッションまたはDBの進捗を使って学習を開始します。 */
     public LessonProgress startLearning(
             HttpSession session,
             String lessonId
     ) {
-        LessonProgress progress =
-                lessonProgressService.resetProgress(session, lessonId);
-        flowService.startLearning(session, lessonId);
+        LessonProgress progress = lessonProgressService
+                .findStoredProgress(session, lessonId)
+                .orElseGet(() -> restoreOrCreateInitialProgress(
+                        session,
+                        lessonId
+                ));
+
+        if (progress.isCompleted()) {
+            flowService.showSummary(session, lessonId);
+        } else {
+            flowService.startLearning(session, lessonId);
+        }
         return progress;
+    }
+
+    private LessonProgress restoreOrCreateInitialProgress(
+            HttpSession session,
+            String lessonId
+    ) {
+        return learningProgressRestoreService
+                .restoreIfAuthenticated(session, lessonId)
+                .map(progress -> {
+                    lessonProgressService.saveProgress(
+                            session,
+                            lessonId,
+                            progress
+                    );
+                    return progress;
+                })
+                .orElseGet(() ->
+                        lessonProgressService.resetProgress(session, lessonId));
     }
 
     /** 回答状態を保存し、正解後も確認のため現在stepに留まります。 */
