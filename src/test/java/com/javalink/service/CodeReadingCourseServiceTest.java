@@ -48,6 +48,9 @@ class CodeReadingCourseServiceTest {
     private LearningProgressSyncService learningProgressSyncService;
 
     @Mock
+    private LearningProgressRestoreService learningProgressRestoreService;
+
+    @Mock
     private HttpSession session;
 
     private CodeReadingCourseService courseService;
@@ -60,8 +63,97 @@ class CodeReadingCourseServiceTest {
                 partService,
                 flowService,
                 lessonCatalog,
-                learningProgressSyncService
+                learningProgressSyncService,
+                learningProgressRestoreService
         );
+    }
+
+    @Test
+    void セッション進捗があればDB復元も初期化もせず使用する() {
+        LessonProgress stored = mock(LessonProgress.class);
+        when(lessonProgressService.findStoredProgress(session, LESSON_ID))
+                .thenReturn(Optional.of(stored));
+
+        LessonProgress result = courseService.startLearning(session, LESSON_ID);
+
+        assertSame(stored, result);
+        verify(flowService).startLearning(session, LESSON_ID);
+        verifyNoInteractions(learningProgressRestoreService);
+        verify(lessonProgressService, never())
+                .resetProgress(session, LESSON_ID);
+        verifyNoInteractions(learningProgressSyncService);
+    }
+
+    @Test
+    void DBの途中進捗をセッションへ保存して学習画面へ進む() {
+        LessonProgress restored = mock(LessonProgress.class);
+        when(lessonProgressService.findStoredProgress(session, LESSON_ID))
+                .thenReturn(Optional.empty());
+        when(learningProgressRestoreService.restoreIfAuthenticated(
+                session,
+                LESSON_ID
+        )).thenReturn(Optional.of(restored));
+
+        LessonProgress result = courseService.startLearning(session, LESSON_ID);
+
+        assertSame(restored, result);
+        verify(lessonProgressService).saveProgress(
+                session,
+                LESSON_ID,
+                restored
+        );
+        verify(flowService).startLearning(session, LESSON_ID);
+        verify(lessonProgressService, never())
+                .resetProgress(session, LESSON_ID);
+        verifyNoInteractions(learningProgressSyncService);
+    }
+
+    @Test
+    void DBの完了済み進捗をセッションへ保存してまとめ画面へ進む() {
+        LessonProgress restored = mock(LessonProgress.class);
+        when(restored.isCompleted()).thenReturn(true);
+        when(lessonProgressService.findStoredProgress(session, LESSON_ID))
+                .thenReturn(Optional.empty());
+        when(learningProgressRestoreService.restoreIfAuthenticated(
+                session,
+                LESSON_ID
+        )).thenReturn(Optional.of(restored));
+
+        LessonProgress result = courseService.startLearning(session, LESSON_ID);
+
+        assertSame(restored, result);
+        verify(lessonProgressService).saveProgress(
+                session,
+                LESSON_ID,
+                restored
+        );
+        verify(flowService).showSummary(session, LESSON_ID);
+        verify(flowService, never()).startLearning(session, LESSON_ID);
+        verifyNoInteractions(learningProgressSyncService);
+    }
+
+    @Test
+    void DB復元できなければ初期進捗を作って学習画面へ進む() {
+        LessonProgress initial = mock(LessonProgress.class);
+        when(lessonProgressService.findStoredProgress(session, LESSON_ID))
+                .thenReturn(Optional.empty());
+        when(learningProgressRestoreService.restoreIfAuthenticated(
+                session,
+                LESSON_ID
+        )).thenReturn(Optional.empty());
+        when(lessonProgressService.resetProgress(session, LESSON_ID))
+                .thenReturn(initial);
+
+        LessonProgress result = courseService.startLearning(session, LESSON_ID);
+
+        assertSame(initial, result);
+        verify(flowService).startLearning(session, LESSON_ID);
+        verify(lessonProgressService, never()).saveProgress(
+                session,
+                LESSON_ID,
+                initial
+        );
+        verifyNoInteractions(learningProgressSyncService);
     }
 
     @Test
