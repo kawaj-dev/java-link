@@ -911,7 +911,7 @@ h1 {
     z-index: 3;
     display: flex;
     width: min(1120px, calc(100% - 48px));
-    min-height: 64px;
+    min-height: 58px;
     align-items: center;
     justify-content: space-between;
     margin: 0 auto;
@@ -931,8 +931,8 @@ h1 {
 
 .home-logo-image {
     display: block;
-    width: 34px;
-    height: 34px;
+    width: 32px;
+    height: 32px;
     border-radius: 9px;
     object-fit: cover;
 }
@@ -1042,7 +1042,7 @@ h1 {
     position: absolute;
     right: 18px;
     bottom: auto;
-    top: 690px;
+    top: 620px;
     min-height: 38px;
     padding: 8px 15px;
     font-size: 0.82rem;
@@ -1052,14 +1052,14 @@ h1 {
     position: relative;
     width: min(100% - 40px, 1120px);
     margin: 0 auto;
-    padding: 22px 0 110px;
+    padding: 10px 0 100px;
     text-align: center;
 }
 
 .home-circuit-side {
     position: absolute;
     z-index: 0;
-    top: 82px;
+    top: 70px;
     width: 190px;
     height: 420px;
     opacity: 0.38;
@@ -1114,7 +1114,7 @@ h1 {
 
 .home-hero-circuit {
     display: block;
-    width: min(390px, 78vw);
+    width: min(350px, 76vw);
     height: auto;
     margin: 0 auto 4px;
     overflow: visible;
@@ -1167,7 +1167,7 @@ h1 {
     gap: 0.11em;
     margin: 0;
     color: #ffffff;
-    font-size: clamp(3.5rem, 7.8vw, 5.65rem);
+    font-size: clamp(3.4rem, 7.2vw, 5.2rem);
     font-weight: 800;
     line-height: 0.95;
     letter-spacing: -0.055em;
@@ -1190,9 +1190,9 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(24px, 3.5vw, 46px);
-    margin: 14px 0 0;
-    font-size: clamp(1.1rem, 2.6vw, 1.45rem);
+    gap: clamp(22px, 3.2vw, 40px);
+    margin: 10px 0 0;
+    font-size: clamp(1.08rem, 2.4vw, 1.38rem);
     font-weight: 800;
     letter-spacing: 0.05em;
 }
@@ -1213,8 +1213,8 @@ h1 {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: clamp(14px, 3vw, 34px);
-    margin: 24px 0 36px;
+    gap: clamp(12px, 2.7vw, 30px);
+    margin: 16px 0 24px;
     padding: 0;
     color: #ffffff;
     list-style: none;
@@ -1224,7 +1224,7 @@ h1 {
     display: grid;
     min-width: 78px;
     justify-items: center;
-    gap: 8px;
+    gap: 6px;
     font-weight: 700;
 }
 
@@ -1252,8 +1252,8 @@ h1 {
 
 .home-flow-icon {
     display: grid;
-    width: 54px;
-    height: 54px;
+    width: 48px;
+    height: 48px;
     place-items: center;
     border: 2.5px solid #1685ff;
     border-radius: 50%;
@@ -1356,7 +1356,7 @@ h1 {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: 20px;
-    width: min(420px, 100%);
+    width: min(400px, 100%);
     margin: 0 auto;
     scroll-margin-top: 24px;
 }
@@ -1365,8 +1365,8 @@ h1 {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-height: 224px;
-    padding: 14px 26px 15px;
+    min-height: 204px;
+    padding: 12px 24px 14px;
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.78);
     border-radius: 18px;
@@ -1384,10 +1384,10 @@ h1 {
 
 .home-menu-card-symbol {
     display: grid;
-    width: 50px;
-    height: 50px;
+    width: 44px;
+    height: 44px;
     place-items: center;
-    margin-bottom: 7px;
+    margin-bottom: 6px;
     border-radius: 50%;
     color: #1f78b5;
     background: #eaf6fb;
@@ -1399,8 +1399,8 @@ h1 {
 }
 
 .home-card-icon {
-    width: 36px;
-    height: 36px;
+    width: 32px;
+    height: 32px;
     fill: none;
     stroke: currentcolor;
     stroke-linecap: round;
@@ -1435,21 +1435,21 @@ h1 {
 .home-menu-card h2 {
     margin: 0;
     color: #0d3154;
-    font-size: clamp(1.15rem, 2.1vw, 1.35rem);
+    font-size: clamp(1.12rem, 2vw, 1.3rem);
 }
 
 .home-menu-card p {
     flex-grow: 1;
-    margin: 8px 0 10px;
+    margin: 6px 0 8px;
     color: #486378;
     font-size: 0.9rem;
-    line-height: 1.6;
+    line-height: 1.5;
 }
 
 .home-menu-button {
     display: flex;
     width: min(220px, 100%);
-    min-height: 38px;
+    min-height: 36px;
     align-items: center;
     justify-content: space-between;
     padding: 7px 16px 7px 22px;
@@ -1706,7 +1706,7 @@ h1 {
 
     .home-site-header {
         width: min(100% - 28px, 1120px);
-        min-height: 66px;
+        min-height: 60px;
     }
 
     .home-logo {
@@ -1725,21 +1725,21 @@ h1 {
 
     .home-page {
         width: min(100% - 28px, 1120px);
-        padding: 20px 0 76px;
+        padding: 14px 0 72px;
     }
 
     .home-hero-circuit {
-        margin-bottom: 8px;
+        margin-bottom: 4px;
     }
 
     .home-learning-flow {
         gap: 10px;
-        margin: 28px 0 34px;
+        margin: 20px 0 26px;
     }
 
     .home-learning-flow li:not(.home-flow-arrow) {
         min-width: 63px;
-        gap: 10px;
+        gap: 8px;
         font-size: 0.86rem;
     }
 
@@ -1759,14 +1759,14 @@ h1 {
     }
 
     .home-menu-card {
-        min-height: 236px;
-        padding: 17px 22px 19px;
+        min-height: 216px;
+        padding: 15px 22px 17px;
     }
 
     .home-menu-card-symbol {
-        width: 50px;
-        height: 50px;
-        margin-bottom: 8px;
+        width: 46px;
+        height: 46px;
+        margin-bottom: 6px;
     }
 
     .home-card-icon {
@@ -1775,8 +1775,8 @@ h1 {
     }
 
     .home-menu-card p {
-        margin: 10px 0 14px;
-        line-height: 1.65;
+        margin: 8px 0 10px;
+        line-height: 1.55;
     }
 
     .home-concept {
