@@ -35,6 +35,7 @@
 
     <!-- 導入：完成コードの全体像を見るだけの画面です。 -->
     <section th:if="${phase.name() == 'INTRO'}" class="quiz-focus-program"
+             th:classappend="${lessonId == 'hello-program-reading'} ? ' quiz-focus-program--stage1'"
             >        
         <div class="quiz-ide-window">
             <div class="quiz-ide-tabbar">
