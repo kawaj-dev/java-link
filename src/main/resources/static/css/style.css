@@ -4152,6 +4152,86 @@ body:has(.quiz-focus-program) .quiz-intro-start .next-button:hover {
     background-color: #0565d8;
 }
 
+/* Stage 1 INTROだけを、100%表示でもコードと開始操作を見渡せる高さに整えます。 */
+body:has(.quiz-focus-program--stage1) .quiz-focus-page {
+    padding-top: 18px;
+    padding-bottom: 36px;
+}
+
+body:has(.quiz-focus-program--stage1) .page-home-navigation {
+    margin-bottom: 10px;
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-focus-header {
+    margin-bottom: 16px;
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-focus-header .label {
+    margin-bottom: 6px;
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-focus-header h1 {
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-focus-stage {
+    margin-top: 5px;
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-focus-header h2 {
+    margin-top: 5px;
+    font-size: clamp(1.15rem, 2.5vw, 1.55rem);
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-focus-program {
+    padding: clamp(14px, 2vw, 20px);
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-focus-program .quiz-ide-tabbar,
+body:has(.quiz-focus-program--stage1) .quiz-focus-program .quiz-ide-tab {
+    min-height: 36px;
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-focus-program .quiz-ide-editor,
+body:has(.quiz-focus-program--stage1) .quiz-focus-program .quiz-full-code {
+    min-height: 210px;
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-focus-program .quiz-intro-code {
+    font-size: clamp(0.72rem, 2.4vw, 1rem);
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-focus-program .quiz-ide-line-numbers,
+body:has(.quiz-focus-program--stage1) .quiz-focus-program .quiz-full-code {
+    padding-top: 18px;
+    padding-bottom: 18px;
+}
+
+body:has(.quiz-focus-program--stage1) .quiz-intro-start .next-button {
+    min-height: 48px;
+    margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+    body:has(.quiz-focus-program--stage1) .quiz-focus-page {
+        padding-top: 14px;
+        padding-bottom: 28px;
+    }
+
+    body:has(.quiz-focus-program--stage1) .quiz-focus-header {
+        margin-bottom: 13px;
+    }
+
+    body:has(.quiz-focus-program--stage1) .quiz-focus-program {
+        padding: 13px;
+    }
+
+    body:has(.quiz-focus-program--stage1) .quiz-focus-program .quiz-ide-editor,
+    body:has(.quiz-focus-program--stage1) .quiz-focus-program .quiz-full-code {
+        min-height: 190px;
+    }
+}
+
 /* 各Partで、コードの長さを保ちながら意味カードを対応させます。 */
 .quiz-reading-code-map {
     display: flex;
