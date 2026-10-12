@@ -99,6 +99,12 @@ class QuizControllerTest {
 
     @Test
     void 初回GETは導入画面と完成コードだけを表示する() throws Exception {
+        String completedCode = "public class Main {\n"
+                + "    public static void main(String[] args) {\n"
+                + "        System.out.println(\"Hello\");\n"
+                + "    }\n"
+                + "}";
+
         mockMvc.perform(get("/quiz"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("quiz"))
@@ -107,8 +113,16 @@ class QuizControllerTest {
                 .andExpect(content().string(containsString("完成コード")))
                 .andExpect(content().string(containsString("Main.java")))
                 .andExpect(content().string(containsString("quiz-intro-code")))
-                .andExpect(content().string(containsString("public class Main {\n    public static void main(String[] args) {\n        System.out.println(\"Hello\");\n    }\n}")))
+                .andExpect(result -> assertTrue(
+                        normalizeLineEndings(
+                                result.getResponse().getContentAsString()
+                        ).contains(completedCode)
+                ))
                 .andExpect(content().string(containsString("スタート")));
+    }
+
+    private static String normalizeLineEndings(String value) {
+        return value.replace("\r\n", "\n").replace('\r', '\n');
     }
 
     @Test
