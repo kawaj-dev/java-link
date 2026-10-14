@@ -81,7 +81,7 @@ class QuizReadingScriptTest {
         assertTrue(template.contains("quiz-reading-access-row--header"));
         assertTrue(template.contains("(section.tableHeader and entryStat.first) or entry.tableHeader"));
         assertTrue(script.contains("entry.tableHeader === true"));
-        assertTrue(template.contains("style.css(v='stage1-learning-compact-1')"));
+        assertTrue(template.contains("style.css(v='stage1-summary-compact-1')"));
         assertTrue(template.contains("quiz-reading.js(v='stage3-reading-6')"));
         assertFalse(template.contains("continuous-circuit-1"));
     }

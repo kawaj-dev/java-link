@@ -7014,6 +7014,130 @@ body:has(.quiz-summary-development-flow)
     color: #e5edf7;
 }
 
+/* Stage 1 SUMMARYだけを、コード・まとめ・次の操作を見渡せる高さに整えます。 */
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-focus-page {
+    padding-top: 16px;
+    padding-bottom: 18px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .page-home-navigation {
+    margin-bottom: 8px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-focus-header {
+    margin-bottom: 10px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-focus-header .label {
+    margin-bottom: 4px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-focus-header h1 {
+    font-size: clamp(2.25rem, 5vw, 3rem);
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-focus-stage {
+    margin-top: 4px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-focus-header h2 {
+    margin-top: 4px;
+    font-size: clamp(1.1rem, 2.5vw, 1.4rem);
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-final-review {
+    margin-top: 10px;
+    padding: 14px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-summary-development-flow {
+    margin: 0 auto 10px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-summary-development-flow .quiz-ide-tabbar {
+    min-height: 36px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-summary-development-flow .quiz-ide-editor,
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-summary-development-flow .quiz-full-code {
+    min-height: 140px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-summary-development-flow .quiz-ide-line-numbers {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-summary-development-flow .quiz-full-code {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 1.5;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-summary-run-panel {
+    padding: 8px 14px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-summary-run-panel .run-button {
+    min-height: 44px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-summary-run-help {
+    margin-top: 4px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-focus-review-list {
+    gap: 4px;
+    margin: 8px 0;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-focus-review-list > div {
+    gap: 10px;
+    padding: 6px 10px;
+    line-height: 1.35;
+}
+
+body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+    .quiz-summary-navigation {
+    margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+    body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+        .quiz-focus-page {
+        padding-top: 14px;
+        padding-bottom: 18px;
+    }
+
+    body:has(.quiz-final-review[data-lesson-id="hello-program-reading"])
+        .quiz-final-review {
+        padding: 12px;
+    }
+}
+
 /* /quiz LEARNING: 緑は完了・正解だけに限定し、教材装飾はブランドブルーへ寄せます。 */
 body:has(.quiz-focus-learning)
     .quiz-circuit-code-button[aria-pressed="true"] .quiz-circuit-toggle {
