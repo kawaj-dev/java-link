@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='stage1-learning-compact-1')}"
-          href="/css/style.css?v=stage1-learning-compact-1">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='stage1-summary-compact-1')}"
+          href="/css/style.css?v=stage1-summary-compact-1">
     <script th:if="${phase.name() == 'LEARNING'}" defer
             th:src="@{/js/quiz-reading.js(v='stage3-reading-6')}"
             src="/js/quiz-reading.js?v=stage3-reading-6"></script>
@@ -319,7 +319,7 @@
 
     <!-- まとめ：単語ではなくコードの意味のまとまりで読み直します。 -->
     <section th:if="${phase.name() == 'SUMMARY'}" class="quiz-final-review"
-             th:attr="aria-label=|${codeReadingPage.stageName} まとめ|">
+             th:attr="aria-label=|${codeReadingPage.stageName} まとめ|,data-lesson-id=${lessonId}">
         <div class="quiz-summary-development-flow">
         <div class="quiz-ide-window quiz-summary-ide-window">
             <div class="quiz-ide-tabbar">
