@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='stage1-summary-compact-1')}"
-          href="/css/style.css?v=stage1-summary-compact-1">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='stage2-intro-compact-1')}"
+          href="/css/style.css?v=stage2-intro-compact-1">
     <script th:if="${phase.name() == 'LEARNING'}" defer
             th:src="@{/js/quiz-reading.js(v='stage3-reading-6')}"
             src="/js/quiz-reading.js?v=stage3-reading-6"></script>
@@ -36,7 +36,7 @@
     <!-- 導入：完成コードの全体像を見るだけの画面です。 -->
     <section th:if="${phase.name() == 'INTRO'}" class="quiz-focus-program"
              th:classappend="${lessonId == 'hello-program-reading'} ? ' quiz-focus-program--stage1'"
-            >        
+             th:attr="data-lesson-id=${lessonId}">
         <div class="quiz-ide-window">
             <div class="quiz-ide-tabbar">
                 <span class="quiz-ide-tab quiz-ide-tab--active">

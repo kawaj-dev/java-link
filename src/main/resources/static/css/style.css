@@ -4232,6 +4232,86 @@ body:has(.quiz-focus-program--stage1) .quiz-intro-start .next-button {
     }
 }
 
+/* Stage 2 INTROだけを、6行のコードと開始操作を見渡せる高さに整えます。 */
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-page {
+    padding-top: 16px;
+    padding-bottom: 28px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .page-home-navigation {
+    margin-bottom: 8px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-header {
+    margin-bottom: 14px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-header .label {
+    margin-bottom: 5px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-header h1 {
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-stage {
+    margin-top: 4px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-header h2 {
+    margin-top: 4px;
+    font-size: clamp(1.15rem, 2.5vw, 1.55rem);
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-learning-objective {
+    margin: 5px 0 0;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-program {
+    padding: clamp(14px, 2vw, 18px);
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-program .quiz-ide-tabbar,
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-program .quiz-ide-tab {
+    min-height: 36px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-program .quiz-ide-editor,
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-program .quiz-full-code {
+    min-height: 210px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-program .quiz-ide-line-numbers,
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-program .quiz-full-code {
+    padding-top: 12px;
+    padding-bottom: 12px;
+    line-height: 1.75;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-intro-start .next-button {
+    margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+    body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-page {
+        padding-top: 14px;
+        padding-bottom: 24px;
+    }
+
+    body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-header {
+        margin-bottom: 12px;
+    }
+
+    body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-program {
+        padding: 13px;
+    }
+
+    body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-program .quiz-ide-editor,
+    body:has(.quiz-focus-program[data-lesson-id="variable-program-reading"]) .quiz-focus-program .quiz-full-code {
+        min-height: 190px;
+    }
+}
+
 /* 各Partで、コードの長さを保ちながら意味カードを対応させます。 */
 .quiz-reading-code-map {
     display: flex;
