@@ -6835,6 +6835,116 @@ body:has(.quiz-focus-learning[data-lesson-id="hello-program-reading"])
     }
 }
 
+/* Stage 2 LEARNINGだけを、コード・電球・操作を見渡しやすい高さに整えます。 */
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-focus-page {
+    padding-top: 18px;
+    padding-bottom: 36px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .page-home-navigation {
+    margin-bottom: 10px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-focus-header {
+    margin-bottom: 14px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-focus-header .label {
+    margin-bottom: 5px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-focus-header h1 {
+    font-size: clamp(2.25rem, 5vw, 3.25rem);
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-focus-stage {
+    margin-top: 5px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-focus-header h2 {
+    margin-top: 5px;
+    font-size: clamp(1.15rem, 2.5vw, 1.55rem);
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-focus-learning-objective {
+    margin: 5px 0 0;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-focus-learning {
+    margin-top: 12px;
+    padding: clamp(14px, 2vw, 20px);
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-focus-learning-header {
+    min-height: 44px;
+    padding-bottom: 7px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-understood-link {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-reading-stage {
+    gap: 10px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-reading-code-panel {
+    padding-top: 12px;
+    padding-bottom: 8px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-reading-code-meaning {
+    min-height: 42px;
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-reading-circuit-panel {
+    padding-top: 0;
+    padding-bottom: 2px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+    .quiz-reading-circuit-panel .quiz-code-circuit-bulbs {
+    padding-top: 4px;
+    padding-bottom: 5px;
+}
+
+@media (max-width: 600px) {
+    body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+        .quiz-focus-page {
+        padding-top: 14px;
+        padding-bottom: 28px;
+    }
+
+    body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+        .quiz-focus-header {
+        margin-bottom: 12px;
+    }
+
+    body:has(.quiz-focus-learning[data-lesson-id="variable-program-reading"])
+        .quiz-focus-learning {
+        padding: 13px;
+    }
+}
+
 /* /quiz LEARNING: 青=ブランド・現在位置、緑=完了、黄色=点灯。 */
 body:has(.quiz-focus-learning) {
     color: #102f52;
