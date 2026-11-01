@@ -27,7 +27,8 @@ public class LearningProgressSyncService {
                         userAccount,
                         progress.getLessonId(),
                         progress.getCurrentStepId(),
-                        progress.isCompleted()
+                        progress.isCompleted(),
+                        progress.getCompletedStepIds()
                 ));
     }
 }

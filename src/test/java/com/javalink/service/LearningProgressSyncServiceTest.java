@@ -5,6 +5,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
+import java.util.Set;
 
 import com.javalink.entity.UserAccount;
 import com.javalink.model.LessonProgress;
@@ -41,6 +42,8 @@ class LearningProgressSyncServiceTest {
     void ログイン済みならセッション進捗をDB進捗保存Serviceへ渡す() {
         UserAccount userAccount = new UserAccount();
         LessonProgress progress = new LessonProgress("stage1", "class");
+        progress.completeStep("public");
+        progress.completeStep("class");
         progress.setCompleted(true);
         when(authenticatedUserService.findAuthenticatedUser(session))
                 .thenReturn(Optional.of(userAccount));
@@ -52,7 +55,8 @@ class LearningProgressSyncServiceTest {
                 userAccount,
                 "stage1",
                 "class",
-                true
+                true,
+                Set.of("public", "class")
         );
     }
 
