@@ -6,13 +6,18 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import com.javalink.entity.LearningProgress;
+import com.javalink.entity.LearningStepProgress;
 import com.javalink.entity.UserAccount;
 import com.javalink.repository.LearningProgressRepository;
+import com.javalink.repository.LearningStepProgressRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,11 +31,17 @@ class LearningProgressServiceTest {
     @Mock
     private LearningProgressRepository learningProgressRepository;
 
+    @Mock
+    private LearningStepProgressRepository learningStepProgressRepository;
+
     private LearningProgressService learningProgressService;
 
     @BeforeEach
     void setUp() {
-        learningProgressService = new LearningProgressService(learningProgressRepository);
+        learningProgressService = new LearningProgressService(
+                learningProgressRepository,
+                learningStepProgressRepository
+        );
     }
 
     @Test
@@ -41,9 +52,16 @@ class LearningProgressServiceTest {
         LearningProgress saved = new LearningProgress();
         when(learningProgressRepository.save(any(LearningProgress.class)))
                 .thenReturn(saved);
+        when(learningStepProgressRepository.findAllByLearningProgress(saved))
+                .thenReturn(List.of());
 
         LearningProgress result = learningProgressService.saveProgress(
-                userAccount, "stage1", "public", false);
+                userAccount,
+                "stage1",
+                "public",
+                false,
+                Set.of()
+        );
 
         ArgumentCaptor<LearningProgress> captor =
                 ArgumentCaptor.forClass(LearningProgress.class);
@@ -55,9 +73,13 @@ class LearningProgressServiceTest {
         assertEquals("public", progressToSave.getCurrentStepId());
         assertEquals(false, progressToSave.isCompleted());
         assertSame(saved, result);
+        verify(learningStepProgressRepository)
+                .findAllByLearningProgress(saved);
+        verify(learningStepProgressRepository, never()).saveAll(any());
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     void 既存進捗があれば同じEntityを更新して保存する() {
         UserAccount userAccount = new UserAccount();
         LearningProgress existing = new LearningProgress();
@@ -69,9 +91,16 @@ class LearningProgressServiceTest {
                 .thenReturn(Optional.of(existing));
         LearningProgress saved = new LearningProgress();
         when(learningProgressRepository.save(existing)).thenReturn(saved);
+        when(learningStepProgressRepository.findAllByLearningProgress(saved))
+                .thenReturn(List.of());
 
         LearningProgress result = learningProgressService.saveProgress(
-                userAccount, "stage1", "class", true);
+                userAccount,
+                "stage1",
+                "class",
+                true,
+                Set.of("public", "class")
+        );
 
         verify(learningProgressRepository).findByUserAccountAndLessonId(userAccount, "stage1");
         verify(learningProgressRepository, times(1)).save(existing);
@@ -80,6 +109,17 @@ class LearningProgressServiceTest {
         assertEquals("class", existing.getCurrentStepId());
         assertTrue(existing.isCompleted());
         assertSame(saved, result);
+        ArgumentCaptor<List<LearningStepProgress>> stepCaptor =
+                ArgumentCaptor.forClass(List.class);
+        verify(learningStepProgressRepository).saveAll(stepCaptor.capture());
+        assertEquals(
+                Set.of("public", "class"),
+                stepCaptor.getValue().stream()
+                        .map(LearningStepProgress::getStepId)
+                        .collect(java.util.stream.Collectors.toSet())
+        );
+        assertTrue(stepCaptor.getValue().stream()
+                .allMatch(step -> step.getLearningProgress() == saved));
     }
 
     @Test
