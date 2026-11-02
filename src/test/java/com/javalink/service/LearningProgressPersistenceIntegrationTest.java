@@ -1,6 +1,7 @@
 package com.javalink.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -64,6 +65,7 @@ class LearningProgressPersistenceIntegrationTest {
 
         List<LearningStepProgress> steps = learningStepProgressRepository
                 .findAllByLearningProgress(saved);
+        assertEquals(1, saved.getStepProgressVersion());
         assertEquals(2, steps.size());
         assertEquals(
                 Set.of("public", "class"),
@@ -123,6 +125,10 @@ class LearningProgressPersistenceIntegrationTest {
         assertTrue(learningStepProgressRepository
                 .findAllByLearningProgress(existing)
                 .isEmpty());
+        assertFalse(learningProgressService
+                .findProgressSnapshot(userAccount, "stage1")
+                .orElseThrow()
+                .detailedStepProgress());
 
         LearningProgress updated = learningProgressService.saveProgress(
                 userAccount,
@@ -134,7 +140,32 @@ class LearningProgressPersistenceIntegrationTest {
 
         assertEquals(existing.getId(), updated.getId());
         assertEquals("class", updated.getCurrentStepId());
+        assertEquals(1, updated.getStepProgressVersion());
         assertEquals(Set.of("public"), stepIds(updated));
+        assertTrue(learningProgressService
+                .findProgressSnapshot(userAccount, "stage1")
+                .orElseThrow()
+                .detailedStepProgress());
+    }
+
+    @Test
+    void version1でStep0件の進捗を詳細形式として読み取る() {
+        UserAccount userAccount = saveUser("learner@example.com");
+        learningProgressService.saveProgress(
+                userAccount,
+                "stage1",
+                "public",
+                false,
+                Set.of()
+        );
+
+        LearningProgressService.ProgressSnapshot snapshot =
+                learningProgressService
+                        .findProgressSnapshot(userAccount, "stage1")
+                        .orElseThrow();
+
+        assertTrue(snapshot.detailedStepProgress());
+        assertTrue(snapshot.completedStepIds().isEmpty());
     }
 
     @Test

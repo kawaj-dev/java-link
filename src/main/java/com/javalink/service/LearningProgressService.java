@@ -17,6 +17,8 @@ import com.javalink.repository.LearningStepProgressRepository;
 @Service
 public class LearningProgressService {
 
+    private static final int STEP_PROGRESS_VERSION = 1;
+
     private final LearningProgressRepository learningProgressRepository;
     private final LearningStepProgressRepository learningStepProgressRepository;
 
@@ -47,6 +49,7 @@ public class LearningProgressService {
 
         progress.setCurrentStepId(currentStepId);
         progress.setCompleted(completed);
+        progress.setStepProgressVersion(STEP_PROGRESS_VERSION);
         LearningProgress savedProgress = learningProgressRepository.save(progress);
 
         Set<String> storedStepIds = learningStepProgressRepository
@@ -69,6 +72,31 @@ public class LearningProgressService {
         return learningProgressRepository.findByUserAccountAndLessonId(userAccount, lessonId);
     }
 
+    @Transactional(readOnly = true)
+    public Optional<ProgressSnapshot> findProgressSnapshot(
+            UserAccount userAccount,
+            String lessonId
+    ) {
+        return learningProgressRepository
+                .findByUserAccountAndLessonId(userAccount, lessonId)
+                .map(progress -> {
+                    Set<String> completedStepIds = learningStepProgressRepository
+                            .findAllByLearningProgress(progress)
+                            .stream()
+                            .map(LearningStepProgress::getStepId)
+                            .collect(Collectors.toSet());
+                    boolean detailedStepProgress =
+                            Integer.valueOf(STEP_PROGRESS_VERSION)
+                                    .equals(progress.getStepProgressVersion())
+                                    || !completedStepIds.isEmpty();
+                    return new ProgressSnapshot(
+                            progress,
+                            completedStepIds,
+                            detailedStepProgress
+                    );
+                });
+    }
+
     private LearningStepProgress createStepProgress(
             LearningProgress learningProgress,
             String stepId
@@ -77,5 +105,16 @@ public class LearningProgressService {
         stepProgress.setLearningProgress(learningProgress);
         stepProgress.setStepId(stepId);
         return stepProgress;
+    }
+
+    public record ProgressSnapshot(
+            LearningProgress progress,
+            Set<String> completedStepIds,
+            boolean detailedStepProgress
+    ) {
+
+        public ProgressSnapshot {
+            completedStepIds = Set.copyOf(completedStepIds);
+        }
     }
 }

@@ -4,7 +4,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -13,6 +15,7 @@ import java.util.Set;
 
 import com.javalink.entity.LearningProgress;
 import com.javalink.entity.UserAccount;
+import com.javalink.model.CodeReadingPart;
 import com.javalink.model.Lesson;
 import com.javalink.model.LessonProgress;
 import com.javalink.model.LessonStep;
@@ -69,7 +72,7 @@ class LearningProgressRestoreServiceTest {
         UserAccount userAccount = mock(UserAccount.class);
         when(authenticatedUserService.findAuthenticatedUser(session))
                 .thenReturn(Optional.of(userAccount));
-        when(learningProgressService.findProgress(userAccount, LESSON_ID))
+        when(learningProgressService.findProgressSnapshot(userAccount, LESSON_ID))
                 .thenReturn(Optional.empty());
 
         Optional<LessonProgress> result =
@@ -133,6 +136,203 @@ class LearningProgressRestoreServiceTest {
     }
 
     @Test
+    void 詳細形式はDBに保存された完了済みStepだけを復元する() {
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("third", false);
+        Lesson lesson = lesson(
+                step("first", true),
+                step("second", true),
+                step("third", true),
+                step("last", true)
+        );
+        stubDetailedProgress(
+                userAccount,
+                storedProgress,
+                Set.of("first", "second")
+        );
+        when(lessonService.getLesson(LESSON_ID)).thenReturn(lesson);
+
+        LessonProgress restored = restoreService
+                .restoreIfAuthenticated(session, LESSON_ID)
+                .orElseThrow();
+
+        assertEquals(Set.of("first", "second"), restored.getCompletedStepIds());
+        assertFalse(restored.isStepCompleted("third"));
+        assertFalse(restored.isStepCompleted("last"));
+        assertFalse(restored.isAnswered());
+        assertFalse(restored.isCorrect());
+        verify(learningProgressService)
+                .findProgressSnapshot(userAccount, LESSON_ID);
+        verifyNoMoreInteractions(learningProgressService);
+    }
+
+    @Test
+    void 詳細形式で現在Stepが完了済みなら次のStepを操作できる() {
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("second", false);
+        Lesson lesson = lesson(
+                step("first", true),
+                step("second", true),
+                step("third", true)
+        );
+        stubDetailedProgress(
+                userAccount,
+                storedProgress,
+                Set.of("first", "second")
+        );
+        when(lessonService.getLesson(LESSON_ID)).thenReturn(lesson);
+
+        LessonProgress restored = restoreService
+                .restoreIfAuthenticated(session, LESSON_ID)
+                .orElseThrow();
+        CodeReadingPart part = part("first", "second", "third");
+        CodeReadingPartService partService = new CodeReadingPartService(
+                mock(CodeReadingLessonCatalog.class)
+        );
+
+        assertTrue(restored.isAnswered());
+        assertTrue(restored.isCorrect());
+        assertEquals("", restored.getSelectedOptionId());
+        assertEquals("third", partService.findActionableStepId(restored, part));
+    }
+
+    @Test
+    void 詳細形式で未確認の現在Stepだけが操作対象になる() {
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("second", false);
+        Lesson lesson = lesson(
+                step("first", true),
+                step("second", true),
+                step("third", true)
+        );
+        stubDetailedProgress(userAccount, storedProgress, Set.of("first"));
+        when(lessonService.getLesson(LESSON_ID)).thenReturn(lesson);
+
+        LessonProgress restored = restoreService
+                .restoreIfAuthenticated(session, LESSON_ID)
+                .orElseThrow();
+        CodeReadingPart part = part("first", "second", "third");
+        CodeReadingPartService partService = new CodeReadingPartService(
+                mock(CodeReadingLessonCatalog.class)
+        );
+
+        assertEquals("second", partService.findActionableStepId(restored, part));
+        assertFalse(restored.isStepCompleted("third"));
+    }
+
+    @Test
+    void 詳細形式はPart境界をまたいだ完了状態をそのまま復元する() {
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("part2-first", false);
+        Lesson lesson = lesson(
+                step("part1-first", true),
+                step("part1-last", true),
+                step("part2-first", true),
+                step("part2-last", true)
+        );
+        stubDetailedProgress(
+                userAccount,
+                storedProgress,
+                Set.of("part1-first", "part1-last")
+        );
+        when(lessonService.getLesson(LESSON_ID)).thenReturn(lesson);
+
+        LessonProgress restored = restoreService
+                .restoreIfAuthenticated(session, LESSON_ID)
+                .orElseThrow();
+
+        assertEquals("part2-first", restored.getCurrentStepId());
+        assertEquals(
+                Set.of("part1-first", "part1-last"),
+                restored.getCompletedStepIds()
+        );
+        assertFalse(restored.isStepCompleted("part2-first"));
+    }
+
+    @Test
+    void 詳細形式のStep0件は最初のStepなら未完了のまま復元する() {
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("first", false);
+        Lesson lesson = lesson(step("first", true), step("last", true));
+        stubDetailedProgress(userAccount, storedProgress, Set.of());
+        when(lessonService.getLesson(LESSON_ID)).thenReturn(lesson);
+
+        LessonProgress restored = restoreService
+                .restoreIfAuthenticated(session, LESSON_ID)
+                .orElseThrow();
+
+        assertTrue(restored.getCompletedStepIds().isEmpty());
+        assertFalse(restored.isAnswered());
+        assertFalse(restored.isCompleted());
+    }
+
+    @Test
+    void 詳細形式のStep0件で現在位置が後続Stepなら矛盾として復元しない() {
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("last", false);
+        Lesson lesson = lesson(step("first", true), step("last", true));
+        stubDetailedProgress(userAccount, storedProgress, Set.of());
+        when(lessonService.getLesson(LESSON_ID)).thenReturn(lesson);
+
+        Optional<LessonProgress> result =
+                restoreService.restoreIfAuthenticated(session, LESSON_ID);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void 詳細形式にLesson未登録のStepがあれば復元しない() {
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("last", false);
+        Lesson lesson = lesson(step("first", true), step("last", true));
+        stubDetailedProgress(
+                userAccount,
+                storedProgress,
+                Set.of("first", "unknown")
+        );
+        when(lessonService.getLesson(LESSON_ID)).thenReturn(lesson);
+
+        Optional<LessonProgress> result =
+                restoreService.restoreIfAuthenticated(session, LESSON_ID);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void 詳細形式のLesson完了は全requiredStepが保存済みの場合だけ復元する() {
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("last", true);
+        Lesson lesson = lesson(step("first", true), step("last", true));
+        stubDetailedProgress(
+                userAccount,
+                storedProgress,
+                Set.of("first", "last")
+        );
+        when(lessonService.getLesson(LESSON_ID)).thenReturn(lesson);
+
+        LessonProgress restored = restoreService
+                .restoreIfAuthenticated(session, LESSON_ID)
+                .orElseThrow();
+
+        assertTrue(restored.isCompleted());
+        assertEquals(Set.of("first", "last"), restored.getCompletedStepIds());
+    }
+
+    @Test
+    void 詳細形式のLesson完了でrequiredStepが不足していれば復元しない() {
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("last", true);
+        Lesson lesson = lesson(step("first", true), step("last", true));
+        stubDetailedProgress(userAccount, storedProgress, Set.of("last"));
+        when(lessonService.getLesson(LESSON_ID)).thenReturn(lesson);
+
+        Optional<LessonProgress> result =
+                restoreService.restoreIfAuthenticated(session, LESSON_ID);
+
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
     void DBの現在StepがLessonに存在しなければ空を返す() {
         UserAccount userAccount = mock(UserAccount.class);
         LearningProgress storedProgress = storedProgress("missing", false);
@@ -168,8 +368,31 @@ class LearningProgressRestoreServiceTest {
     ) {
         when(authenticatedUserService.findAuthenticatedUser(session))
                 .thenReturn(Optional.of(userAccount));
-        when(learningProgressService.findProgress(userAccount, LESSON_ID))
-                .thenReturn(Optional.of(storedProgress));
+        when(learningProgressService.findProgressSnapshot(userAccount, LESSON_ID))
+                .thenReturn(Optional.of(
+                        new LearningProgressService.ProgressSnapshot(
+                                storedProgress,
+                                Set.of(),
+                                false
+                        )
+                ));
+    }
+
+    private void stubDetailedProgress(
+            UserAccount userAccount,
+            LearningProgress storedProgress,
+            Set<String> completedStepIds
+    ) {
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+        when(learningProgressService.findProgressSnapshot(userAccount, LESSON_ID))
+                .thenReturn(Optional.of(
+                        new LearningProgressService.ProgressSnapshot(
+                                storedProgress,
+                                completedStepIds,
+                                true
+                        )
+                ));
     }
 
     private LearningProgress storedProgress(
@@ -202,6 +425,20 @@ class LearningProgressRestoreServiceTest {
                 "Test description",
                 "",
                 List.of(steps)
+        );
+    }
+
+    private CodeReadingPart part(String... stepIds) {
+        return new CodeReadingPart(
+                "part-1",
+                1,
+                "Part 1",
+                List.of(),
+                "",
+                List.of(stepIds),
+                List.of(stepIds),
+                List.of(),
+                ""
         );
     }
 }

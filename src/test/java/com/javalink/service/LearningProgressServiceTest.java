@@ -1,6 +1,7 @@
 package com.javalink.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -72,6 +73,7 @@ class LearningProgressServiceTest {
         assertEquals("stage1", progressToSave.getLessonId());
         assertEquals("public", progressToSave.getCurrentStepId());
         assertEquals(false, progressToSave.isCompleted());
+        assertEquals(1, progressToSave.getStepProgressVersion());
         assertSame(saved, result);
         verify(learningStepProgressRepository)
                 .findAllByLearningProgress(saved);
@@ -108,6 +110,7 @@ class LearningProgressServiceTest {
         assertEquals("stage1", existing.getLessonId());
         assertEquals("class", existing.getCurrentStepId());
         assertTrue(existing.isCompleted());
+        assertEquals(1, existing.getStepProgressVersion());
         assertSame(saved, result);
         ArgumentCaptor<List<LearningStepProgress>> stepCaptor =
                 ArgumentCaptor.forClass(List.class);
@@ -134,5 +137,68 @@ class LearningProgressServiceTest {
 
         verify(learningProgressRepository).findByUserAccountAndLessonId(userAccount, "stage1");
         assertSame(found, result);
+    }
+
+    @Test
+    void version1でStep0件でも詳細形式のスナップショットを返す() {
+        UserAccount userAccount = new UserAccount();
+        LearningProgress progress = new LearningProgress();
+        progress.setStepProgressVersion(1);
+        when(learningProgressRepository.findByUserAccountAndLessonId(
+                userAccount,
+                "stage1"
+        )).thenReturn(Optional.of(progress));
+        when(learningStepProgressRepository.findAllByLearningProgress(progress))
+                .thenReturn(List.of());
+
+        LearningProgressService.ProgressSnapshot snapshot =
+                learningProgressService
+                        .findProgressSnapshot(userAccount, "stage1")
+                        .orElseThrow();
+
+        assertTrue(snapshot.detailedStepProgress());
+        assertTrue(snapshot.completedStepIds().isEmpty());
+    }
+
+    @Test
+    void versionがなくても子Stepがあれば詳細形式のスナップショットを返す() {
+        UserAccount userAccount = new UserAccount();
+        LearningProgress progress = new LearningProgress();
+        LearningStepProgress stepProgress = new LearningStepProgress();
+        stepProgress.setStepId("public");
+        when(learningProgressRepository.findByUserAccountAndLessonId(
+                userAccount,
+                "stage1"
+        )).thenReturn(Optional.of(progress));
+        when(learningStepProgressRepository.findAllByLearningProgress(progress))
+                .thenReturn(List.of(stepProgress));
+
+        LearningProgressService.ProgressSnapshot snapshot =
+                learningProgressService
+                        .findProgressSnapshot(userAccount, "stage1")
+                        .orElseThrow();
+
+        assertTrue(snapshot.detailedStepProgress());
+        assertEquals(Set.of("public"), snapshot.completedStepIds());
+    }
+
+    @Test
+    void versionなしで子Stepもなければ旧形式のスナップショットを返す() {
+        UserAccount userAccount = new UserAccount();
+        LearningProgress progress = new LearningProgress();
+        when(learningProgressRepository.findByUserAccountAndLessonId(
+                userAccount,
+                "stage1"
+        )).thenReturn(Optional.of(progress));
+        when(learningStepProgressRepository.findAllByLearningProgress(progress))
+                .thenReturn(List.of());
+
+        LearningProgressService.ProgressSnapshot snapshot =
+                learningProgressService
+                        .findProgressSnapshot(userAccount, "stage1")
+                        .orElseThrow();
+
+        assertFalse(snapshot.detailedStepProgress());
+        assertTrue(snapshot.completedStepIds().isEmpty());
     }
 }

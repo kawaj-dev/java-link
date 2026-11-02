@@ -49,6 +49,9 @@ public class LearningProgress {
     @Column(name = "completed", nullable = false)
     private boolean completed;
 
+    @Column(name = "step_progress_version")
+    private Integer stepProgressVersion;
+
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
@@ -86,6 +89,14 @@ public class LearningProgress {
 
     public void setCompleted(boolean completed) {
         this.completed = completed;
+    }
+
+    public Integer getStepProgressVersion() {
+        return stepProgressVersion;
+    }
+
+    public void setStepProgressVersion(Integer stepProgressVersion) {
+        this.stepProgressVersion = stepProgressVersion;
     }
 
     public LocalDateTime getUpdatedAt() {
