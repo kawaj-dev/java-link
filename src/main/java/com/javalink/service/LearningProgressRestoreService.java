@@ -2,6 +2,8 @@ package com.javalink.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import com.javalink.entity.LearningProgress;
 import com.javalink.model.Lesson;
@@ -33,14 +35,18 @@ public class LearningProgressRestoreService {
     ) {
         return authenticatedUserService.findAuthenticatedUser(session)
                 .flatMap(userAccount ->
-                        learningProgressService.findProgress(userAccount, lessonId))
-                .flatMap(progress -> restore(progress, lessonId));
+                        learningProgressService.findProgressSnapshot(
+                                userAccount,
+                                lessonId
+                        ))
+                .flatMap(snapshot -> restore(snapshot, lessonId));
     }
 
     private Optional<LessonProgress> restore(
-            LearningProgress storedProgress,
+            LearningProgressService.ProgressSnapshot snapshot,
             String lessonId
     ) {
+        LearningProgress storedProgress = snapshot.progress();
         Lesson lesson = lessonService.getLesson(lessonId);
         List<LessonStep> steps = lesson.steps();
         int currentIndex = findStepIndex(
@@ -57,6 +63,66 @@ public class LearningProgressRestoreService {
             return Optional.empty();
         }
 
+        if (snapshot.detailedStepProgress()) {
+            return restoreDetailedProgress(
+                    snapshot,
+                    lessonId,
+                    steps,
+                    currentIndex
+            );
+        }
+
+        return restoreLegacyProgress(
+                storedProgress,
+                lessonId,
+                steps,
+                currentIndex
+        );
+    }
+
+    private Optional<LessonProgress> restoreDetailedProgress(
+            LearningProgressService.ProgressSnapshot snapshot,
+            String lessonId,
+            List<LessonStep> steps,
+            int currentIndex
+    ) {
+        LearningProgress storedProgress = snapshot.progress();
+        Set<String> storedStepIds = snapshot.completedStepIds();
+        Set<String> lessonStepIds = steps.stream()
+                .map(LessonStep::id)
+                .collect(Collectors.toSet());
+
+        if (!lessonStepIds.containsAll(storedStepIds)
+                || !hasConsistentDetailedProgress(
+                        steps,
+                        currentIndex,
+                        storedStepIds,
+                        storedProgress.isCompleted()
+                )) {
+            return Optional.empty();
+        }
+
+        LessonProgress restoredProgress = new LessonProgress(
+                lessonId,
+                storedProgress.getCurrentStepId()
+        );
+        storedStepIds.forEach(restoredProgress::completeStep);
+        if (restoredProgress.isStepCompleted(
+                restoredProgress.getCurrentStepId()
+        )) {
+            restoredProgress.setAnswered(true);
+            restoredProgress.setCorrect(true);
+        }
+        restoredProgress.setCompleted(storedProgress.isCompleted());
+        return Optional.of(restoredProgress);
+    }
+
+    private Optional<LessonProgress> restoreLegacyProgress(
+            LearningProgress storedProgress,
+            String lessonId,
+            List<LessonStep> steps,
+            int currentIndex
+    ) {
         LessonProgress restoredProgress = new LessonProgress(
                 lessonId,
                 storedProgress.getCurrentStepId()
@@ -72,6 +138,40 @@ public class LearningProgressRestoreService {
         restoredProgress.setCompleted(storedProgress.isCompleted());
 
         return Optional.of(restoredProgress);
+    }
+
+    private boolean hasConsistentDetailedProgress(
+            List<LessonStep> steps,
+            int currentIndex,
+            Set<String> storedStepIds,
+            boolean completed
+    ) {
+        Set<String> completedRequiredStepIds = steps.stream()
+                .filter(LessonStep::required)
+                .map(LessonStep::id)
+                .filter(storedStepIds::contains)
+                .collect(Collectors.toSet());
+        Set<String> expectedRequiredStepIds;
+
+        if (completed) {
+            expectedRequiredStepIds = steps.stream()
+                    .filter(LessonStep::required)
+                    .map(LessonStep::id)
+                    .collect(Collectors.toSet());
+        } else {
+            boolean currentStepCompleted = storedStepIds.contains(
+                    steps.get(currentIndex).id()
+            );
+            long completionLimit = currentStepCompleted
+                    ? currentIndex + 1L
+                    : currentIndex;
+            expectedRequiredStepIds = steps.stream()
+                    .limit(completionLimit)
+                    .filter(LessonStep::required)
+                    .map(LessonStep::id)
+                    .collect(Collectors.toSet());
+        }
+        return completedRequiredStepIds.equals(expectedRequiredStepIds);
     }
 
     private int findStepIndex(List<LessonStep> steps, String stepId) {
