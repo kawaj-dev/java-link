@@ -1,6 +1,7 @@
 package com.javalink.service;
 
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -21,6 +22,7 @@ import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
@@ -206,8 +208,9 @@ class CodeReadingCourseServiceTest {
 
     @Test
     void 最終Stepを正解して教材完了になった場合は進捗を同期する() {
-        LessonProgress completed = mock(LessonProgress.class);
-        when(completed.isCompleted()).thenReturn(true);
+        LessonProgress completed = new LessonProgress(LESSON_ID, "final-step");
+        completed.completeStep("final-step");
+        completed.setCompleted(true);
         LessonEngine.AnswerResult answerResult = answerResult(true, completed);
         when(lessonEngine.answerCurrentStep(session, LESSON_ID, "correct"))
                 .thenReturn(answerResult);
@@ -220,6 +223,72 @@ class CodeReadingCourseServiceTest {
 
         assertSame(answerResult, result);
         verify(learningProgressSyncService).saveIfAuthenticated(session, completed);
+    }
+
+    @Test
+    void 通常Stepを正解した直後は現在Stepのまま更新後進捗を同期する() {
+        LessonProgress answered = new LessonProgress(LESSON_ID, "public");
+        answered.completeStep("public");
+        answered.setAnswered(true);
+        answered.setCorrect(true);
+        LessonEngine.AnswerResult answerResult = answerResult(true, answered);
+        when(lessonEngine.answerCurrentStep(session, LESSON_ID, "correct"))
+                .thenReturn(answerResult);
+
+        LessonEngine.AnswerResult result = courseService.answerCurrentItem(
+                session,
+                LESSON_ID,
+                "correct"
+        );
+
+        assertSame(answerResult, result);
+        InOrder order = org.mockito.Mockito.inOrder(
+                lessonEngine,
+                learningProgressSyncService
+        );
+        order.verify(lessonEngine)
+                .answerCurrentStep(session, LESSON_ID, "correct");
+        order.verify(learningProgressSyncService)
+                .saveIfAuthenticated(session, answered);
+        verify(lessonEngine, never()).moveToNextStep(session, LESSON_ID);
+    }
+
+    @Test
+    void Part最後のStepを正解した直後も現在位置を変えず同期する() {
+        LessonProgress answered = new LessonProgress(LESSON_ID, "part1-last");
+        answered.completeStep("part1-last");
+        answered.setAnswered(true);
+        answered.setCorrect(true);
+        when(lessonEngine.answerCurrentStep(session, LESSON_ID, "correct"))
+                .thenReturn(answerResult(true, answered));
+
+        courseService.answerCurrentItem(session, LESSON_ID, "correct");
+
+        verify(learningProgressSyncService)
+                .saveIfAuthenticated(session, answered);
+        verify(lessonEngine, never()).moveToNextStep(session, LESSON_ID);
+    }
+
+    @Test
+    void 正解直後のDB同期に失敗した場合は成功結果を返さず例外を伝える() {
+        LessonProgress answered = mock(LessonProgress.class);
+        when(lessonEngine.answerCurrentStep(session, LESSON_ID, "correct"))
+                .thenReturn(answerResult(true, answered));
+        RuntimeException failure = new RuntimeException("database unavailable");
+        org.mockito.Mockito.doThrow(failure)
+                .when(learningProgressSyncService)
+                .saveIfAuthenticated(session, answered);
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> courseService.answerCurrentItem(
+                        session,
+                        LESSON_ID,
+                        "correct"
+                )
+        );
+
+        assertSame(failure, thrown);
     }
 
     @Test
