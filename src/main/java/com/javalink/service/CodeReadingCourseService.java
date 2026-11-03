@@ -89,7 +89,7 @@ public class CodeReadingCourseService {
                 lessonId,
                 selectedOptionId
         );
-        if (result.correct() && result.progress().isCompleted()) {
+        if (result.correct()) {
             learningProgressSyncService.saveIfAuthenticated(
                     session,
                     result.progress()
