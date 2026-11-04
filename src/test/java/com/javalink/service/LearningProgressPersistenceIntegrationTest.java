@@ -22,6 +22,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @SpringBootTest(properties = {
         "spring.datasource.url=jdbc:h2:mem:learning-progress-persistence",
@@ -43,6 +45,9 @@ class LearningProgressPersistenceIntegrationTest {
 
     @Autowired
     private UserAccountRepository userAccountRepository;
+
+    @Autowired
+    private PlatformTransactionManager transactionManager;
 
     @BeforeEach
     void setUp() {
@@ -257,6 +262,83 @@ class LearningProgressPersistenceIntegrationTest {
                 .findByUserAccountAndLessonId(userAccount, "stage1")
                 .isEmpty());
         assertEquals(0, learningStepProgressRepository.count());
+    }
+
+    @Test
+    void 対象ユーザーとLessonの親子進捗だけを削除する() {
+        UserAccount targetUser = saveUser("target@example.com");
+        UserAccount otherUser = saveUser("other@example.com");
+        LearningProgress targetStage1 = learningProgressService.saveProgress(
+                targetUser, "stage1", "class", true, Set.of("public", "class"));
+        LearningProgress targetStage2 = learningProgressService.saveProgress(
+                targetUser, "stage2", "age", false, Set.of("int"));
+        LearningProgress otherStage1 = learningProgressService.saveProgress(
+                otherUser, "stage1", "class", false, Set.of("public"));
+
+        learningProgressService.deleteProgress(targetUser, "stage1");
+
+        assertTrue(learningProgressRepository
+                .findByUserAccountAndLessonId(targetUser, "stage1")
+                .isEmpty());
+        assertTrue(learningStepProgressRepository
+                .findAllByLearningProgress(targetStage1)
+                .isEmpty());
+        assertTrue(learningProgressRepository
+                .findByUserAccountAndLessonId(targetUser, "stage2")
+                .isPresent());
+        assertEquals(Set.of("int"), stepIds(targetStage2));
+        assertTrue(learningProgressRepository
+                .findByUserAccountAndLessonId(otherUser, "stage1")
+                .isPresent());
+        assertEquals(Set.of("public"), stepIds(otherStage1));
+    }
+
+    @Test
+    void 進捗がなくても繰り返しリセットできる() {
+        UserAccount userAccount = saveUser("learner@example.com");
+
+        learningProgressService.deleteProgress(userAccount, "stage1");
+        learningProgressService.deleteProgress(userAccount, "stage1");
+
+        assertTrue(learningProgressRepository
+                .findByUserAccountAndLessonId(userAccount, "stage1")
+                .isEmpty());
+        assertEquals(0, learningStepProgressRepository.count());
+    }
+
+    @Test
+    void リセットを含むトランザクション失敗時は親子進捗を維持する() {
+        UserAccount userAccount = saveUser("learner@example.com");
+        LearningProgress saved = learningProgressService.saveProgress(
+                userAccount, "stage1", "class", false, Set.of("public"));
+        TransactionTemplate transaction = new TransactionTemplate(transactionManager);
+
+        assertThrows(RuntimeException.class, () ->
+                transaction.executeWithoutResult(status -> {
+                    learningProgressService.deleteProgress(userAccount, "stage1");
+                    throw new RuntimeException("force rollback");
+                }));
+
+        assertTrue(learningProgressRepository
+                .findByUserAccountAndLessonId(userAccount, "stage1")
+                .isPresent());
+        assertEquals(Set.of("public"), stepIds(saved));
+    }
+
+    @Test
+    void リセット後に同じLessonのStep詳細を再保存できる() {
+        UserAccount userAccount = saveUser("learner@example.com");
+        learningProgressService.saveProgress(
+                userAccount, "stage1", "class", true, Set.of("public", "class"));
+
+        learningProgressService.deleteProgress(userAccount, "stage1");
+        LearningProgress relearned = learningProgressService.saveProgress(
+                userAccount, "stage1", "public", false, Set.of("public"));
+
+        assertFalse(relearned.isCompleted());
+        assertEquals("public", relearned.getCurrentStepId());
+        assertEquals(1, relearned.getStepProgressVersion());
+        assertEquals(Set.of("public"), stepIds(relearned));
     }
 
     private Set<String> stepIds(LearningProgress progress) {

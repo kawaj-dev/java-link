@@ -31,4 +31,17 @@ public class LearningProgressSyncService {
                         progress.getCompletedStepIds()
                 ));
     }
+
+    /** ログイン済みの場合だけ、対象LessonのDB進捗を削除します。 */
+    public void resetIfAuthenticated(
+            HttpSession session,
+            String lessonId
+    ) {
+        authenticatedUserService.findAuthenticatedUser(session)
+                .ifPresent(userAccount ->
+                        learningProgressService.deleteProgress(
+                                userAccount,
+                                lessonId
+                        ));
+    }
 }

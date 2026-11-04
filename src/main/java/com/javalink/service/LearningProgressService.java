@@ -72,6 +72,18 @@ public class LearningProgressService {
         return learningProgressRepository.findByUserAccountAndLessonId(userAccount, lessonId);
     }
 
+    /** 対象ユーザー・Lessonの親進捗と完了済みStepを削除します。 */
+    @Transactional
+    public void deleteProgress(UserAccount userAccount, String lessonId) {
+        learningProgressRepository
+                .findByUserAccountAndLessonId(userAccount, lessonId)
+                .ifPresent(progress -> {
+                    learningStepProgressRepository
+                            .deleteAllByLearningProgress(progress);
+                    learningProgressRepository.delete(progress);
+                });
+    }
+
     @Transactional(readOnly = true)
     public Optional<ProgressSnapshot> findProgressSnapshot(
             UserAccount userAccount,
