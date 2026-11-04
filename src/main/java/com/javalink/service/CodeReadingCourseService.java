@@ -328,6 +328,7 @@ public class CodeReadingCourseService {
             HttpSession session,
             String lessonId
     ) {
+        learningProgressSyncService.resetIfAuthenticated(session, lessonId);
         LessonProgress progress =
                 lessonProgressService.resetProgress(session, lessonId);
         flowService.reset(session, lessonId);

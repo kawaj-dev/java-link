@@ -319,6 +319,43 @@ class CodeReadingCourseServiceTest {
         verifyNoInteractions(learningProgressSyncService);
     }
 
+    @Test
+    void DB進捗削除後にセッション進捗と画面フェーズを初期化する() {
+        LessonProgress initial = mock(LessonProgress.class);
+        when(lessonProgressService.resetProgress(session, LESSON_ID))
+                .thenReturn(initial);
+
+        LessonProgress result = courseService.reset(session, LESSON_ID);
+
+        assertSame(initial, result);
+        InOrder order = org.mockito.Mockito.inOrder(
+                learningProgressSyncService,
+                lessonProgressService,
+                flowService
+        );
+        order.verify(learningProgressSyncService)
+                .resetIfAuthenticated(session, LESSON_ID);
+        order.verify(lessonProgressService)
+                .resetProgress(session, LESSON_ID);
+        order.verify(flowService).reset(session, LESSON_ID);
+    }
+
+    @Test
+    void DB進捗削除に失敗した場合はセッションを初期化せず例外を伝える() {
+        RuntimeException failure = new RuntimeException("database unavailable");
+        org.mockito.Mockito.doThrow(failure)
+                .when(learningProgressSyncService)
+                .resetIfAuthenticated(session, LESSON_ID);
+
+        RuntimeException thrown = assertThrows(
+                RuntimeException.class,
+                () -> courseService.reset(session, LESSON_ID)
+        );
+
+        assertSame(failure, thrown);
+        verifyNoInteractions(lessonProgressService, flowService);
+    }
+
     private LessonEngine.AnswerResult answerResult(
             boolean correct,
             LessonProgress progress

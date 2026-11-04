@@ -71,4 +71,27 @@ class LearningProgressSyncServiceTest {
         verify(authenticatedUserService).findAuthenticatedUser(session);
         verifyNoInteractions(learningProgressService);
     }
+
+    @Test
+    void ログイン済みなら対象LessonのDB進捗を削除する() {
+        UserAccount userAccount = new UserAccount();
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+
+        learningProgressSyncService.resetIfAuthenticated(session, "stage1");
+
+        verify(learningProgressService)
+                .deleteProgress(userAccount, "stage1");
+    }
+
+    @Test
+    void 未ログインならDB進捗を削除しない() {
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.empty());
+
+        learningProgressSyncService.resetIfAuthenticated(session, "stage1");
+
+        verify(authenticatedUserService).findAuthenticatedUser(session);
+        verifyNoInteractions(learningProgressService);
+    }
 }
