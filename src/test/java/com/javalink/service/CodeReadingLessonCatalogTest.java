@@ -20,6 +20,130 @@ class CodeReadingLessonCatalogTest {
             new CodeReadingLessonCatalog();
 
     @Test
+    void Stage4は9Part33Stepと条件分岐コードと実行結果を持つ() {
+        var definition = catalog.getDefinition(
+                CodeReadingLessonCatalog.STAGE4_LESSON_ID
+        );
+
+        assertEquals("Stage 4", definition.stageName());
+        assertEquals("信号を見て行動を決めよう", definition.learningGoal());
+        assertEquals(9, definition.parts().size());
+        assertEquals(33, definition.steps().size());
+        assertEquals("進む", definition.consoleOutput());
+        assertEquals(java.util.List.of(1, 2, 3, 4, 5, 6, 7, 8, 9),
+                definition.parts().stream().map(part -> part.order()).toList());
+        assertEquals(definition.steps().size(), definition.steps().stream()
+                .map(step -> step.id()).distinct().count());
+        assertEquals("public class Main {", definition.parts().get(0).targetCode());
+        assertEquals("public static void main(String[] args) {", definition.parts().get(1).targetCode());
+        assertEquals("String signal = \"青\";", definition.parts().get(2).targetCode());
+        assertEquals("if (signal.equals(\"青\")) {", definition.parts().get(3).targetCode());
+        assertEquals("System.out.println(\"進む\");", definition.parts().get(4).targetCode());
+        assertEquals("} else {", definition.parts().get(5).targetCode());
+        assertEquals("System.out.println(\"止まる\");", definition.parts().get(6).targetCode());
+        assertEquals("}", definition.parts().get(7).targetCode());
+        assertEquals("}\n}", definition.parts().get(8).targetCode());
+        assertEquals("""
+                public class Main {
+                    public static void main(String[] args) {
+                        String signal = "青";
+
+                        if (signal.equals("青")) {
+                            System.out.println("進む");
+                        } else {
+                            System.out.println("止まる");
+                        }
+                    }
+                }
+                """.strip(), definition.completedCode().strip());
+    }
+
+    @Test
+    void Stage4はifとelseとequalsを初心者向けに正しく説明する() {
+        var definition = catalog.getDefinition(
+                CodeReadingLessonCatalog.STAGE4_LESSON_ID
+        );
+
+        assertEquals("条件がtrueのときだけ処理する",
+                definition.getStep("if-keyword").correctCard().text());
+        assertTrue(definition.getStep("if-keyword").explanationSections().stream()
+                .flatMap(section -> section.entries().stream())
+                .anyMatch(entry -> entry.before().contains("true")));
+        assertEquals("条件がfalseのときに処理する",
+                definition.getStep("else-keyword").correctCard().text());
+        assertTrue(definition.getStep("else-keyword").explanationSections().stream()
+                .flatMap(section -> section.entries().stream())
+                .anyMatch(entry -> entry.before().contains("false")));
+        assertEquals("文字列の内容が同じか比べる",
+                definition.getStep("equals-method").correctCard().text());
+        assertTrue(definition.getStep("equals-method").explanationSections().stream()
+                .flatMap(section -> section.entries().stream())
+                .anyMatch(entry -> entry.before().contains("== ではなく equals()")));
+        assertTrue(definition.getStep("equals-method").explanationSections().stream()
+                .flatMap(section -> section.officialReferences().stream())
+                .anyMatch(reference -> reference.sectionTitle().equals("String.equals(Object)")));
+    }
+
+    @Test
+    void Stage4は基礎構文の共通Explanationインスタンスを再利用する() {
+        var stage1 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE1_LESSON_ID);
+        var stage4 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE4_LESSON_ID);
+
+        assertSame(stage1.getStep("class-public").explanationSections(),
+                stage4.getStep("class-public").explanationSections());
+        assertSame(stage1.getStep("main-public").explanationSections(),
+                stage4.getStep("main-public").explanationSections());
+        assertSame(stage1.getStep("class-keyword").explanationSections(),
+                stage4.getStep("class-keyword").explanationSections());
+        assertSame(stage1.getStep("class-name").explanationSections(),
+                stage4.getStep("class-name").explanationSections());
+        assertSame(stage1.getStep("static").explanationSections(),
+                stage4.getStep("static").explanationSections());
+        assertSame(stage1.getStep("void").explanationSections(),
+                stage4.getStep("void").explanationSections());
+        assertSame(stage1.getStep("main").explanationSections(),
+                stage4.getStep("main").explanationSections());
+        assertSame(stage1.getStep("string-array").explanationSections(),
+                stage4.getStep("string-array").explanationSections());
+        assertSame(stage1.getStep("args").explanationSections(),
+                stage4.getStep("args").explanationSections());
+
+        var blockStart = stage1.getStep("class-open").explanationSections();
+        assertSame(blockStart, stage4.getStep("class-open").explanationSections());
+        assertSame(blockStart, stage4.getStep("main-open").explanationSections());
+        assertSame(blockStart, stage4.getStep("if-open").explanationSections());
+        assertSame(blockStart, stage4.getStep("else-open").explanationSections());
+
+        assertSame(stage1.getStep("print-command").explanationSections(),
+                stage4.getStep("true-print-command").explanationSections());
+        assertSame(stage4.getStep("true-print-command").explanationSections(),
+                stage4.getStep("false-print-command").explanationSections());
+
+        assertSame(stage1.getStep("semicolon").explanationSections(),
+                stage4.getStep("signal-semicolon").explanationSections());
+        assertSame(stage4.getStep("signal-semicolon").explanationSections(),
+                stage4.getStep("true-semicolon").explanationSections());
+        assertSame(stage4.getStep("true-semicolon").explanationSections(),
+                stage4.getStep("false-semicolon").explanationSections());
+
+        var blockEnd = stage1.getStep("main-close").explanationSections();
+        assertSame(blockEnd, stage4.getStep("if-close").explanationSections());
+        assertSame(blockEnd, stage4.getStep("else-close").explanationSections());
+        assertSame(blockEnd, stage4.getStep("main-close").explanationSections());
+        assertSame(blockEnd, stage4.getStep("class-close").explanationSections());
+    }
+
+    @Test
+    void Stage3の次はStage4でStage4の次は存在しない() {
+        assertEquals(CodeReadingLessonCatalog.STAGE4_LESSON_ID,
+                catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE3_LESSON_ID)
+                        .orElseThrow().lessonId());
+        assertTrue(catalog.getNextDefinition(
+                CodeReadingLessonCatalog.STAGE4_LESSON_ID
+        ).isEmpty());
+    }
+
+    @Test
     void Stage3は7Part33Stepと実行結果30を持つ() {
         var definition = catalog.getDefinition(
                 CodeReadingLessonCatalog.STAGE3_LESSON_ID
@@ -883,7 +1007,7 @@ class CodeReadingLessonCatalogTest {
                         "ポイント",
                         "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
-        assertEquals("中身が、ここから始まる", sections.get(0).entries().get(0).emphasis());
+        assertEquals("ブロックが、ここから始まる", sections.get(0).entries().get(0).emphasis());
         assertFalse(sections.get(1).tableHeader());
         assertEquals("{ と } はセット", sections.get(1).entries().get(0).label());
         assertEquals("{ で始まった範囲は、対応する } で終わります。",
@@ -1074,7 +1198,7 @@ class CodeReadingLessonCatalogTest {
                         "ポイント",
                         "このページの技術的根拠：Javaの公式仕様・API"),
                 sections.stream().map(section -> section.title()).toList());
-        assertEquals("中身がここで終わる", sections.get(0).entries().get(0).emphasis());
+        assertEquals("ブロックがここで終わる", sections.get(0).entries().get(0).emphasis());
         assertEquals("{ }", sections.get(1).entries().get(0).label());
         assertEquals("一般的なプログラミング上の推奨習慣", sections.get(1).entries().get(0).emphasis());
         assertEquals("}", sections.get(2).entries().get(0).label());

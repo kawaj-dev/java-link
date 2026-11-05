@@ -32,6 +32,7 @@ public class CodeReadingLessonCatalog {
         public static final String STAGE1_LESSON_ID = "hello-program-reading";
         public static final String STAGE2_LESSON_ID = "variable-program-reading";
         public static final String STAGE3_LESSON_ID = "operator-program-reading";
+        public static final String STAGE4_LESSON_ID = "conditional-program-reading";
         private static final String OFFICIAL_REFERENCES_TITLE =
                         "このページの技術的根拠：Javaの公式仕様・API";
         private static final String DISPLAY_AND_NEWLINE_CARD = "画面に表示して改行する";
@@ -77,7 +78,8 @@ public class CodeReadingLessonCatalog {
                 CodeReadingLessonDefinition stage1 = createStage1();
                 CodeReadingLessonDefinition stage2 = createStage2();
                 CodeReadingLessonDefinition stage3 = createStage3(stage2);
-                definitionsInOrder = List.of(stage1, stage2, stage3);
+                CodeReadingLessonDefinition stage4 = createStage4(stage2);
+                definitionsInOrder = List.of(stage1, stage2, stage3, stage4);
                 definitions = definitionsInOrder.stream().collect(Collectors.toUnmodifiableMap(
                                 CodeReadingLessonDefinition::lessonId,
                                 Function.identity()));
@@ -183,6 +185,31 @@ public class CodeReadingLessonCatalog {
                                 createStage3Circuits(),
                                 createStage3CodeLines(),
                                 "30");
+        }
+
+        private static CodeReadingLessonDefinition createStage4(CodeReadingLessonDefinition stage2) {
+                return new CodeReadingLessonDefinition(
+                                STAGE4_LESSON_ID,
+                                "Stage 4",
+                                "信号を見て行動を決めよう",
+                                """
+                                                public class Main {
+                                                    public static void main(String[] args) {
+                                                        String signal = "青";
+
+                                                        if (signal.equals("青")) {
+                                                            System.out.println("進む");
+                                                        } else {
+                                                            System.out.println("止まる");
+                                                        }
+                                                    }
+                                                }
+                                                """,
+                                createStage4Steps(stage2),
+                                createStage4Parts(),
+                                createStage4Circuits(),
+                                createStage4CodeLines(),
+                                "進む");
         }
 
         private static List<CodeReadingStepDefinition> createStage1Steps() {
@@ -483,7 +510,7 @@ public class CodeReadingLessonCatalog {
         private static List<CodeReadingExplanationSection> blockStartExplanation() {
                 return List.of(
                                 textSection("セパレータ（左波括弧）　separator",
-                                                text("クラスやメソッドの", "中身が、ここから始まる", "ことを表す記号です。")),
+                                                text("クラス、メソッド、if文、else節などの", "ブロックが、ここから始まる", "ことを表す記号です。")),
                                 tableSection("波括弧のルール",
                                                 tableRow("{ と } はセット", "{ で始まった範囲は、対応する } で終わります。")),
                                 textSection("ポイント",
@@ -621,8 +648,8 @@ public class CodeReadingLessonCatalog {
                                 textSection(
                                                 "セパレータ（右波括弧）　separator",
                                                 text(
-                                                                "} は、クラスやメソッドの",
-                                                                "中身がここで終わる",
+                                                                "} は、クラス、メソッド、if文、else節などの",
+                                                                "ブロックがここで終わる",
                                                                 "ことを表す記号です。")),
                                 textSection(
                                                 "{ } を書くときのコツ",
@@ -1423,6 +1450,272 @@ public class CodeReadingLessonCatalog {
                                                 List.of("System.out.println", "c", ";"), List.of(),
                                                 "変数cに保存されている計算結果30を表示して改行する"),
                                 new CodeReadingPart("part-7", 7, "プログラムを閉じる", List.of(), "}\n}",
+                                                List.of("main-close", "class-close"), List.of("}", "}"), List.of(),
+                                                "mainメソッドとMainクラスを順番に終了する"));
+        }
+
+        private static List<CodeReadingStepDefinition> createStage4Steps(
+                        CodeReadingLessonDefinition stage2) {
+                List<CodeReadingExplanationSection> variableName =
+                                sharedExplanation(stage2, "age-declaration");
+                List<CodeReadingExplanationSection> assignment =
+                                sharedExplanation(stage2, "assignment");
+                List<CodeReadingExplanationSection> variableUse =
+                                sharedExplanation(stage2, "age-use");
+                List<CodeReadingExplanationSection> semicolon = semicolonExplanation();
+                return List.of(
+                                richStep("class-public", 1, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("class-keyword", 2, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("class-name", 3, "Main", "Main", "main-class-name", CLASS_NAME_CARD,
+                                                "クラス名", CLASS_NAME_EXPLANATION),
+                                richStep("class-open", 4, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("main-public", 5, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("static", 6, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("void", 7, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("main", 8, "main", "main", "program-entry", MAIN_CARD,
+                                                "メソッド名", MAIN_EXPLANATION),
+                                richStep("string-array", 9, "String[]", "String[]", "multiple-strings", STRING_ARRAY_CARD,
+                                                "引数の型", STRING_ARRAY_EXPLANATION),
+                                richStep("args", 10, "args", "args", "argument-variable", ARGS_CARD,
+                                                "引数名", ARGS_EXPLANATION),
+                                richStep("main-open", 11, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("signal-string-type", 12, "String", "String", "string-type",
+                                                "文字列を扱うデータ型", "文字列型", stringTypeExplanation()),
+                                richStep("signal-name", 13, "signal", "signal", "variable-name",
+                                                "変数の名前", "変数名", variableName),
+                                richStep("signal-assignment", 14, "=", "=", "assignment",
+                                                "右側の値を左側に入れる", "代入演算子", assignment),
+                                richStep("signal-blue-literal", 15, "\"青\"", "\"青\"", "string-value",
+                                                "文字列の値", "文字列リテラル", stringLiteralExplanation("青")),
+                                richStep("signal-semicolon", 16, ";", ";", "command-end",
+                                                "文の終わり", "セミコロン", semicolon),
+                                richStep("if-keyword", 17, "if", "if", "conditional-start",
+                                                "条件がtrueのときだけ処理する", "if文", ifExplanation()),
+                                richStep("condition-signal", 18, "signal", "signal", "use-variable-value",
+                                                VARIABLE_VALUE_USE_CARD, "変数の利用", variableUse),
+                                richStep("equals-method", 19, "equals", "equals", "compare-string-content",
+                                                "文字列の内容が同じか比べる", "equalsメソッド", equalsExplanation()),
+                                richStep("condition-blue-literal", 20, "\"青\"", "\"青\"", "comparison-value",
+                                                "比較する文字列", "文字列リテラル", stringLiteralExplanation("青")),
+                                richStep("if-open", 21, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("true-print-command", 22, "System.out.println", "System.out.println",
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("go-string", 23, "\"進む\"", "\"進む\"", "display-text",
+                                                "表示する文字", "文字列リテラル", stringLiteralExplanation("進む")),
+                                richStep("true-semicolon", 24, ";", ";", "command-end",
+                                                "文の終わり", "セミコロン", semicolon),
+                                richStep("if-close", 25, "}", "}", "close-if", "ここで終わる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("else-keyword", 26, "else", "else", "conditional-fallback",
+                                                "条件がfalseのときに処理する", "else節", elseExplanation()),
+                                richStep("else-open", 27, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("false-print-command", 28, "System.out.println", "System.out.println",
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("stop-string", 29, "\"止まる\"", "\"止まる\"", "display-text",
+                                                "表示する文字", "文字列リテラル", stringLiteralExplanation("止まる")),
+                                richStep("false-semicolon", 30, ";", ";", "command-end",
+                                                "文の終わり", "セミコロン", semicolon),
+                                richStep("else-close", 31, "}", "}", "close-else", "ここで終わる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("main-close", 32, "}", "}", "close-main", "ここで終わる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("class-close", 33, "}", "}", "close-class", "ここで終わる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION));
+        }
+
+        private static List<CodeReadingExplanationSection> stringTypeExplanation() {
+                return List.of(
+                                textSection("文字列型　String",
+                                                text("複数の文字をまとめた文字列を扱うためのクラス型です。")),
+                                textSection("ポイント",
+                                                text("String は大文字の S で始めます。"),
+                                                text("文字列の値はダブルクォート \" \" で囲みます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§4.3.3", "The Class String",
+                                                                "Stringが文字列を表すクラス型であることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.3.3")));
+        }
+
+        private static List<CodeReadingExplanationSection> stringLiteralExplanation(String value) {
+                return List.of(
+                                textSection("文字列リテラル　string literal",
+                                                text("ダブルクォートで囲んで、文字列の値を直接書いたものです。")),
+                                textSection("このコードでの値",
+                                                text("\"" + value + "\" は文字列として扱われます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§3.10.5", "String Literals",
+                                                                "Javaの文字列リテラルの書き方を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-3.html#jls-3.10.5")));
+        }
+
+        private static List<CodeReadingExplanationSection> ifExplanation() {
+                return List.of(
+                                textSection("if文　if statement",
+                                                text("かっこの中の条件が true のときだけ、直後のブロックを実行します。")),
+                                tableSectionWithHeader("条件と実行される処理",
+                                                tableRow("条件", "実行される処理"),
+                                                tableRow("true", "if側の処理"),
+                                                tableRow("false", "if側の処理は実行しない")),
+                                textSection("ポイント",
+                                                text("if は、条件によって実行する処理を分ける条件分岐です。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§14.9.1", "The if-then Statement",
+                                                                "条件がtrueのときに文を実行するif文の動作を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.9.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> equalsExplanation() {
+                return List.of(
+                                textSection("equalsメソッド　equals method",
+                                                text("2つの文字列の内容が同じかを調べ、trueまたはfalseを返します。")),
+                                tableSectionWithHeader("文字列の比較",
+                                                tableRow("書き方", "意味"),
+                                                tableRow("signal.equals(\"青\")", "文字列の内容が同じか比較する"),
+                                                tableRow("signal == \"青\"", "同じオブジェクトを参照しているか比較する")),
+                                textSection("ポイント",
+                                                text("文字列の内容を比較するときは、== ではなく equals() を使います。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                javaSeApiReference("String.equals(Object)",
+                                                                "文字列の内容が等しいかを比較するequalsメソッドを説明しています。",
+                                                                "https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html#equals(java.lang.Object)")));
+        }
+
+        private static List<CodeReadingExplanationSection> elseExplanation() {
+                return List.of(
+                                textSection("else節　else clause",
+                                                text("ifの条件が false のときに実行する処理を表します。")),
+                                tableSectionWithHeader("ifとelseの分かれ方",
+                                                tableRow("条件", "実行される処理"),
+                                                tableRow("true", "if側"),
+                                                tableRow("false", "else側")),
+                                textSection("ポイント",
+                                                text("この教材ではelse ifは扱わず、trueとfalseの2つに分けます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§14.9.2", "The if-then-else Statement",
+                                                                "条件がfalseのときにelse側を実行する動作を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.9.2")));
+        }
+
+        private static List<CodeReadingCircuitDefinition> createStage4Circuits() {
+                return List.of(
+                                new CodeReadingCircuitDefinition("class-declaration", "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{")),
+                                new CodeReadingCircuitDefinition("main-method", "public static void main(String[] args) {",
+                                                List.of("main-public", "static", "void", "main", "string-array", "args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{")),
+                                new CodeReadingCircuitDefinition("signal-declaration", "String signal = \"青\";",
+                                                List.of("signal-string-type", "signal-name", "signal-assignment",
+                                                                "signal-blue-literal", "signal-semicolon"),
+                                                List.of("String", "signal", "=", "\"青\"", ";")),
+                                new CodeReadingCircuitDefinition("if-condition", "if (signal.equals(\"青\")) {",
+                                                List.of("if-keyword", "condition-signal", "equals-method",
+                                                                "condition-blue-literal", "if-open"),
+                                                List.of("if", "signal", ".equals", "(\"青\")", "{")),
+                                new CodeReadingCircuitDefinition("true-output", "System.out.println(\"進む\");",
+                                                List.of("true-print-command", "go-string", "true-semicolon"),
+                                                List.of("System.out.println", "\"進む\"", ";")),
+                                new CodeReadingCircuitDefinition("else-start", "} else {",
+                                                List.of("if-close", "else-keyword", "else-open"),
+                                                List.of("}", "else", "{")),
+                                new CodeReadingCircuitDefinition("false-output", "System.out.println(\"止まる\");",
+                                                List.of("false-print-command", "stop-string", "false-semicolon"),
+                                                List.of("System.out.println", "\"止まる\"", ";")),
+                                new CodeReadingCircuitDefinition("else-close", "elseブロック終了 }",
+                                                List.of("else-close"), List.of("elseブロック終了 }")),
+                                new CodeReadingCircuitDefinition("block-closes", "mainメソッド終了 }　Mainクラス終了 }",
+                                                List.of("main-close", "class-close"),
+                                                List.of("mainメソッド終了 }", "Mainクラス終了 }")));
+        }
+
+        private static Map<String, List<CodeReadingCodeLineDefinition>> createStage4CodeLines() {
+                return Map.of(
+                                "part-1", List.of(line(
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"), "", "")),
+                                "part-2", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("main-public"), token("static"), token("void"), token("main"),
+                                                                new CodeReadingCodeTokenDefinition("string-array", "(", ""),
+                                                                new CodeReadingCodeTokenDefinition("args", "", ")"), token("main-open")),
+                                                "", "quiz-reading-code-line--part-2")),
+                                "part-3", List.of(line(List.of("signal-string-type", "signal-name",
+                                                "signal-assignment", "signal-blue-literal", "signal-semicolon"), "", "")),
+                                "part-4", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("if-keyword"),
+                                                                new CodeReadingCodeTokenDefinition("condition-signal", " (", ""),
+                                                                new CodeReadingCodeTokenDefinition("equals-method", ".", "("),
+                                                                new CodeReadingCodeTokenDefinition("condition-blue-literal", "", "))"),
+                                                                new CodeReadingCodeTokenDefinition("if-open", " ", "")),
+                                                "", "")),
+                                "part-5", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("true-print-command"),
+                                                                new CodeReadingCodeTokenDefinition("go-string", "(", ")"),
+                                                                token("true-semicolon")), "", "")),
+                                "part-6", List.of(line(List.of("if-close", "else-keyword", "else-open"), "", "")),
+                                "part-7", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("false-print-command"),
+                                                                new CodeReadingCodeTokenDefinition("stop-string", "(", ")"),
+                                                                token("false-semicolon")), "", "")),
+                                "part-8", List.of(line(List.of("else-close"), "", "")),
+                                "part-9", List.of(line(List.of("main-close", "class-close"), "", "")));
+        }
+
+        private static List<CodeReadingPart> createStage4Parts() {
+                return List.of(
+                                new CodeReadingPart("part-1", 1, "クラスを作る", List.of(), "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{"), List.of(),
+                                                "Mainというクラスを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-2", 2, "mainメソッドを作る", List.of(),
+                                                "public static void main(String[] args) {",
+                                                List.of("main-public", "static", "void", "main", "string-array", "args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{"), List.of(),
+                                                "mainメソッドを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-3", 3, "文字列を変数に代入する",
+                                                List.of("信号を表す文字列を変数signalに保存します。"),
+                                                "String signal = \"青\";",
+                                                List.of("signal-string-type", "signal-name", "signal-assignment",
+                                                                "signal-blue-literal", "signal-semicolon"),
+                                                List.of("String", "signal", "=", "\"青\"", ";"), List.of(),
+                                                "String型の変数signalを宣言し、文字列「青」で初期化する"),
+                                new CodeReadingPart("part-4", 4, "文字列が一致するか判定する",
+                                                List.of("ifで条件分岐を始め、signalの内容が「青」と同じかをequals()で調べます。"),
+                                                "if (signal.equals(\"青\")) {",
+                                                List.of("if-keyword", "condition-signal", "equals-method",
+                                                                "condition-blue-literal", "if-open"),
+                                                List.of("if", "signal", "equals", "\"青\"", "{"), List.of(),
+                                                "ifで文字列の内容が一致するか判定し、true側のブロックを始める"),
+                                new CodeReadingPart("part-5", 5, "条件がtrueの場合の処理",
+                                                List.of("条件がtrueなので「進む」と表示します。"),
+                                                "System.out.println(\"進む\");",
+                                                List.of("true-print-command", "go-string", "true-semicolon"),
+                                                List.of("System.out.println", "\"進む\"", ";"), List.of(),
+                                                "ifの条件がtrueのときに「進む」と表示する"),
+                                new CodeReadingPart("part-6", 6, "条件がfalseの場合の処理",
+                                                List.of("ifの条件がfalseだった場合の処理へ分かれます。"),
+                                                "} else {", List.of("if-close", "else-keyword", "else-open"),
+                                                List.of("}", "else", "{"), List.of(),
+                                                "if側のブロックを閉じ、条件がfalseのときに実行するelse側のブロックを始める"),
+                                new CodeReadingPart("part-7", 7, "else側の処理",
+                                                List.of("条件がfalseの場合は「止まる」と表示します。"),
+                                                "System.out.println(\"止まる\");",
+                                                List.of("false-print-command", "stop-string", "false-semicolon"),
+                                                List.of("System.out.println", "\"止まる\"", ";"), List.of(),
+                                                "else側で「止まる」と表示する"),
+                                new CodeReadingPart("part-8", 8, "elseブロックを閉じる", List.of(), "}",
+                                                List.of("else-close"), List.of("}"), List.of(),
+                                                "else側の処理を書くブロックを終了する"),
+                                new CodeReadingPart("part-9", 9, "プログラムを閉じる", List.of(), "}\n}",
                                                 List.of("main-close", "class-close"), List.of("}", "}"), List.of(),
                                                 "mainメソッドとMainクラスを順番に終了する"));
         }

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='stage3-summary-compact-1')}"
-          href="/css/style.css?v=stage3-summary-compact-1">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='stage4-reading-1')}"
+          href="/css/style.css?v=stage4-reading-1">
     <script th:if="${phase.name() == 'LEARNING'}" defer
             th:src="@{/js/quiz-reading.js(v='stage3-reading-6')}"
             src="/js/quiz-reading.js?v=stage3-reading-6"></script>
@@ -31,6 +31,10 @@
            th:if="${lessonId == 'operator-program-reading'}">
             変数に入れた値を使って、計算するコードを読めるようになろう
         </p>
+        <p class="quiz-focus-learning-objective"
+           th:if="${lessonId == 'conditional-program-reading'}">
+            ifとelseを使って、条件に応じて処理を分けるコードを読めるようになろう
+        </p>
     </header>
 
     <!-- 導入：完成コードの全体像を見るだけの画面です。 -->
@@ -48,8 +52,11 @@
                 <div class="quiz-ide-line-numbers" aria-hidden="true">
                     <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span
                         th:if="${lessonId != 'hello-program-reading'}">6</span>
-                    <span th:if="${lessonId == 'operator-program-reading'}">7</span>
-                    <span th:if="${lessonId == 'operator-program-reading'}">8</span>
+                    <span th:if="${lessonId == 'operator-program-reading' or lessonId == 'conditional-program-reading'}">7</span>
+                    <span th:if="${lessonId == 'operator-program-reading' or lessonId == 'conditional-program-reading'}">8</span>
+                    <span th:if="${lessonId == 'conditional-program-reading'}">9</span>
+                    <span th:if="${lessonId == 'conditional-program-reading'}">10</span>
+                    <span th:if="${lessonId == 'conditional-program-reading'}">11</span>
                 </div>
                 <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId == 'hello-program-reading'}"><code>public class Main {
     public static void main(String[] args) {
@@ -332,8 +339,11 @@
                 <div class="quiz-ide-line-numbers" aria-hidden="true">
                     <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span
                         th:if="${lessonId != 'hello-program-reading'}">6</span>
-                    <span th:if="${lessonId == 'operator-program-reading'}">7</span>
-                    <span th:if="${lessonId == 'operator-program-reading'}">8</span>
+                    <span th:if="${lessonId == 'operator-program-reading' or lessonId == 'conditional-program-reading'}">7</span>
+                    <span th:if="${lessonId == 'operator-program-reading' or lessonId == 'conditional-program-reading'}">8</span>
+                    <span th:if="${lessonId == 'conditional-program-reading'}">9</span>
+                    <span th:if="${lessonId == 'conditional-program-reading'}">10</span>
+                    <span th:if="${lessonId == 'conditional-program-reading'}">11</span>
                 </div>
                 <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId == 'hello-program-reading'}"><code>public class Main {
     public static void main(String[] args) {
