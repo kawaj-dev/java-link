@@ -3345,6 +3345,155 @@ h1 {
     }
 }
 
+/* Stage 4だけを、条件分岐コードの可読性を保ちながらコンパクトに整えます。 */
+body:has([data-lesson-id="conditional-program-reading"]) .quiz-focus-page {
+    padding-top: 16px;
+    padding-bottom: 28px;
+}
+
+body:has([data-lesson-id="conditional-program-reading"]) .page-home-navigation {
+    margin-bottom: 8px;
+}
+
+body:has([data-lesson-id="conditional-program-reading"]) .quiz-focus-header {
+    margin-bottom: 12px;
+}
+
+body:has([data-lesson-id="conditional-program-reading"]) .quiz-focus-header .label {
+    margin-bottom: 4px;
+}
+
+body:has([data-lesson-id="conditional-program-reading"]) .quiz-focus-header h1 {
+    font-size: clamp(2.25rem, 5vw, 3.1rem);
+}
+
+body:has([data-lesson-id="conditional-program-reading"]) .quiz-focus-stage,
+body:has([data-lesson-id="conditional-program-reading"]) .quiz-focus-header h2 {
+    margin-top: 4px;
+}
+
+body:has([data-lesson-id="conditional-program-reading"]) .quiz-focus-header h2 {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+}
+
+body:has([data-lesson-id="conditional-program-reading"]) .quiz-focus-learning-objective {
+    margin: 4px 0 0;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-focus-program,
+body:has(.quiz-focus-learning[data-lesson-id="conditional-program-reading"]) .quiz-focus-learning,
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"]) .quiz-final-review {
+    margin-top: 10px;
+    padding: clamp(12px, 1.8vw, 18px);
+}
+
+body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-focus-program .quiz-ide-tabbar,
+body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-focus-program .quiz-ide-tab {
+    min-height: 36px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-focus-program .quiz-ide-editor,
+body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-focus-program .quiz-full-code,
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"])
+    .quiz-summary-development-flow .quiz-ide-editor,
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"])
+    .quiz-summary-development-flow .quiz-full-code {
+    min-height: 300px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-focus-program .quiz-ide-line-numbers,
+body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-focus-program .quiz-full-code,
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"])
+    .quiz-summary-development-flow .quiz-ide-line-numbers,
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"])
+    .quiz-summary-development-flow .quiz-full-code {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 1.55;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-intro-start .next-button,
+body:has(.quiz-focus-learning[data-lesson-id="conditional-program-reading"]) .quiz-understood-link,
+body:has(.quiz-focus-learning[data-lesson-id="conditional-program-reading"]) .next-button,
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"]) .run-button,
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"]) .quiz-summary-navigation button {
+    min-height: 44px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-intro-start .next-button {
+    margin-top: 10px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="conditional-program-reading"]) .quiz-focus-learning-header {
+    min-height: 44px;
+    padding-bottom: 7px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="conditional-program-reading"]) .quiz-reading-stage {
+    gap: 10px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="conditional-program-reading"]) .quiz-reading-code-panel {
+    padding-top: 12px;
+    padding-bottom: 8px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="conditional-program-reading"]) .quiz-reading-code-meaning {
+    min-height: 42px;
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="conditional-program-reading"]) .quiz-reading-circuit-panel {
+    padding-top: 0;
+    padding-bottom: 2px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"]) .quiz-summary-development-flow {
+    margin: 0 auto 10px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"]) .quiz-summary-run-panel {
+    padding: 8px 14px;
+}
+
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"]) .quiz-focus-review-list {
+    gap: 4px;
+    margin: 8px 0;
+}
+
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"]) .quiz-focus-review-list > div {
+    gap: 10px;
+    padding: 6px 10px;
+    line-height: 1.35;
+}
+
+body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"]) .quiz-summary-navigation {
+    margin-top: 12px;
+}
+
+@media (max-width: 600px) {
+    body:has([data-lesson-id="conditional-program-reading"]) .quiz-focus-page {
+        padding-top: 14px;
+        padding-bottom: 24px;
+    }
+
+    body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-focus-program,
+    body:has(.quiz-focus-learning[data-lesson-id="conditional-program-reading"]) .quiz-focus-learning,
+    body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"]) .quiz-final-review {
+        padding: 12px;
+    }
+
+    body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-focus-program .quiz-ide-editor,
+    body:has(.quiz-focus-program[data-lesson-id="conditional-program-reading"]) .quiz-focus-program .quiz-full-code,
+    body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"])
+        .quiz-summary-development-flow .quiz-ide-editor,
+    body:has(.quiz-final-review[data-lesson-id="conditional-program-reading"])
+        .quiz-summary-development-flow .quiz-full-code {
+        min-height: 276px;
+    }
+}
+
 /* Stage 3の算術演算子一覧は、共通TABLEを5列でも追いやすい罫線表示にします。 */
 .quiz-focus-learning[data-lesson-id="operator-program-reading"]
     .quiz-reading-access-table:has(.quiz-reading-access-row--five-columns) {

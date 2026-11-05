@@ -94,4 +94,21 @@ class LearningProgressSyncServiceTest {
         verify(authenticatedUserService).findAuthenticatedUser(session);
         verifyNoInteractions(learningProgressService);
     }
+
+    @Test
+    void Stage4リセットはStage4のLessonIdだけを削除Serviceへ渡す() {
+        UserAccount userAccount = new UserAccount();
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+
+        learningProgressSyncService.resetIfAuthenticated(
+                session,
+                CodeReadingLessonCatalog.STAGE4_LESSON_ID
+        );
+
+        verify(learningProgressService).deleteProgress(
+                userAccount,
+                CodeReadingLessonCatalog.STAGE4_LESSON_ID
+        );
+    }
 }

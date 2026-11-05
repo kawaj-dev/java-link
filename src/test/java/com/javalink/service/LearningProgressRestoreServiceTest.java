@@ -362,6 +362,57 @@ class LearningProgressRestoreServiceTest {
         assertTrue(result.isEmpty());
     }
 
+    @Test
+    void Stage4の詳細進捗は確認済みStepだけを復元する() {
+        String stage4LessonId = CodeReadingLessonCatalog.STAGE4_LESSON_ID;
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("condition-signal", false);
+        Set<String> completedStepIds = Set.of(
+                "class-public",
+                "class-keyword",
+                "class-name",
+                "class-open",
+                "main-public",
+                "static",
+                "void",
+                "main",
+                "string-array",
+                "args",
+                "main-open",
+                "signal-string-type",
+                "signal-name",
+                "signal-assignment",
+                "signal-blue-literal",
+                "signal-semicolon",
+                "if-keyword"
+        );
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+        when(learningProgressService.findProgressSnapshot(
+                userAccount,
+                stage4LessonId
+        )).thenReturn(Optional.of(
+                new LearningProgressService.ProgressSnapshot(
+                        storedProgress,
+                        completedStepIds,
+                        true
+                )
+        ));
+        when(lessonService.getLesson(stage4LessonId))
+                .thenReturn(new CodeReadingLessonCatalog().getLesson(stage4LessonId));
+
+        LessonProgress restored = restoreService.restoreIfAuthenticated(
+                session,
+                stage4LessonId
+        ).orElseThrow();
+
+        assertEquals("condition-signal", restored.getCurrentStepId());
+        assertEquals(completedStepIds, restored.getCompletedStepIds());
+        assertFalse(restored.isStepCompleted("condition-signal"));
+        assertFalse(restored.isStepCompleted("equals-method"));
+        assertFalse(restored.isCompleted());
+    }
+
     private void stubProgress(
             UserAccount userAccount,
             LearningProgress storedProgress
