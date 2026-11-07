@@ -81,6 +81,28 @@ class QuizControllerTest {
     }
 
     @Test
+    void 目次へ戻っても学習中のStage進捗を維持する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+
+        mockMvc.perform(post("/quiz/start")
+                        .param("lessonId", CodeReadingLessonCatalog.STAGE4_LESSON_ID)
+                        .session(session))
+                .andExpect(status().is3xxRedirection());
+
+        mockMvc.perform(get("/quiz/stages").session(session))
+                .andExpect(status().isOk())
+                .andExpect(view().name("code-reading-index"));
+
+        mockMvc.perform(get("/quiz")
+                        .param("lessonId", CodeReadingLessonCatalog.STAGE4_LESSON_ID)
+                        .session(session))
+                .andExpect(status().isOk())
+                .andExpect(model().attribute("phase", CodeReadingPhase.LEARNING))
+                .andExpect(content().string(containsString("Part 1 / 9")))
+                .andExpect(content().string(containsString("href=\"/quiz/stages\"")));
+    }
+
+    @Test
     void Stage3導入画面は完成コードと学習テーマを表示する() throws Exception {
         MockHttpSession session = new MockHttpSession();
 

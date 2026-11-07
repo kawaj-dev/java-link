@@ -23,7 +23,7 @@ class HomeControllerTest {
         mockMvc.perform(get("/"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("home"))
-                .andExpect(content().string(containsString("href=\"/quiz\"")))
+                .andExpect(content().string(containsString("href=\"/quiz/stages\"")))
                 .andExpect(content().string(not(containsString("href=\"/stage1\""))))
                 .andExpect(content().string(not(containsString("Javaタウンをつくろう"))))
                 .andExpect(content().string(not(containsString("home-menu-card--town"))))
