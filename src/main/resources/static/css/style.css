@@ -1683,8 +1683,154 @@ h1 {
 
 /* 既存画面を邪魔しない、小さなトップページリンクです。 */
 .page-home-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
     margin-bottom: 18px;
     text-align: left;
+}
+
+/* コードリーディングのStage目次 */
+.code-reading-index-body {
+    min-height: 100vh;
+    margin: 0;
+    color: #17324d;
+    background:
+        radial-gradient(circle at 12% 16%, rgba(255, 255, 255, 0.92) 0 4px, transparent 5px),
+        linear-gradient(180deg, #e8f6fc 0%, #f5fbfe 100%);
+}
+
+.code-reading-index-page {
+    width: min(1080px, calc(100% - 40px));
+    margin: 0 auto;
+    padding: 28px 0 48px;
+}
+
+.code-reading-index-navigation {
+    margin-bottom: 20px;
+}
+
+.code-reading-index-navigation a {
+    color: #315a72;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.code-reading-index-navigation a:hover {
+    text-decoration: underline;
+}
+
+.code-reading-index-navigation a:focus-visible,
+.code-reading-stage-link:focus-visible {
+    outline: 3px solid #ffc900;
+    outline-offset: 3px;
+}
+
+.code-reading-index-header {
+    margin-bottom: 26px;
+    text-align: center;
+}
+
+.code-reading-index-label {
+    margin: 0 0 5px;
+    color: #287bb2;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+}
+
+.code-reading-index-header h1 {
+    margin: 0;
+    color: #0d3154;
+    font-size: clamp(1.75rem, 4vw, 2.55rem);
+}
+
+.code-reading-index-header > p:last-child {
+    margin: 7px 0 0;
+    color: #486378;
+    font-size: 1.08rem;
+    font-weight: 700;
+}
+
+.code-reading-stage-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.code-reading-stage-card {
+    display: flex;
+    min-width: 0;
+    min-height: 236px;
+    flex-direction: column;
+    padding: 22px;
+    border: 1px solid rgba(42, 126, 184, 0.16);
+    border-top: 5px solid #2e8ed0;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.96);
+    box-shadow: 0 14px 34px rgba(7, 37, 76, 0.09);
+}
+
+.code-reading-stage-number {
+    margin: 0 0 7px;
+    color: #087dff;
+    font-size: 0.9rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.code-reading-stage-card h2 {
+    margin: 0;
+    color: #0d3154;
+    font-size: clamp(1.08rem, 2vw, 1.28rem);
+    line-height: 1.45;
+}
+
+.code-reading-stage-description {
+    flex-grow: 1;
+    margin: 12px 0 18px;
+    color: #486378;
+    line-height: 1.7;
+}
+
+.code-reading-stage-link {
+    display: flex;
+    width: min(230px, 100%);
+    min-height: 44px;
+    align-items: center;
+    justify-content: space-between;
+    align-self: center;
+    padding: 9px 18px 9px 22px;
+    border-radius: 999px;
+    color: #ffffff;
+    background: linear-gradient(90deg, #087dff, #055fe2);
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.code-reading-stage-link:hover {
+    filter: brightness(0.92);
+}
+
+@media (max-width: 700px) {
+    .code-reading-index-page {
+        width: min(100% - 28px, 520px);
+        padding: 20px 0 36px;
+    }
+
+    .code-reading-index-header {
+        margin-bottom: 20px;
+    }
+
+    .code-reading-stage-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .code-reading-stage-card {
+        min-height: 0;
+        padding: 18px;
+    }
 }
 
 .page-home-navigation a {
