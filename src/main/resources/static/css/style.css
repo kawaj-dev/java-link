@@ -1754,8 +1754,10 @@ h1 {
 
 .code-reading-stage-grid {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: 20px;
+    width: min(760px, 100%);
+    margin: 0 auto;
 }
 
 .code-reading-stage-card {
@@ -1820,11 +1822,6 @@ h1 {
 
     .code-reading-index-header {
         margin-bottom: 20px;
-    }
-
-    .code-reading-stage-grid {
-        grid-template-columns: minmax(0, 1fr);
-        gap: 14px;
     }
 
     .code-reading-stage-card {
