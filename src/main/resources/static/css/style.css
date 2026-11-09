@@ -1763,7 +1763,6 @@ h1 {
 .code-reading-stage-card {
     display: flex;
     min-width: 0;
-    min-height: 236px;
     flex-direction: column;
     padding: 22px;
     border: 1px solid rgba(42, 126, 184, 0.16);
@@ -1789,8 +1788,7 @@ h1 {
 }
 
 .code-reading-stage-description {
-    flex-grow: 1;
-    margin: 12px 0 18px;
+    margin: 12px 0 14px;
     color: #486378;
     line-height: 1.7;
 }
@@ -1825,7 +1823,6 @@ h1 {
     }
 
     .code-reading-stage-card {
-        min-height: 0;
         padding: 18px;
     }
 }
