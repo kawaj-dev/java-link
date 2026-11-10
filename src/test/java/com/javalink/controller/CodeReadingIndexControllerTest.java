@@ -2,6 +2,7 @@ package com.javalink.controller;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
@@ -57,6 +58,13 @@ class CodeReadingIndexControllerTest {
     void 各Stageの既存URLへのリンクを表示する() throws Exception {
         mockMvc.perform(get("/quiz/stages"))
                 .andExpect(status().isOk())
+                .andExpect(result -> assertEquals(
+                        4,
+                        countOccurrences(
+                                result.getResponse().getContentAsString(),
+                                "class=\"code-reading-stage-card\""
+                        )
+                ))
                 .andExpect(content().string(containsString(
                         "href=\"/quiz?lessonId=hello-program-reading\"")))
                 .andExpect(content().string(containsString(
@@ -65,5 +73,9 @@ class CodeReadingIndexControllerTest {
                         "href=\"/quiz?lessonId=operator-program-reading\"")))
                 .andExpect(content().string(containsString(
                         "href=\"/quiz?lessonId=conditional-program-reading\"")));
+    }
+
+    private static int countOccurrences(String text, String target) {
+        return (text.length() - text.replace(target, "").length()) / target.length();
     }
 }

@@ -1703,11 +1703,11 @@ h1 {
 .code-reading-index-page {
     width: min(1080px, calc(100% - 40px));
     margin: 0 auto;
-    padding: 28px 0 48px;
+    padding: 18px 0 32px;
 }
 
 .code-reading-index-navigation {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .code-reading-index-navigation a {
@@ -1721,13 +1721,13 @@ h1 {
 }
 
 .code-reading-index-navigation a:focus-visible,
-.code-reading-stage-link:focus-visible {
+.code-reading-stage-card:focus-visible {
     outline: 3px solid #ffc900;
     outline-offset: 3px;
 }
 
 .code-reading-index-header {
-    margin-bottom: 26px;
+    margin-bottom: 16px;
     text-align: center;
 }
 
@@ -1742,11 +1742,11 @@ h1 {
 .code-reading-index-header h1 {
     margin: 0;
     color: #0d3154;
-    font-size: clamp(1.75rem, 4vw, 2.55rem);
+    font-size: clamp(1.65rem, 3.4vw, 2.2rem);
 }
 
 .code-reading-index-header > p:last-child {
-    margin: 7px 0 0;
+    margin: 4px 0 0;
     color: #486378;
     font-size: 1.08rem;
     font-weight: 700;
@@ -1755,75 +1755,83 @@ h1 {
 .code-reading-stage-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 20px;
+    gap: 12px;
     width: min(760px, 100%);
     margin: 0 auto;
 }
 
 .code-reading-stage-card {
-    display: flex;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 18px;
     min-width: 0;
-    flex-direction: column;
-    padding: 22px;
+    min-height: 100px;
+    align-items: center;
+    padding: 13px 18px;
     border: 1px solid rgba(42, 126, 184, 0.16);
     border-top: 5px solid #2e8ed0;
     border-radius: 18px;
+    color: inherit;
     background: rgba(255, 255, 255, 0.96);
     box-shadow: 0 14px 34px rgba(7, 37, 76, 0.09);
+    text-decoration: none;
+}
+
+.code-reading-stage-card:hover {
+    border-color: rgba(8, 125, 255, 0.35);
+    box-shadow: 0 16px 36px rgba(7, 37, 76, 0.13);
+}
+
+.code-reading-stage-content {
+    display: block;
+    min-width: 0;
 }
 
 .code-reading-stage-number {
-    margin: 0 0 7px;
+    display: block;
+    margin-bottom: 3px;
     color: #087dff;
     font-size: 0.9rem;
     font-weight: 800;
     letter-spacing: 0.04em;
 }
 
-.code-reading-stage-card h2 {
-    margin: 0;
+.code-reading-stage-title {
+    display: block;
     color: #0d3154;
     font-size: clamp(1.08rem, 2vw, 1.28rem);
+    font-weight: 700;
     line-height: 1.45;
 }
 
 .code-reading-stage-description {
-    margin: 12px 0 14px;
+    display: block;
+    margin-top: 4px;
     color: #486378;
-    line-height: 1.7;
+    font-size: 0.9rem;
+    line-height: 1.5;
 }
 
-.code-reading-stage-link {
-    display: flex;
-    width: min(230px, 100%);
-    min-height: 44px;
-    align-items: center;
-    justify-content: space-between;
-    align-self: center;
-    padding: 9px 18px 9px 22px;
-    border-radius: 999px;
-    color: #ffffff;
-    background: linear-gradient(90deg, #087dff, #055fe2);
-    font-weight: 700;
-    text-decoration: none;
-}
-
-.code-reading-stage-link:hover {
-    filter: brightness(0.92);
+.code-reading-stage-arrow {
+    color: #087dff;
+    font-size: 1.55rem;
+    font-weight: 800;
 }
 
 @media (max-width: 700px) {
     .code-reading-index-page {
         width: min(100% - 28px, 520px);
-        padding: 20px 0 36px;
+        padding: 16px 0 30px;
     }
 
     .code-reading-index-header {
-        margin-bottom: 20px;
+        margin-bottom: 14px;
     }
 
     .code-reading-stage-card {
-        padding: 18px;
+        gap: 12px;
+        min-height: 96px;
+        padding: 13px 15px;
     }
 }
 
