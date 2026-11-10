@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学習の目次 | Java Link</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='code-reading-index-3')}"
-          href="/css/style.css?v=code-reading-index-3">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='code-reading-index-4')}"
+          href="/css/style.css?v=code-reading-index-4">
 </head>
 <body class="code-reading-index-body">
 <main class="code-reading-index-page">
@@ -20,19 +20,21 @@
     </header>
 
     <section class="code-reading-stage-grid" aria-label="Stage一覧">
-        <article class="code-reading-stage-card" th:each="stage : ${stages}">
-            <p class="code-reading-stage-number" th:text="${stage.stageName}">Stage 1</p>
-            <h2 th:text="${stage.title}">「Hello」と表示するプログラムを読めるようになろう</h2>
-            <p class="code-reading-stage-description" th:text="${stage.description}">
-                Javaの基本のコードを学びます。
-            </p>
-            <a class="code-reading-stage-link"
-               th:href="@{/quiz(lessonId=${stage.lessonId})}"
-               href="/quiz?lessonId=hello-program-reading">
-                <span th:text="|${stage.stageName}へ進む|">Stage 1へ進む</span>
-                <span aria-hidden="true">→</span>
-            </a>
-        </article>
+        <a class="code-reading-stage-card"
+           th:each="stage : ${stages}"
+           th:href="@{/quiz(lessonId=${stage.lessonId})}"
+           href="/quiz?lessonId=hello-program-reading">
+            <span class="code-reading-stage-content">
+                <span class="code-reading-stage-number" th:text="${stage.stageName}">Stage 1</span>
+                <span class="code-reading-stage-title" th:text="${stage.title}">
+                    「Hello」と表示するプログラムを読めるようになろう
+                </span>
+                <span class="code-reading-stage-description" th:text="${stage.description}">
+                    Javaの基本のコードを学びます。
+                </span>
+            </span>
+            <span class="code-reading-stage-arrow" aria-hidden="true">→</span>
+        </a>
     </section>
 </main>
 </body>
