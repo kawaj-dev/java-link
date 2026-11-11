@@ -1703,11 +1703,11 @@ h1 {
 .code-reading-index-page {
     width: min(1080px, calc(100% - 40px));
     margin: 0 auto;
-    padding: 18px 0 32px;
+    padding: 8px 0 16px;
 }
 
 .code-reading-index-navigation {
-    margin-bottom: 10px;
+    margin-bottom: 4px;
 }
 
 .code-reading-index-navigation a {
@@ -1727,12 +1727,12 @@ h1 {
 }
 
 .code-reading-index-header {
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     text-align: center;
 }
 
 .code-reading-index-label {
-    margin: 0 0 5px;
+    margin: 0 0 2px;
     color: #287bb2;
     font-size: 0.82rem;
     font-weight: 800;
@@ -1742,11 +1742,11 @@ h1 {
 .code-reading-index-header h1 {
     margin: 0;
     color: #0d3154;
-    font-size: clamp(1.65rem, 3.4vw, 2.2rem);
+    font-size: clamp(1.65rem, 3.2vw, 2rem);
 }
 
 .code-reading-index-header > p:last-child {
-    margin: 4px 0 0;
+    margin: 1px 0 0;
     color: #486378;
     font-size: 1.08rem;
     font-weight: 700;
@@ -1824,8 +1824,20 @@ h1 {
         padding: 16px 0 30px;
     }
 
+    .code-reading-index-navigation {
+        margin-bottom: 8px;
+    }
+
     .code-reading-index-header {
         margin-bottom: 14px;
+    }
+
+    .code-reading-index-label {
+        margin-bottom: 4px;
+    }
+
+    .code-reading-index-header > p:last-child {
+        margin-top: 3px;
     }
 
     .code-reading-stage-card {
