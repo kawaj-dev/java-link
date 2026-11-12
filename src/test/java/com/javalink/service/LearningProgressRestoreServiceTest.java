@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -411,6 +412,52 @@ class LearningProgressRestoreServiceTest {
         assertFalse(restored.isStepCompleted("condition-signal"));
         assertFalse(restored.isStepCompleted("equals-method"));
         assertFalse(restored.isCompleted());
+    }
+
+    @Test
+    void ログインユーザーの複数Lessonを一括スナップショットから復元する() {
+        String secondLessonId = "stage2";
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress firstProgress = storedProgress("first", false);
+        LearningProgress secondProgress = storedProgress("last", true);
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+        when(learningProgressService.findProgressSnapshots(userAccount))
+                .thenReturn(Map.of(
+                        LESSON_ID,
+                        new LearningProgressService.ProgressSnapshot(
+                                firstProgress,
+                                Set.of(),
+                                true
+                        ),
+                        secondLessonId,
+                        new LearningProgressService.ProgressSnapshot(
+                                secondProgress,
+                                Set.of("first", "last"),
+                                true
+                        )
+                ));
+        when(lessonService.getLesson(LESSON_ID))
+                .thenReturn(lesson(step("first", true), step("last", true)));
+        when(lessonService.getLesson(secondLessonId))
+                .thenReturn(new Lesson(
+                        secondLessonId,
+                        "Stage 2",
+                        "description",
+                        "",
+                        List.of(step("first", true), step("last", true))
+                ));
+
+        Map<String, LessonProgress> result =
+                restoreService.restoreAllIfAuthenticated(
+                        session,
+                        List.of(LESSON_ID, secondLessonId)
+                );
+
+        assertEquals(2, result.size());
+        assertFalse(result.get(LESSON_ID).isCompleted());
+        assertTrue(result.get(secondLessonId).isCompleted());
+        verify(learningProgressService).findProgressSnapshots(userAccount);
     }
 
     private void stubProgress(

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>学習の目次 | Java Link</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='code-reading-index-5')}"
-          href="/css/style.css?v=code-reading-index-5">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='code-reading-index-6')}"
+          href="/css/style.css?v=code-reading-index-6">
 </head>
 <body class="code-reading-index-body">
 <main class="code-reading-index-page">
@@ -21,16 +21,33 @@
 
     <section class="code-reading-stage-grid" aria-label="Stage一覧">
         <a class="code-reading-stage-card"
+           th:classappend="${stage.statusCssClass}"
            th:each="stage : ${stages}"
            th:href="@{/quiz(lessonId=${stage.lessonId})}"
            href="/quiz?lessonId=hello-program-reading">
             <span class="code-reading-stage-content">
-                <span class="code-reading-stage-number" th:text="${stage.stageName}">Stage 1</span>
+                <span class="code-reading-stage-meta">
+                    <span class="code-reading-stage-number" th:text="${stage.stageName}">Stage 1</span>
+                    <span class="code-reading-stage-status" th:text="${stage.statusLabel}">未学習</span>
+                </span>
                 <span class="code-reading-stage-title" th:text="${stage.title}">
                     「Hello」と表示するプログラムを読めるようになろう
                 </span>
                 <span class="code-reading-stage-description" th:text="${stage.description}">
                     Javaの基本のコードを学びます。
+                </span>
+                <span class="code-reading-stage-progress">
+                    <span class="code-reading-stage-progress-track"
+                          role="progressbar"
+                          aria-label="学習進捗"
+                          aria-valuemin="0"
+                          aria-valuemax="100"
+                          th:attr="aria-valuenow=${stage.progressPercentage}">
+                        <span class="code-reading-stage-progress-value"
+                              th:style="|width: ${stage.progressPercentage}%|"></span>
+                    </span>
+                    <span class="code-reading-stage-progress-label"
+                          th:text="|${stage.progressPercentage}%|">0%</span>
                 </span>
             </span>
             <span class="code-reading-stage-arrow" aria-hidden="true">→</span>

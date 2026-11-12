@@ -1,6 +1,9 @@
 package com.javalink.service;
 
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -40,6 +43,25 @@ public class LearningProgressRestoreService {
                                 lessonId
                         ))
                 .flatMap(snapshot -> restore(snapshot, lessonId));
+    }
+
+    /** ログイン中ユーザーの指定Lesson群を、一括取得したDB進捗から復元します。 */
+    public Map<String, LessonProgress> restoreAllIfAuthenticated(
+            HttpSession session,
+            Collection<String> lessonIds
+    ) {
+        return authenticatedUserService.findAuthenticatedUser(session)
+                .map(userAccount -> {
+                    Map<String, LearningProgressService.ProgressSnapshot> snapshots =
+                            learningProgressService.findProgressSnapshots(userAccount);
+                    Map<String, LessonProgress> restored = new LinkedHashMap<>();
+                    lessonIds.forEach(lessonId -> Optional
+                            .ofNullable(snapshots.get(lessonId))
+                            .flatMap(snapshot -> restore(snapshot, lessonId))
+                            .ifPresent(progress -> restored.put(lessonId, progress)));
+                    return Map.copyOf(restored);
+                })
+                .orElseGet(Map::of);
     }
 
     private Optional<LessonProgress> restore(

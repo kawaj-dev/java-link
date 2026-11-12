@@ -108,6 +108,42 @@ class LearningStepProgressRepositoryTest {
         assertEquals(2, learningStepProgressRepository.count());
     }
 
+    @Test
+    void 指定した複数の親進捗のStepだけを一括取得する() {
+        LearningProgress stage1 = saveLearningProgress(
+                "first@example.com",
+                "stage1"
+        );
+        LearningProgress stage2 = saveLearningProgress(
+                "second@example.com",
+                "stage2"
+        );
+        LearningProgress other = saveLearningProgress(
+                "other@example.com",
+                "stage1"
+        );
+        learningStepProgressRepository.saveAndFlush(
+                stepProgress(stage1, "public")
+        );
+        learningStepProgressRepository.saveAndFlush(
+                stepProgress(stage2, "int")
+        );
+        learningStepProgressRepository.saveAndFlush(
+                stepProgress(other, "class")
+        );
+
+        List<LearningStepProgress> found = learningStepProgressRepository
+                .findAllByLearningProgressIn(List.of(stage1, stage2));
+
+        assertEquals(2, found.size());
+        assertEquals(
+                java.util.Set.of("public", "int"),
+                found.stream()
+                        .map(LearningStepProgress::getStepId)
+                        .collect(java.util.stream.Collectors.toSet())
+        );
+    }
+
     private LearningProgress saveLearningProgress(
             String email,
             String lessonId

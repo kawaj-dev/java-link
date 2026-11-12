@@ -1787,13 +1787,35 @@ h1 {
     min-width: 0;
 }
 
+.code-reading-stage-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 3px;
+}
+
 .code-reading-stage-number {
     display: block;
-    margin-bottom: 3px;
     color: #087dff;
     font-size: 0.9rem;
     font-weight: 800;
     letter-spacing: 0.04em;
+}
+
+.code-reading-stage-status {
+    flex-shrink: 0;
+    color: #687984;
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.code-reading-stage-card.is-in-progress .code-reading-stage-status {
+    color: #087dff;
+}
+
+.code-reading-stage-card.is-completed .code-reading-stage-status {
+    color: #16805a;
 }
 
 .code-reading-stage-title {
@@ -1810,6 +1832,40 @@ h1 {
     color: #486378;
     font-size: 0.9rem;
     line-height: 1.5;
+}
+
+.code-reading-stage-progress {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 38px;
+    gap: 9px;
+    align-items: center;
+    margin-top: 6px;
+}
+
+.code-reading-stage-progress-track {
+    height: 5px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: #dce6ec;
+}
+
+.code-reading-stage-progress-value {
+    display: block;
+    width: 0;
+    height: 100%;
+    border-radius: inherit;
+    background: #087dff;
+}
+
+.code-reading-stage-card.is-completed .code-reading-stage-progress-value {
+    background: #25a56f;
+}
+
+.code-reading-stage-progress-label {
+    color: #526a74;
+    font-size: 0.78rem;
+    font-weight: 800;
+    text-align: right;
 }
 
 .code-reading-stage-arrow {

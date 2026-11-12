@@ -11,6 +11,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -200,5 +201,31 @@ class LearningProgressServiceTest {
 
         assertFalse(snapshot.detailedStepProgress());
         assertTrue(snapshot.completedStepIds().isEmpty());
+    }
+
+    @Test
+    void ユーザーの全進捗を親子それぞれ1回の検索で一括取得する() {
+        UserAccount userAccount = new UserAccount();
+        LearningProgress stage1 = new LearningProgress();
+        stage1.setLessonId("stage1");
+        LearningProgress stage2 = new LearningProgress();
+        stage2.setLessonId("stage2");
+        LearningStepProgress stage1Step = new LearningStepProgress();
+        stage1Step.setLearningProgress(stage1);
+        stage1Step.setStepId("public");
+        when(learningProgressRepository.findAllByUserAccount(userAccount))
+                .thenReturn(List.of(stage1, stage2));
+        when(learningStepProgressRepository.findAllByLearningProgressIn(
+                List.of(stage1, stage2)
+        )).thenReturn(List.of(stage1Step));
+
+        Map<String, LearningProgressService.ProgressSnapshot> result =
+                learningProgressService.findProgressSnapshots(userAccount);
+
+        assertEquals(Set.of("public"), result.get("stage1").completedStepIds());
+        assertTrue(result.get("stage2").completedStepIds().isEmpty());
+        verify(learningProgressRepository).findAllByUserAccount(userAccount);
+        verify(learningStepProgressRepository)
+                .findAllByLearningProgressIn(List.of(stage1, stage2));
     }
 }

@@ -9,6 +9,7 @@ import org.springframework.mock.web.MockHttpSession;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -46,6 +47,25 @@ class CodeReadingFlowServiceTest {
                         CodeReadingFlowService.CODE_READING_FLOW_MAP
                 );
         assertEquals(state, states.get(LESSON_ID));
+    }
+
+    @Test
+    void 保存済み状態の検索では初期状態を生成しない() {
+        assertTrue(service.findStoredState(session, LESSON_ID).isEmpty());
+        assertNull(session.getAttribute(
+                CodeReadingFlowService.CODE_READING_FLOW_MAP
+        ));
+    }
+
+    @Test
+    void 保存済み状態だけを取得できる() {
+        CodeReadingFlowState stored =
+                service.startLearning(session, LESSON_ID);
+
+        assertEquals(
+                stored,
+                service.findStoredState(session, LESSON_ID).orElseThrow()
+        );
     }
 
     @Test

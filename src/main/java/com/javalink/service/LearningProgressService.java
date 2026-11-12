@@ -1,6 +1,8 @@
 package com.javalink.service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -97,16 +99,59 @@ public class LearningProgressService {
                             .stream()
                             .map(LearningStepProgress::getStepId)
                             .collect(Collectors.toSet());
-                    boolean detailedStepProgress =
-                            Integer.valueOf(STEP_PROGRESS_VERSION)
-                                    .equals(progress.getStepProgressVersion())
-                                    || !completedStepIds.isEmpty();
-                    return new ProgressSnapshot(
-                            progress,
-                            completedStepIds,
-                            detailedStepProgress
-                    );
+                    return toSnapshot(progress, completedStepIds);
                 });
+    }
+
+    /** 対象ユーザーの全Lesson進捗を、Step詳細とともに一括取得します。 */
+    @Transactional(readOnly = true)
+    public Map<String, ProgressSnapshot> findProgressSnapshots(
+            UserAccount userAccount
+    ) {
+        List<LearningProgress> progresses =
+                learningProgressRepository.findAllByUserAccount(userAccount);
+        if (progresses.isEmpty()) {
+            return Map.of();
+        }
+
+        Map<LearningProgress, Set<String>> stepIdsByProgress =
+                learningStepProgressRepository
+                        .findAllByLearningProgressIn(progresses)
+                        .stream()
+                        .collect(Collectors.groupingBy(
+                                LearningStepProgress::getLearningProgress,
+                                Collectors.mapping(
+                                        LearningStepProgress::getStepId,
+                                        Collectors.toSet()
+                                )
+                        ));
+
+        return progresses.stream().collect(Collectors.toUnmodifiableMap(
+                LearningProgress::getLessonId,
+                progress -> toSnapshot(
+                        progress,
+                        stepIdsByProgress.getOrDefault(
+                                progress,
+                                Collections.emptySet()
+                        )
+                ),
+                (first, ignored) -> first
+        ));
+    }
+
+    private ProgressSnapshot toSnapshot(
+            LearningProgress progress,
+            Set<String> completedStepIds
+    ) {
+        boolean detailedStepProgress =
+                Integer.valueOf(STEP_PROGRESS_VERSION)
+                        .equals(progress.getStepProgressVersion())
+                        || !completedStepIds.isEmpty();
+        return new ProgressSnapshot(
+                progress,
+                completedStepIds,
+                detailedStepProgress
+        );
     }
 
     private LearningStepProgress createStepProgress(
