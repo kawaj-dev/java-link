@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 
 /**
  * 教材ごとの導入・学習・まとめ画面をHTTPセッションで管理します。
@@ -33,6 +34,27 @@ public class CodeReadingFlowService {
                 lessonId,
                 CodeReadingFlowState::initial
         );
+    }
+
+    /** 初期状態を生成せず、セッションに保存済みの画面状態だけを取得します。 */
+    public Optional<CodeReadingFlowState> findStoredState(
+            HttpSession session,
+            String lessonId
+    ) {
+        validate(session, lessonId);
+        Object stored = session.getAttribute(CODE_READING_FLOW_MAP);
+        if (stored == null) {
+            return Optional.empty();
+        }
+        if (!(stored instanceof Map<?, ?> states)) {
+            throw new IllegalStateException(
+                    "セッションのコード読解画面状態が正しいMap形式ではありません。"
+            );
+        }
+        Object state = states.get(lessonId);
+        return state instanceof CodeReadingFlowState flowState
+                ? Optional.of(flowState)
+                : Optional.empty();
     }
 
     public CodeReadingFlowState startLearning(

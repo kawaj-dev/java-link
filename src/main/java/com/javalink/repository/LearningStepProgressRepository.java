@@ -1,5 +1,6 @@
 package com.javalink.repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Modifying;
@@ -15,6 +16,10 @@ public interface LearningStepProgressRepository
 
     List<LearningStepProgress> findAllByLearningProgress(
             LearningProgress learningProgress
+    );
+
+    List<LearningStepProgress> findAllByLearningProgressIn(
+            Collection<LearningProgress> learningProgresses
     );
 
     @Modifying

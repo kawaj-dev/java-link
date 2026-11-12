@@ -57,7 +57,8 @@ public class LessonProgressService {
             String lessonId
     ) {
         validateSessionAndLesson(session, lessonId);
-        return Optional.ofNullable(getProgressMap(session).get(lessonId));
+        return findProgressMap(session)
+                .map(progressMap -> progressMap.get(lessonId));
     }
 
     /**
@@ -209,5 +210,21 @@ public class LessonProgressService {
         }
 
         return (Map<String, LessonProgress>) storedProgress;
+    }
+
+    @SuppressWarnings("unchecked")
+    private Optional<Map<String, LessonProgress>> findProgressMap(
+            HttpSession session
+    ) {
+        Object storedProgress = session.getAttribute(LESSON_PROGRESS_MAP);
+        if (storedProgress == null) {
+            return Optional.empty();
+        }
+        if (!(storedProgress instanceof Map<?, ?>)) {
+            throw new IllegalStateException(
+                    "セッションの学習進捗データが正しいMap形式ではありません。"
+            );
+        }
+        return Optional.of((Map<String, LessonProgress>) storedProgress);
     }
 }

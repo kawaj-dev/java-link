@@ -15,6 +15,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -111,12 +112,9 @@ class LessonProgressServiceTest {
                 progressService.findStoredProgress(session, MAIN_LESSON_ID);
 
         assertTrue(result.isEmpty());
-        @SuppressWarnings("unchecked")
-        Map<String, LessonProgress> stored =
-                (Map<String, LessonProgress>) session.getAttribute(
-                        LessonProgressService.LESSON_PROGRESS_MAP
-                );
-        assertFalse(stored.containsKey(MAIN_LESSON_ID));
+        assertNull(session.getAttribute(
+                LessonProgressService.LESSON_PROGRESS_MAP
+        ));
     }
 
     @Test

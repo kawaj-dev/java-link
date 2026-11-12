@@ -1,5 +1,6 @@
 package com.javalink.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,6 @@ public interface LearningProgressRepository
             UserAccount userAccount,
             String lessonId
     );
+
+    List<LearningProgress> findAllByUserAccount(UserAccount userAccount);
 }

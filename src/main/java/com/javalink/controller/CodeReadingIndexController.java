@@ -2,6 +2,9 @@ package com.javalink.controller;
 
 import com.javalink.model.Lesson;
 import com.javalink.service.CodeReadingLessonCatalog;
+import com.javalink.service.CodeReadingStageProgressService;
+import com.javalink.service.CodeReadingStageProgressService.StageProgress;
+import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Controller;
@@ -26,26 +29,49 @@ public class CodeReadingIndexController {
     );
 
     private final CodeReadingLessonCatalog lessonCatalog;
+    private final CodeReadingStageProgressService stageProgressService;
 
-    public CodeReadingIndexController(CodeReadingLessonCatalog lessonCatalog) {
+    public CodeReadingIndexController(
+            CodeReadingLessonCatalog lessonCatalog,
+            CodeReadingStageProgressService stageProgressService
+    ) {
         this.lessonCatalog = lessonCatalog;
+        this.stageProgressService = stageProgressService;
     }
 
     @GetMapping("/quiz/stages")
-    public String showIndex(Model model) {
+    public String showIndex(Model model, HttpSession session) {
+        Map<String, StageProgress> progressByLessonId =
+                stageProgressService.getStageProgresses(session);
         List<StageIndexItem> stages = lessonCatalog.getLessons().stream()
-                .map(this::toStageIndexItem)
+                .map(lesson -> toStageIndexItem(
+                        lesson,
+                        progressByLessonId.getOrDefault(
+                                lesson.id(),
+                                new StageProgress(
+                                        CodeReadingStageProgressService
+                                                .StageLearningStatus.NOT_STARTED,
+                                        0
+                                )
+                        )
+                ))
                 .toList();
         model.addAttribute("stages", stages);
         return "code-reading-index";
     }
 
-    private StageIndexItem toStageIndexItem(Lesson lesson) {
+    private StageIndexItem toStageIndexItem(
+            Lesson lesson,
+            StageProgress progress
+    ) {
         return new StageIndexItem(
                 lesson.id(),
                 lesson.title(),
                 lesson.description(),
-                STAGE_DESCRIPTIONS.getOrDefault(lesson.id(), lesson.description())
+                STAGE_DESCRIPTIONS.getOrDefault(lesson.id(), lesson.description()),
+                progress.status().getLabel(),
+                progress.status().getCssClass(),
+                progress.percentage()
         );
     }
 
@@ -53,7 +79,10 @@ public class CodeReadingIndexController {
             String lessonId,
             String stageName,
             String title,
-            String description
+            String description,
+            String statusLabel,
+            String statusCssClass,
+            int progressPercentage
     ) {
     }
 }

@@ -9,6 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.javalink.entity.LearningProgress;
 import com.javalink.entity.UserAccount;
 import jakarta.persistence.EntityManager;
+import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -110,6 +111,36 @@ class LearningProgressRepositoryTest {
         );
 
         assertEquals(2, learningProgressRepository.count());
+    }
+
+    @Test
+    void ユーザー単位の一括取得に他ユーザーの進捗を含めない() {
+        UserAccount firstUser = saveUserAccount(
+                "First Learner",
+                "first@example.com"
+        );
+        UserAccount secondUser = saveUserAccount(
+                "Second Learner",
+                "second@example.com"
+        );
+        learningProgressRepository.saveAndFlush(
+                learningProgress(firstUser, "stage1", "public", false)
+        );
+        learningProgressRepository.saveAndFlush(
+                learningProgress(firstUser, "stage2", "int", false)
+        );
+        learningProgressRepository.saveAndFlush(
+                learningProgress(secondUser, "stage1", "public", false)
+        );
+
+        List<LearningProgress> found =
+                learningProgressRepository.findAllByUserAccount(firstUser);
+
+        assertEquals(2, found.size());
+        assertTrue(found.stream().allMatch(
+                progress -> progress.getUserAccount().getId()
+                        .equals(firstUser.getId())
+        ));
     }
 
     @Test
