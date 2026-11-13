@@ -1762,7 +1762,8 @@ h1 {
 
 .code-reading-stage-card {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "content progress arrow";
+    grid-template-columns: minmax(0, 1fr) minmax(140px, 160px) auto;
     gap: 18px;
     min-width: 0;
     min-height: 100px;
@@ -1783,20 +1784,14 @@ h1 {
 }
 
 .code-reading-stage-content {
+    grid-area: content;
     display: block;
     min-width: 0;
 }
 
-.code-reading-stage-meta {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 3px;
-}
-
 .code-reading-stage-number {
     display: block;
+    margin-bottom: 3px;
     color: #087dff;
     font-size: 0.9rem;
     font-weight: 800;
@@ -1804,10 +1799,11 @@ h1 {
 }
 
 .code-reading-stage-status {
-    flex-shrink: 0;
+    display: block;
     color: #687984;
     font-size: 0.78rem;
     font-weight: 800;
+    text-align: right;
 }
 
 .code-reading-stage-card.is-in-progress .code-reading-stage-status {
@@ -1839,7 +1835,13 @@ h1 {
     grid-template-columns: minmax(0, 1fr) 38px;
     gap: 9px;
     align-items: center;
-    margin-top: 6px;
+    margin-top: 7px;
+}
+
+.code-reading-stage-progress-summary {
+    grid-area: progress;
+    display: block;
+    min-width: 0;
 }
 
 .code-reading-stage-progress-track {
@@ -1869,6 +1871,7 @@ h1 {
 }
 
 .code-reading-stage-arrow {
+    grid-area: arrow;
     color: #087dff;
     font-size: 1.55rem;
     font-weight: 800;
@@ -1897,9 +1900,21 @@ h1 {
     }
 
     .code-reading-stage-card {
-        gap: 12px;
+        grid-template-areas:
+            "content arrow"
+            "progress arrow";
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px 12px;
         min-height: 96px;
         padding: 13px 15px;
+    }
+
+    .code-reading-stage-status {
+        text-align: left;
+    }
+
+    .code-reading-stage-progress {
+        margin-top: 5px;
     }
 }
 
