@@ -1755,8 +1755,8 @@ h1 {
 .code-reading-stage-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr);
-    gap: 12px;
-    width: min(760px, 100%);
+    gap: 10px;
+    width: min(900px, 100%);
     margin: 0 auto;
 }
 
@@ -1766,9 +1766,9 @@ h1 {
     grid-template-columns: minmax(0, 1fr) minmax(140px, 160px) auto;
     gap: 18px;
     min-width: 0;
-    min-height: 100px;
+    min-height: 90px;
     align-items: center;
-    padding: 13px 18px;
+    padding: 10px 18px;
     border: 1px solid rgba(42, 126, 184, 0.16);
     border-top: 5px solid #2e8ed0;
     border-radius: 18px;
@@ -1791,7 +1791,7 @@ h1 {
 
 .code-reading-stage-number {
     display: block;
-    margin-bottom: 3px;
+    margin-bottom: 2px;
     color: #087dff;
     font-size: 0.9rem;
     font-weight: 800;
@@ -1824,7 +1824,7 @@ h1 {
 
 .code-reading-stage-description {
     display: block;
-    margin-top: 4px;
+    margin-top: 2px;
     color: #486378;
     font-size: 0.9rem;
     line-height: 1.5;
