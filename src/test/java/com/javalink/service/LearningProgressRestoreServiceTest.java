@@ -415,6 +415,57 @@ class LearningProgressRestoreServiceTest {
     }
 
     @Test
+    void Stage5の詳細進捗は確認済みStepと現在位置を復元する() {
+        String stage5LessonId = CodeReadingLessonCatalog.STAGE5_LESSON_ID;
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("condition-i", false);
+        Set<String> completedStepIds = Set.of(
+                "class-public",
+                "class-keyword",
+                "class-name",
+                "class-open",
+                "main-public",
+                "static",
+                "void",
+                "main",
+                "string-array",
+                "args",
+                "main-open",
+                "for-keyword",
+                "loop-int",
+                "initial-i",
+                "initial-assignment",
+                "initial-one",
+                "initial-separator"
+        );
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+        when(learningProgressService.findProgressSnapshot(
+                userAccount,
+                stage5LessonId
+        )).thenReturn(Optional.of(
+                new LearningProgressService.ProgressSnapshot(
+                        storedProgress,
+                        completedStepIds,
+                        true
+                )
+        ));
+        when(lessonService.getLesson(stage5LessonId))
+                .thenReturn(new CodeReadingLessonCatalog().getLesson(stage5LessonId));
+
+        LessonProgress restored = restoreService.restoreIfAuthenticated(
+                session,
+                stage5LessonId
+        ).orElseThrow();
+
+        assertEquals("condition-i", restored.getCurrentStepId());
+        assertEquals(completedStepIds, restored.getCompletedStepIds());
+        assertFalse(restored.isStepCompleted("condition-i"));
+        assertFalse(restored.isStepCompleted("increment"));
+        assertFalse(restored.isCompleted());
+    }
+
+    @Test
     void ログインユーザーの複数Lessonを一括スナップショットから復元する() {
         String secondLessonId = "stage2";
         UserAccount userAccount = mock(UserAccount.class);

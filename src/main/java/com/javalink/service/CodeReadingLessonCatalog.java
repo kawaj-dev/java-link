@@ -33,6 +33,7 @@ public class CodeReadingLessonCatalog {
         public static final String STAGE2_LESSON_ID = "variable-program-reading";
         public static final String STAGE3_LESSON_ID = "operator-program-reading";
         public static final String STAGE4_LESSON_ID = "conditional-program-reading";
+        public static final String STAGE5_LESSON_ID = "loop-program-reading";
         private static final String OFFICIAL_REFERENCES_TITLE =
                         "このページの技術的根拠：Javaの公式仕様・API";
         private static final String DISPLAY_AND_NEWLINE_CARD = "画面に表示して改行する";
@@ -79,7 +80,8 @@ public class CodeReadingLessonCatalog {
                 CodeReadingLessonDefinition stage2 = createStage2();
                 CodeReadingLessonDefinition stage3 = createStage3(stage2);
                 CodeReadingLessonDefinition stage4 = createStage4(stage2);
-                definitionsInOrder = List.of(stage1, stage2, stage3, stage4);
+                CodeReadingLessonDefinition stage5 = createStage5(stage2);
+                definitionsInOrder = List.of(stage1, stage2, stage3, stage4, stage5);
                 definitions = definitionsInOrder.stream().collect(Collectors.toUnmodifiableMap(
                                 CodeReadingLessonDefinition::lessonId,
                                 Function.identity()));
@@ -210,6 +212,29 @@ public class CodeReadingLessonCatalog {
                                 createStage4Circuits(),
                                 createStage4CodeLines(),
                                 "進む");
+        }
+
+        private static CodeReadingLessonDefinition createStage5(CodeReadingLessonDefinition stage2) {
+                return new CodeReadingLessonDefinition(
+                                STAGE5_LESSON_ID,
+                                "Stage 5",
+                                "繰り返し処理を使って数字を表示しよう",
+                                """
+                                                public class Main {
+                                                    public static void main(String[] args) {
+
+                                                        for (int i = 1; i <= 5; i++) {
+                                                            System.out.println(i);
+                                                        }
+
+                                                    }
+                                                }
+                                                """,
+                                createStage5Steps(stage2),
+                                createStage5Parts(),
+                                createStage5Circuits(),
+                                createStage5CodeLines(),
+                                "1\n2\n3\n4\n5");
         }
 
         private static List<CodeReadingStepDefinition> createStage1Steps() {
@@ -1718,5 +1743,298 @@ public class CodeReadingLessonCatalog {
                                 new CodeReadingPart("part-9", 9, "プログラムを閉じる", List.of(), "}\n}",
                                                 List.of("main-close", "class-close"), List.of("}", "}"), List.of(),
                                                 "mainメソッドとMainクラスを順番に終了する"));
+        }
+
+        private static List<CodeReadingStepDefinition> createStage5Steps(
+                        CodeReadingLessonDefinition stage2) {
+                List<CodeReadingExplanationSection> integerType =
+                                sharedExplanation(stage2, "int-type");
+                List<CodeReadingExplanationSection> assignment =
+                                sharedExplanation(stage2, "assignment");
+                List<CodeReadingExplanationSection> variableUse = loopVariableUseExplanation();
+                List<CodeReadingExplanationSection> semicolon = semicolonExplanation();
+                return List.of(
+                                richStep("class-public", 1, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("class-keyword", 2, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("class-name", 3, "Main", "Main", "main-class-name", CLASS_NAME_CARD,
+                                                "クラス名", CLASS_NAME_EXPLANATION),
+                                richStep("class-open", 4, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("main-public", 5, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("static", 6, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("void", 7, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("main", 8, "main", "main", "program-entry", MAIN_CARD,
+                                                "メソッド名", MAIN_EXPLANATION),
+                                richStep("string-array", 9, "String[]", "String[]", "multiple-strings", STRING_ARRAY_CARD,
+                                                "引数の型", STRING_ARRAY_EXPLANATION),
+                                richStep("args", 10, "args", "args", "argument-variable", ARGS_CARD,
+                                                "引数名", ARGS_EXPLANATION),
+                                richStep("main-open", 11, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("for-keyword", 12, "for", "for", "repeat-processing",
+                                                "条件を満たす間、処理を繰り返す", "for文", forExplanation()),
+                                richStep("loop-int", 13, "int", "int", "integer-type", "整数を扱うデータ型",
+                                                "整数型", integerType),
+                                richStep("initial-i", 14, "i", "i", "loop-variable", "繰り返しで使う変数の名前",
+                                                "for文の変数", loopVariableExplanation()),
+                                richStep("initial-assignment", 15, "=", "=", "assignment", "右側の値を左側に入れる",
+                                                "代入演算子", assignment),
+                                richStep("initial-one", 16, "1", "1", "initial-value", "変数iの最初の値",
+                                                "初期値", loopInitialValueExplanation()),
+                                richStep("initial-separator", 17, ";", ";", "for-separator",
+                                                "初期化と条件式を区切る", "for文の区切り", forSeparatorExplanation(true)),
+                                richStep("condition-i", 18, "i", "i", "use-loop-variable", VARIABLE_VALUE_USE_CARD,
+                                                "変数の利用", variableUse),
+                                richStep("less-than-or-equal", 19, "<=", "<=", "less-than-or-equal",
+                                                "左側が右側以下かを判定する", "比較演算子", lessThanOrEqualExplanation()),
+                                richStep("condition-five", 20, "5", "5", "comparison-limit",
+                                                "繰り返しを続ける上限の値", "比較する整数", loopLimitExplanation()),
+                                richStep("condition-separator", 21, ";", ";", "for-separator",
+                                                "条件式と更新式を区切る", "for文の区切り", forSeparatorExplanation(false)),
+                                richStep("update-i", 22, "i", "i", "update-loop-variable",
+                                                "値を更新する変数", "更新対象の変数", variableUse),
+                                richStep("increment", 23, "++", "++", "increment-by-one",
+                                                "変数iの値を1増やす", "インクリメント演算子", incrementExplanation()),
+                                richStep("for-open", 24, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("print-command", 25, "System.out.println", "System.out.println",
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("print-i", 26, "i", "i", "use-loop-variable", VARIABLE_VALUE_USE_CARD,
+                                                "変数の利用", variableUse),
+                                richStep("print-semicolon", 27, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", semicolon),
+                                richStep("for-close", 28, "}", "}", "close-for", "for文のブロックを閉じる",
+                                                "終了波かっこ", forBlockEndExplanation()),
+                                richStep("main-close", 29, "}", "}", "close-main", "mainメソッドを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("class-close", 30, "}", "}", "close-class", "Mainクラスを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION));
+        }
+
+        private static List<CodeReadingExplanationSection> forExplanation() {
+                return List.of(
+                                textSection("for文　for statement",
+                                                text("初期化、条件式、更新式を使い、条件を満たしている間、同じ処理を繰り返す構文です。")),
+                                tableSectionWithHeader("for文の実行順序",
+                                                tableRow("順序", "処理"),
+                                                tableRow("1", "int i = 1 で最初の値を設定する（最初の1回だけ）"),
+                                                tableRow("2", "i <= 5 を判定する"),
+                                                tableRow("3", "trueならブロック内の処理を実行する"),
+                                                tableRow("4", "i++ でiを1増やす"),
+                                                tableRow("5", "再び条件式を判定し、falseなら終了する")),
+                                textSection("ポイント",
+                                                text("条件式は、ブロック内の処理を実行する前に毎回評価されます。"),
+                                                text("iが6になると i <= 5 はfalseになり、6は表示されません。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§14.14.1", "The basic for Statement",
+                                                                "初期化、条件式、更新式を持つ基本for文の実行順序を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.14.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> loopVariableExplanation() {
+                return List.of(
+                                textSection("for文の変数　loop variable",
+                                                text("iは整数を保存する変数の名前です。Javaの予約語ではなく、別の有効な名前も付けられます。")),
+                                textSection("このコードでの役割",
+                                                text("iは1から始まり、繰り返すたびに1ずつ増えます。"),
+                                                text("for文の初期化部分で宣言したiは、このfor文の制御部分とブロック内で使えます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§6.3", "Scope of a Declaration",
+                                                                "基本for文で宣言したローカル変数の有効範囲を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.3"),
+                                                jlsReference("§3.8", "Identifiers",
+                                                                "変数名に使う識別子の規則を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-3.html#jls-3.8")));
+        }
+
+        private static List<CodeReadingExplanationSection> loopInitialValueExplanation() {
+                return List.of(
+                                textSection("初期値　initial value",
+                                                text("1は、繰り返しを始めるときに変数iへ入れる最初の値です。")),
+                                textSection("実行されるタイミング",
+                                                text("int i = 1 はfor文を開始するときに1回だけ実行され、繰り返すたびには実行されません。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§14.14.1.1", "Initialization of the basic for Statement",
+                                                                "基本for文の初期化が最初に1回実行されることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.14.1.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> forSeparatorExplanation(boolean afterInitialization) {
+                String left = afterInitialization ? "初期化" : "条件式";
+                String right = afterInitialization ? "条件式" : "更新式";
+                return List.of(
+                                textSection("for文のセミコロン",
+                                                text("for文の制御部分で、" + left + "と" + right + "を区切る記号です。")),
+                                textSection("文末のセミコロンとの違い",
+                                                text("for (int i = 1; i <= 5; i++) の2つのセミコロンは、3つの役割を区切ります。"),
+                                                text("System.out.println(i); のセミコロンは、その文の終わりを表します。")));
+        }
+
+        private static List<CodeReadingExplanationSection> loopVariableUseExplanation() {
+                return List.of(
+                                textSection("変数iの利用",
+                                                text("iと書いた場所では、その時点で変数iに保存されている整数の値を使います。")),
+                                tableSectionWithHeader("繰り返しによる値の変化",
+                                                tableHeaderRow3("iの値", "i <= 5", "表示"),
+                                                tableRow3("1", "true", "1"),
+                                                tableRow3("2", "true", "2"),
+                                                tableRow3("3", "true", "3"),
+                                                tableRow3("4", "true", "4"),
+                                                tableRow3("5", "true", "5"),
+                                                tableRow3("6", "false", "表示しない")),
+                                textSection("ポイント",
+                                                text("System.out.println(i); は文字列の\"i\"ではなく、その時点のiの値を表示します。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§6.5.6", "Meaning of Expression Names",
+                                                                "式の中の変数名が表す意味を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.5.6")));
+        }
+
+        private static List<CodeReadingExplanationSection> lessThanOrEqualExplanation() {
+                return List.of(
+                                textSection("比較演算子 <=",
+                                                text("左側の値が右側の値以下ならtrue、右側より大きければfalseを返します。")),
+                                tableSectionWithHeader("< と <= の違い",
+                                                tableHeaderRow3("式", "5を含むか", "trueになる範囲"),
+                                                tableRow3("i < 5", "含まない", "iが5より小さい"),
+                                                tableRow3("i <= 5", "含む", "iが5以下")),
+                                textSection("このコードでの判定",
+                                                text("i <= 5 はiが1から5の間はtrueで、iが6になるとfalseです。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.20.1", "Numerical Comparison Operators <, <=, >, and >=",
+                                                                "数値を比較する関係演算子の動作を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.20.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> loopLimitExplanation() {
+                return List.of(
+                                textSection("比較する整数",
+                                                text("5は、条件式 i <= 5 でiと比較する値です。")),
+                                textSection("このコードでの役割",
+                                                text("iが5のときも条件はtrueなので5を表示し、その後iが6になると繰り返しを終了します。")));
+        }
+
+        private static List<CodeReadingExplanationSection> incrementExplanation() {
+                return List.of(
+                                textSection("インクリメント演算子　++",
+                                                text("変数の数値を1増やす演算子です。今回の更新式 i++ は、i = i + 1 と同じようにiを1増やします。")),
+                                textSection("実行されるタイミング",
+                                                text("ブロック内の処理を実行した後にi++が実行され、その後で再び i <= 5 を判定します。"),
+                                                text("今回はfor文の更新式での役割を学び、前置と後置の違いには踏み込みません。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.14.2", "The Postfix Increment Operator ++",
+                                                                "後置インクリメント演算子++の動作を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.14.2"),
+                                                jlsReference("§14.14.1.3", "Iteration of the basic for Statement",
+                                                                "for文のブロック実行後に更新式が実行されることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.14.1.3")));
+        }
+
+        private static List<CodeReadingExplanationSection> forBlockEndExplanation() {
+                return List.of(
+                                textSection("for文のブロック終了",
+                                                text("この閉じ波括弧は、繰り返して実行する処理の範囲を閉じます。")),
+                                textSection("閉じた後の流れ",
+                                                text("ブロックを1回実行しただけではfor文全体は終了しません。"),
+                                                text("i++を実行してから条件式をもう一度判定し、falseになったときにfor文を終了します。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§14.14.1", "The basic for Statement",
+                                                                "基本for文の繰り返し処理と終了条件を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.14.1")));
+        }
+
+        private static List<CodeReadingCircuitDefinition> createStage5Circuits() {
+                return List.of(
+                                new CodeReadingCircuitDefinition("class-declaration", "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{")),
+                                new CodeReadingCircuitDefinition("main-method", "public static void main(String[] args) {",
+                                                List.of("main-public", "static", "void", "main", "string-array", "args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{")),
+                                new CodeReadingCircuitDefinition("for-initialization", "for (int i = 1;",
+                                                List.of("for-keyword", "loop-int", "initial-i", "initial-assignment",
+                                                                "initial-one", "initial-separator"),
+                                                List.of("for", "int", "i", "=", "1", ";")),
+                                new CodeReadingCircuitDefinition("for-condition-update", "i <= 5; i++) {",
+                                                List.of("condition-i", "less-than-or-equal", "condition-five",
+                                                                "condition-separator", "update-i", "increment", "for-open"),
+                                                List.of("i", "<=", "5", ";", "i", "++", "{")),
+                                new CodeReadingCircuitDefinition("loop-output", "System.out.println(i);",
+                                                List.of("print-command", "print-i", "print-semicolon"),
+                                                List.of("System.out.println", "i", ";")),
+                                new CodeReadingCircuitDefinition("block-closes",
+                                                "for文終了 }　mainメソッド終了 }　Mainクラス終了 }",
+                                                List.of("for-close", "main-close", "class-close"),
+                                                List.of("for文終了 }", "mainメソッド終了 }", "Mainクラス終了 }")));
+        }
+
+        private static Map<String, List<CodeReadingCodeLineDefinition>> createStage5CodeLines() {
+                return Map.of(
+                                "part-1", List.of(line(
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"), "", "")),
+                                "part-2", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("main-public"), token("static"), token("void"), token("main"),
+                                                                new CodeReadingCodeTokenDefinition("string-array", "(", ""),
+                                                                new CodeReadingCodeTokenDefinition("args", "", ")"), token("main-open")),
+                                                "", "quiz-reading-code-line--part-2")),
+                                "part-3", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(new CodeReadingCodeTokenDefinition("for-keyword", "", " ("),
+                                                                token("loop-int"), token("initial-i"), token("initial-assignment"),
+                                                                token("initial-one"), token("initial-separator")), "", "")),
+                                "part-4", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("condition-i"), token("less-than-or-equal"),
+                                                                token("condition-five"), token("condition-separator"),
+                                                                token("update-i"), new CodeReadingCodeTokenDefinition("increment", "", ")"),
+                                                                token("for-open")), "", "")),
+                                "part-5", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("print-command"),
+                                                                new CodeReadingCodeTokenDefinition("print-i", "(", ")"),
+                                                                token("print-semicolon")), "", "")),
+                                "part-6", List.of(line(List.of("for-close", "main-close", "class-close"), "", "")));
+        }
+
+        private static List<CodeReadingPart> createStage5Parts() {
+                return List.of(
+                                new CodeReadingPart("part-1", 1, "クラスを作る", List.of(), "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{"), List.of(),
+                                                "Mainというクラスを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-2", 2, "mainメソッドを作る", List.of(),
+                                                "public static void main(String[] args) {",
+                                                List.of("main-public", "static", "void", "main", "string-array", "args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{"), List.of(),
+                                                "mainメソッドを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-3", 3, "for文を開始して初期化する",
+                                                List.of("for文を開始し、変数iの最初の値を1に設定します。"),
+                                                "for (int i = 1;",
+                                                List.of("for-keyword", "loop-int", "initial-i", "initial-assignment",
+                                                                "initial-one", "initial-separator"),
+                                                List.of("for", "int", "i", "=", "1", ";"), List.of(),
+                                                "for文を始め、繰り返しに使う変数iを1で初期化する"),
+                                new CodeReadingPart("part-4", 4, "条件式と更新式を読む",
+                                                List.of("iが5以下かを判定し、1回の処理後にiを1増やします。"),
+                                                "i <= 5; i++) {",
+                                                List.of("condition-i", "less-than-or-equal", "condition-five",
+                                                                "condition-separator", "update-i", "increment", "for-open"),
+                                                List.of("i", "<=", "5", ";", "i", "++", "{"), List.of(),
+                                                "iが5以下の間、処理後にiを1増やして繰り返す"),
+                                new CodeReadingPart("part-5", 5, "繰り返す処理を読む",
+                                                List.of("繰り返すたびに、その時点のiの値を表示します。"),
+                                                "System.out.println(i);",
+                                                List.of("print-command", "print-i", "print-semicolon"),
+                                                List.of("System.out.println", "i", ";"), List.of(),
+                                                "繰り返すたびに変数iの現在の値を表示する"),
+                                new CodeReadingPart("part-6", 6, "ブロックを閉じる",
+                                                List.of("for文、mainメソッド、Mainクラスのブロックを順番に閉じます。"),
+                                                "}\n}\n}",
+                                                List.of("for-close", "main-close", "class-close"),
+                                                List.of("}", "}", "}"), List.of(),
+                                                "for文の更新と再判定を経て繰り返しを終え、プログラム全体を閉じる"));
         }
 }
