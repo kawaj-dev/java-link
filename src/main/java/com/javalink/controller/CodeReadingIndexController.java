@@ -25,7 +25,9 @@ public class CodeReadingIndexController {
             CodeReadingLessonCatalog.STAGE3_LESSON_ID,
             "変数と演算子を使って計算し、その結果を表示するコードを学びます。",
             CodeReadingLessonCatalog.STAGE4_LESSON_ID,
-            "if・elseによる条件分岐と、equals()による文字列の比較を学びます。"
+            "if・elseによる条件分岐と、equals()による文字列の比較を学びます。",
+            CodeReadingLessonCatalog.STAGE5_LESSON_ID,
+            "for文を使って処理を繰り返し、変数の値が変化する仕組みを学びます。"
     );
 
     private final CodeReadingLessonCatalog lessonCatalog;
