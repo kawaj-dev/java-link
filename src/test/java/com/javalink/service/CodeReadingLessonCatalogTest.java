@@ -20,6 +20,80 @@ class CodeReadingLessonCatalogTest {
             new CodeReadingLessonCatalog();
 
     @Test
+    void Stage6は7Part35Stepと配列コードと実行結果を持つ() {
+        var definition = catalog.getDefinition(
+                CodeReadingLessonCatalog.STAGE6_LESSON_ID
+        );
+
+        assertEquals("Stage 6", definition.stageName());
+        assertEquals("配列を使って複数の数字を表示しよう", definition.learningGoal());
+        assertEquals(7, definition.parts().size());
+        assertEquals(35, definition.steps().size());
+        assertEquals(java.util.List.of(1, 2, 3, 4, 5, 6, 7),
+                definition.parts().stream().map(part -> part.order()).toList());
+        assertEquals(definition.steps().size(), definition.steps().stream()
+                .map(step -> step.id()).distinct().count());
+        assertTrue(definition.parts().stream()
+                .allMatch(part -> part.stepIds().size() <= 7));
+        assertEquals("int[] scores = {80, 90, 100};", definition.parts().get(2).targetCode());
+        assertEquals("for (int i = 0;", definition.parts().get(3).targetCode());
+        assertEquals("i < scores.length; i++) {", definition.parts().get(4).targetCode());
+        assertEquals("System.out.println(scores[i]);", definition.parts().get(5).targetCode());
+        assertEquals("}\n}\n}", definition.parts().get(6).targetCode());
+        assertEquals("80\n90\n100", definition.consoleOutput());
+        assertEquals("""
+                public class Main {
+                    public static void main(String[] args) {
+                        int[] scores = {80, 90, 100};
+
+                        for (int i = 0; i < scores.length; i++) {
+                            System.out.println(scores[i]);
+                        }
+                    }
+                }
+                """.strip(), definition.completedCode().strip());
+    }
+
+    @Test
+    void Stage6は配列の添字と長さと要素取得を正しく説明する() {
+        var definition = catalog.getDefinition(
+                CodeReadingLessonCatalog.STAGE6_LESSON_ID
+        );
+
+        assertTrue(allExplanationText(definition, "scores-initializer")
+                .contains("scores[0]80"));
+        assertTrue(allExplanationText(definition, "scores-length")
+                .contains("メソッドではない"));
+        assertTrue(allExplanationText(definition, "less-than")
+                .contains("ArrayIndexOutOfBoundsException"));
+        assertTrue(allExplanationText(definition, "scores-element").contains("80"));
+        assertTrue(allExplanationText(definition, "scores-element").contains("90"));
+        assertTrue(allExplanationText(definition, "scores-element").contains("100"));
+        assertFalse(definition.getStep("scores-name").correctCard().text().isBlank());
+    }
+
+    @Test
+    void Stage6は基礎構文とfor文の共通Explanationインスタンスを再利用する() {
+        var stage1 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE1_LESSON_ID);
+        var stage2 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID);
+        var stage5 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE5_LESSON_ID);
+        var stage6 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE6_LESSON_ID);
+
+        assertSame(stage1.getStep("class-public").explanationSections(),
+                stage6.getStep("class-public").explanationSections());
+        assertSame(stage1.getStep("class-open").explanationSections(),
+                stage6.getStep("for-open").explanationSections());
+        assertSame(stage2.getStep("int-type").explanationSections(),
+                stage6.getStep("loop-int").explanationSections());
+        assertSame(stage2.getStep("assignment").explanationSections(),
+                stage6.getStep("scores-assignment").explanationSections());
+        assertSame(stage5.getStep("for-keyword").explanationSections(),
+                stage6.getStep("for-keyword").explanationSections());
+        assertSame(stage5.getStep("increment").explanationSections(),
+                stage6.getStep("increment").explanationSections());
+    }
+
+    @Test
     void Stage5は6Part30Stepとfor文コードと実行結果を持つ() {
         var definition = catalog.getDefinition(
                 CodeReadingLessonCatalog.STAGE5_LESSON_ID
@@ -212,15 +286,18 @@ class CodeReadingLessonCatalogTest {
     }
 
     @Test
-    void Stage3の次はStage4でStage4の次はStage5でStage5の次は存在しない() {
+    void Stage3からStage6まで順に遷移しStage6の次は存在しない() {
         assertEquals(CodeReadingLessonCatalog.STAGE4_LESSON_ID,
                 catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE3_LESSON_ID)
                         .orElseThrow().lessonId());
         assertEquals(CodeReadingLessonCatalog.STAGE5_LESSON_ID,
                 catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE4_LESSON_ID)
                         .orElseThrow().lessonId());
+        assertEquals(CodeReadingLessonCatalog.STAGE6_LESSON_ID,
+                catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE5_LESSON_ID)
+                        .orElseThrow().lessonId());
         assertTrue(catalog.getNextDefinition(
-                CodeReadingLessonCatalog.STAGE5_LESSON_ID
+                CodeReadingLessonCatalog.STAGE6_LESSON_ID
         ).isEmpty());
     }
 

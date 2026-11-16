@@ -27,7 +27,9 @@ public class CodeReadingIndexController {
             CodeReadingLessonCatalog.STAGE4_LESSON_ID,
             "if・elseによる条件分岐と、equals()による文字列の比較を学びます。",
             CodeReadingLessonCatalog.STAGE5_LESSON_ID,
-            "for文を使って処理を繰り返し、変数の値が変化する仕組みを学びます。"
+            "for文を使って処理を繰り返し、変数の値が変化する仕組みを学びます。",
+            CodeReadingLessonCatalog.STAGE6_LESSON_ID,
+            "配列に複数の値をまとめ、for文を使って各要素を順番に表示するコードを学びます。"
     );
 
     private final CodeReadingLessonCatalog lessonCatalog;
