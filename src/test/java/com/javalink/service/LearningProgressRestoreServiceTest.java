@@ -466,6 +466,64 @@ class LearningProgressRestoreServiceTest {
     }
 
     @Test
+    void Stage6の詳細進捗は配列Stepと現在位置を復元する() {
+        String lessonId = CodeReadingLessonCatalog.STAGE6_LESSON_ID;
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("scores-length", false);
+        Set<String> completedStepIds = Set.of(
+                "class-public",
+                "class-keyword",
+                "class-name",
+                "class-open",
+                "main-public",
+                "static",
+                "void",
+                "main",
+                "string-array",
+                "args",
+                "main-open",
+                "int-array-type",
+                "scores-name",
+                "scores-assignment",
+                "scores-initializer",
+                "scores-semicolon",
+                "for-keyword",
+                "loop-int",
+                "initial-i",
+                "initial-assignment",
+                "initial-zero",
+                "initial-separator",
+                "condition-i",
+                "less-than"
+        );
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+        when(learningProgressService.findProgressSnapshot(
+                userAccount,
+                lessonId
+        )).thenReturn(Optional.of(
+                new LearningProgressService.ProgressSnapshot(
+                        storedProgress,
+                        completedStepIds,
+                        true
+                )
+        ));
+        when(lessonService.getLesson(lessonId))
+                .thenReturn(new CodeReadingLessonCatalog().getLesson(lessonId));
+
+        LessonProgress restored = restoreService.restoreIfAuthenticated(
+                session,
+                lessonId
+        ).orElseThrow();
+
+        assertEquals("scores-length", restored.getCurrentStepId());
+        assertEquals(completedStepIds, restored.getCompletedStepIds());
+        assertFalse(restored.isStepCompleted("scores-length"));
+        assertFalse(restored.isStepCompleted("scores-element"));
+        assertFalse(restored.isCompleted());
+    }
+
+    @Test
     void ログインユーザーの複数Lessonを一括スナップショットから復元する() {
         String secondLessonId = "stage2";
         UserAccount userAccount = mock(UserAccount.class);

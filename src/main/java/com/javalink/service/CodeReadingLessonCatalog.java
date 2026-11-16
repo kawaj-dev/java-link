@@ -34,6 +34,7 @@ public class CodeReadingLessonCatalog {
         public static final String STAGE3_LESSON_ID = "operator-program-reading";
         public static final String STAGE4_LESSON_ID = "conditional-program-reading";
         public static final String STAGE5_LESSON_ID = "loop-program-reading";
+        public static final String STAGE6_LESSON_ID = "array-program-reading";
         private static final String OFFICIAL_REFERENCES_TITLE =
                         "このページの技術的根拠：Javaの公式仕様・API";
         private static final String DISPLAY_AND_NEWLINE_CARD = "画面に表示して改行する";
@@ -81,7 +82,8 @@ public class CodeReadingLessonCatalog {
                 CodeReadingLessonDefinition stage3 = createStage3(stage2);
                 CodeReadingLessonDefinition stage4 = createStage4(stage2);
                 CodeReadingLessonDefinition stage5 = createStage5(stage2);
-                definitionsInOrder = List.of(stage1, stage2, stage3, stage4, stage5);
+                CodeReadingLessonDefinition stage6 = createStage6(stage2, stage5);
+                definitionsInOrder = List.of(stage1, stage2, stage3, stage4, stage5, stage6);
                 definitions = definitionsInOrder.stream().collect(Collectors.toUnmodifiableMap(
                                 CodeReadingLessonDefinition::lessonId,
                                 Function.identity()));
@@ -235,6 +237,31 @@ public class CodeReadingLessonCatalog {
                                 createStage5Circuits(),
                                 createStage5CodeLines(),
                                 "1\n2\n3\n4\n5");
+        }
+
+        private static CodeReadingLessonDefinition createStage6(
+                        CodeReadingLessonDefinition stage2,
+                        CodeReadingLessonDefinition stage5) {
+                return new CodeReadingLessonDefinition(
+                                STAGE6_LESSON_ID,
+                                "Stage 6",
+                                "配列を使って複数の数字を表示しよう",
+                                """
+                                                public class Main {
+                                                    public static void main(String[] args) {
+                                                        int[] scores = {80, 90, 100};
+
+                                                        for (int i = 0; i < scores.length; i++) {
+                                                            System.out.println(scores[i]);
+                                                        }
+                                                    }
+                                                }
+                                                """,
+                                createStage6Steps(stage2, stage5),
+                                createStage6Parts(),
+                                createStage6Circuits(),
+                                createStage6CodeLines(),
+                                "80\n90\n100");
         }
 
         private static List<CodeReadingStepDefinition> createStage1Steps() {
@@ -2031,6 +2058,329 @@ public class CodeReadingLessonCatalog {
                                                 List.of("System.out.println", "i", ";"), List.of(),
                                                 "繰り返すたびに変数iの現在の値を表示する"),
                                 new CodeReadingPart("part-6", 6, "ブロックを閉じる",
+                                                List.of("for文、mainメソッド、Mainクラスのブロックを順番に閉じます。"),
+                                                "}\n}\n}",
+                                                List.of("for-close", "main-close", "class-close"),
+                                                List.of("}", "}", "}"), List.of(),
+                                                "for文の更新と再判定を経て繰り返しを終え、プログラム全体を閉じる"));
+        }
+
+        private static List<CodeReadingStepDefinition> createStage6Steps(
+                        CodeReadingLessonDefinition stage2,
+                        CodeReadingLessonDefinition stage5) {
+                List<CodeReadingExplanationSection> assignment =
+                                sharedExplanation(stage2, "assignment");
+                List<CodeReadingExplanationSection> integerType =
+                                sharedExplanation(stage2, "int-type");
+                List<CodeReadingExplanationSection> forStatement =
+                                sharedExplanation(stage5, "for-keyword");
+                List<CodeReadingExplanationSection> initialSeparator =
+                                sharedExplanation(stage5, "initial-separator");
+                List<CodeReadingExplanationSection> conditionSeparator =
+                                sharedExplanation(stage5, "condition-separator");
+                List<CodeReadingExplanationSection> increment =
+                                sharedExplanation(stage5, "increment");
+                List<CodeReadingExplanationSection> forBlockEnd =
+                                sharedExplanation(stage5, "for-close");
+                List<CodeReadingExplanationSection> indexVariable = arrayIndexVariableExplanation();
+                List<CodeReadingExplanationSection> semicolon = semicolonExplanation();
+                return List.of(
+                                richStep("class-public", 1, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("class-keyword", 2, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("class-name", 3, "Main", "Main", "main-class-name", CLASS_NAME_CARD,
+                                                "クラス名", CLASS_NAME_EXPLANATION),
+                                richStep("class-open", 4, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("main-public", 5, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("static", 6, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("void", 7, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("main", 8, "main", "main", "program-entry", MAIN_CARD,
+                                                "メソッド名", MAIN_EXPLANATION),
+                                richStep("string-array", 9, "String[]", "String[]", "multiple-strings", STRING_ARRAY_CARD,
+                                                "引数の型", STRING_ARRAY_EXPLANATION),
+                                richStep("args", 10, "args", "args", "argument-variable", ARGS_CARD,
+                                                "引数名", ARGS_EXPLANATION),
+                                richStep("main-open", 11, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("int-array-type", 12, "int[]", "int[]", "int-array-type",
+                                                "int型の値を要素に持つ配列の型", "配列型", intArrayTypeExplanation()),
+                                richStep("scores-name", 13, "scores", "scores", "array-reference-variable",
+                                                "int配列を参照する変数の名前", "配列を参照する変数", scoresVariableExplanation()),
+                                richStep("scores-assignment", 14, "=", "=", "assignment",
+                                                "右側の配列を左側の変数から参照できるようにする", "代入演算子", assignment),
+                                richStep("scores-initializer", 15, "{80, 90, 100}", "{80, 90, 100}",
+                                                "array-initializer", "3つの整数を持つ配列を生成して初期化する",
+                                                "配列初期化子", arrayInitializerExplanation()),
+                                richStep("scores-semicolon", 16, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", semicolon),
+                                richStep("for-keyword", 17, "for", "for", "repeat-processing",
+                                                "条件を満たす間、処理を繰り返す", "for文", forStatement),
+                                richStep("loop-int", 18, "int", "int", "integer-type", "整数を扱うデータ型",
+                                                "整数型", integerType),
+                                richStep("initial-i", 19, "i", "i", "array-index-variable",
+                                                "配列の位置を表すための変数", "インデックス用の変数", indexVariable),
+                                richStep("initial-assignment", 20, "=", "=", "assignment",
+                                                "右側の値を左側に入れる", "代入演算子", assignment),
+                                richStep("initial-zero", 21, "0", "0", "first-array-index",
+                                                "配列の最初の位置を表す値", "初期値", arrayInitialZeroExplanation()),
+                                richStep("initial-separator", 22, ";", ";", "for-separator",
+                                                "初期化と条件式を区切る", "for文の区切り", initialSeparator),
+                                richStep("condition-i", 23, "i", "i", "use-array-index",
+                                                "現在確認する配列の位置", "インデックスの利用", indexVariable),
+                                richStep("less-than", 24, "<", "<", "less-than",
+                                                "左側が右側より小さいかを判定する", "比較演算子", arrayLessThanExplanation()),
+                                richStep("scores-length", 25, "scores.length", "scores.length", "array-length",
+                                                "配列scoresの要素数を取得する", "配列のlengthフィールド", arrayLengthExplanation()),
+                                richStep("condition-separator", 26, ";", ";", "for-separator",
+                                                "条件式と更新式を区切る", "for文の区切り", conditionSeparator),
+                                richStep("update-i", 27, "i", "i", "update-array-index",
+                                                "次の位置へ進める変数", "更新対象の変数", indexVariable),
+                                richStep("increment", 28, "++", "++", "increment-by-one",
+                                                "変数iの値を1増やす", "インクリメント演算子", increment),
+                                richStep("for-open", 29, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("print-command", 30, "System.out.println", "System.out.println",
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("scores-element", 31, "scores[i]", "scores[i]", "array-element-access",
+                                                "i番目の配列要素を取得する", "配列要素へのアクセス", arrayElementExplanation()),
+                                richStep("print-semicolon", 32, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", semicolon),
+                                richStep("for-close", 33, "}", "}", "close-for", "for文のブロックを閉じる",
+                                                "終了波かっこ", forBlockEnd),
+                                richStep("main-close", 34, "}", "}", "close-main", "mainメソッドを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("class-close", 35, "}", "}", "close-class", "Mainクラスを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION));
+        }
+
+        private static List<CodeReadingExplanationSection> intArrayTypeExplanation() {
+                return List.of(
+                                textSection("int配列型　int[]",
+                                                text("int型の値を要素として持つ配列の型です。"),
+                                                text("int型の変数は1つの整数値を扱いますが、int[]型の変数はint型の配列を参照できます。")),
+                                textSection("ポイント",
+                                                text("変数scoresが複数の整数を直接内包するのではなく、生成された配列を参照します。"),
+                                                text("[]は、この型が配列型であることを表します。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§10.1", "Array Types",
+                                                                "配列型が要素型と次元から構成されることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html#jls-10.1"),
+                                                jlsReference("§4.3.1", "Objects",
+                                                                "配列がオブジェクトとして扱われることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.3.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> scoresVariableExplanation() {
+                return List.of(
+                                textSection("配列を参照する変数　scores",
+                                                text("scoresは、int型の配列を参照する変数の名前です。"),
+                                                text("scoresという名前自体にJava固有の特別な意味はなく、有効な別の名前も付けられます。")),
+                                textSection("このコードでの役割",
+                                                text("scoresを通して、配列の要素数や各要素の値を利用します。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§4.12", "Variables",
+                                                                "変数が値を保持する記憶場所であることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.12"),
+                                                jlsReference("§3.8", "Identifiers",
+                                                                "変数名に使う識別子の規則を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-3.html#jls-3.8")));
+        }
+
+        private static List<CodeReadingExplanationSection> arrayInitializerExplanation() {
+                return List.of(
+                                textSection("配列初期化子　array initializer",
+                                                text("{80, 90, 100}は、3つのint型の要素を持つ配列を生成し、それぞれの値で初期化します。"),
+                                                text("変数宣言と同時に配列初期化子を使うため、このコードではnewを明示していません。")),
+                                tableSectionWithHeader("インデックスと要素",
+                                                tableHeaderRow3("インデックス", "書き方", "値"),
+                                                tableRow3("0", "scores[0]", "80"),
+                                                tableRow3("1", "scores[1]", "90"),
+                                                tableRow3("2", "scores[2]", "100")),
+                                textSection("ポイント",
+                                                text("配列のインデックスは0から始まります。"),
+                                                text("配列の長さは生成時に決まり、同じ配列の長さを後から変更することはできません。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§10.6", "Array Initializers",
+                                                                "配列初期化子の書き方と要素の初期化を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html#jls-10.6"),
+                                                jlsReference("§15.10.1", "Array Creation Expressions",
+                                                                "配列の生成と長さの決定について定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.10.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> arrayIndexVariableExplanation() {
+                return List.of(
+                                textSection("インデックス用の変数　i",
+                                                text("iは、配列のどの位置を確認するかを表すための整数型の変数です。"),
+                                                text("iはJavaの予約語ではなく、別の有効な変数名も使えます。")),
+                                textSection("このコードでの変化",
+                                                text("iは0から始まり、i++によって0、1、2と1ずつ増えます。"),
+                                                text("配列の最初のインデックスが0なので、Stage 5の1ではなく0から開始します。")));
+        }
+
+        private static List<CodeReadingExplanationSection> arrayInitialZeroExplanation() {
+                return List.of(
+                                textSection("最初のインデックス　0",
+                                                text("Javaの配列は0番目から始まるため、最初の要素scores[0]を取得するにはiを0で初期化します。")),
+                                textSection("Stage 5との違い",
+                                                text("Stage 5では数字1から表示するためiを1で始めました。"),
+                                                text("今回は配列の先頭から順番に取得するためiを0で始めます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§10.4", "Array Access",
+                                                                "配列の構成要素が0からlength-1までのインデックスで参照されることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html#jls-10.4")));
+        }
+
+        private static List<CodeReadingExplanationSection> arrayLessThanExplanation() {
+                return List.of(
+                                textSection("比較演算子 <",
+                                                text("左側の値が右側の値より小さい場合にtrueを返します。")),
+                                textSection("このコードでの条件",
+                                                text("i < scores.lengthは、iが配列の要素数3より小さい間だけtrueです。"),
+                                                text("有効なインデックス0、1、2で処理し、iが3になるとfalseになって終了します。")),
+                                textSection("<=にしない理由",
+                                                text("i <= scores.lengthではiが3のときも処理され、存在しないscores[3]へのアクセスでArrayIndexOutOfBoundsExceptionが発生します。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.20.1", "Numerical Comparison Operators <, <=, >, and >=",
+                                                                "数値を比較する関係演算子の動作を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.20.1"),
+                                                jlsReference("§15.10.4", "Run-Time Evaluation of Array Access Expressions",
+                                                                "範囲外のインデックスで例外が発生することを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.10.4")));
+        }
+
+        private static List<CodeReadingExplanationSection> arrayLengthExplanation() {
+                return List.of(
+                                textSection("配列のlengthフィールド",
+                                                text("scores.lengthは、配列scoresの要素数を表します。この配列の要素数は3です。")),
+                                textSection("ポイント",
+                                                text("配列のlengthはメソッドではないため、scores.length()ではなくscores.lengthと書きます。"),
+                                                text("長さ3の配列で使用できるインデックスは0、1、2です。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§10.7", "Array Members",
+                                                                "配列がpublic finalなlengthフィールドを持つことを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-10.html#jls-10.7")));
+        }
+
+        private static List<CodeReadingExplanationSection> arrayElementExplanation() {
+                return List.of(
+                                textSection("配列要素へのアクセス　scores[i]",
+                                                text("変数iの現在の値をインデックスとして、配列scoresの要素を1つ取得します。"),
+                                                text("scores[i]は文字列ではなく、配列から取得したint型の値です。")),
+                                tableSectionWithHeader("iの値と取得する要素",
+                                                tableHeaderRow3("i", "式", "取得する値"),
+                                                tableRow3("0", "scores[i]", "80"),
+                                                tableRow3("1", "scores[i]", "90"),
+                                                tableRow3("2", "scores[i]", "100")),
+                                textSection("表示の流れ",
+                                                text("System.out.println(scores[i]);によって、80、90、100を1行ずつ表示します。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.10.3", "Array Access Expressions",
+                                                                "配列参照とインデックスを使って要素へアクセスする式を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.10.3")));
+        }
+
+        private static List<CodeReadingCircuitDefinition> createStage6Circuits() {
+                return List.of(
+                                new CodeReadingCircuitDefinition("class-declaration", "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{")),
+                                new CodeReadingCircuitDefinition("main-method", "public static void main(String[] args) {",
+                                                List.of("main-public", "static", "void", "main", "string-array", "args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{")),
+                                new CodeReadingCircuitDefinition("array-declaration", "int[] scores = {80, 90, 100};",
+                                                List.of("int-array-type", "scores-name", "scores-assignment",
+                                                                "scores-initializer", "scores-semicolon"),
+                                                List.of("int[]", "scores", "=", "{80, 90, 100}", ";")),
+                                new CodeReadingCircuitDefinition("for-initialization", "for (int i = 0;",
+                                                List.of("for-keyword", "loop-int", "initial-i", "initial-assignment",
+                                                                "initial-zero", "initial-separator"),
+                                                List.of("for", "int", "i", "=", "0", ";")),
+                                new CodeReadingCircuitDefinition("for-condition-update", "i < scores.length; i++) {",
+                                                List.of("condition-i", "less-than", "scores-length", "condition-separator",
+                                                                "update-i", "increment", "for-open"),
+                                                List.of("i", "<", "scores.length", ";", "i", "++", "{")),
+                                new CodeReadingCircuitDefinition("array-output", "System.out.println(scores[i]);",
+                                                List.of("print-command", "scores-element", "print-semicolon"),
+                                                List.of("System.out.println", "scores[i]", ";")),
+                                new CodeReadingCircuitDefinition("block-closes",
+                                                "for文終了 }　mainメソッド終了 }　Mainクラス終了 }",
+                                                List.of("for-close", "main-close", "class-close"),
+                                                List.of("for文終了 }", "mainメソッド終了 }", "Mainクラス終了 }")));
+        }
+
+        private static Map<String, List<CodeReadingCodeLineDefinition>> createStage6CodeLines() {
+                return Map.of(
+                                "part-1", List.of(line(
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"), "", "")),
+                                "part-2", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("main-public"), token("static"), token("void"), token("main"),
+                                                                new CodeReadingCodeTokenDefinition("string-array", "(", ""),
+                                                                new CodeReadingCodeTokenDefinition("args", "", ")"), token("main-open")),
+                                                "", "quiz-reading-code-line--part-2")),
+                                "part-3", List.of(line(List.of("int-array-type", "scores-name", "scores-assignment",
+                                                "scores-initializer", "scores-semicolon"), "", "")),
+                                "part-4", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(new CodeReadingCodeTokenDefinition("for-keyword", "", " ("),
+                                                                token("loop-int"), token("initial-i"), token("initial-assignment"),
+                                                                token("initial-zero"), token("initial-separator")), "", "")),
+                                "part-5", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("condition-i"), token("less-than"), token("scores-length"),
+                                                                token("condition-separator"), token("update-i"),
+                                                                new CodeReadingCodeTokenDefinition("increment", "", ")"), token("for-open")),
+                                                "", "")),
+                                "part-6", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("print-command"),
+                                                                new CodeReadingCodeTokenDefinition("scores-element", "(", ")"),
+                                                                token("print-semicolon")), "", "")),
+                                "part-7", List.of(line(List.of("for-close", "main-close", "class-close"), "", "")));
+        }
+
+        private static List<CodeReadingPart> createStage6Parts() {
+                return List.of(
+                                new CodeReadingPart("part-1", 1, "クラスを作る", List.of(), "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{"), List.of(),
+                                                "Mainというクラスを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-2", 2, "mainメソッドを作る", List.of(),
+                                                "public static void main(String[] args) {",
+                                                List.of("main-public", "static", "void", "main", "string-array", "args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{"), List.of(),
+                                                "mainメソッドを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-3", 3, "配列を宣言して初期化する",
+                                                List.of("3つの整数を持つint配列を生成し、変数scoresから参照します。"),
+                                                "int[] scores = {80, 90, 100};",
+                                                List.of("int-array-type", "scores-name", "scores-assignment",
+                                                                "scores-initializer", "scores-semicolon"),
+                                                List.of("int[]", "scores", "=", "{80, 90, 100}", ";"), List.of(),
+                                                "int配列を生成して80、90、100で初期化し、scoresから参照する"),
+                                new CodeReadingPart("part-4", 4, "配列の先頭から繰り返す",
+                                                List.of("配列の最初のインデックス0から繰り返しを始めます。"),
+                                                "for (int i = 0;",
+                                                List.of("for-keyword", "loop-int", "initial-i", "initial-assignment",
+                                                                "initial-zero", "initial-separator"),
+                                                List.of("for", "int", "i", "=", "0", ";"), List.of(),
+                                                "for文を始め、配列の位置を表す変数iを0で初期化する"),
+                                new CodeReadingPart("part-5", 5, "要素数まで繰り返す",
+                                                List.of("iが配列の要素数より小さい間、処理後にiを1増やします。"),
+                                                "i < scores.length; i++) {",
+                                                List.of("condition-i", "less-than", "scores-length", "condition-separator",
+                                                                "update-i", "increment", "for-open"),
+                                                List.of("i", "<", "scores.length", ";", "i", "++", "{"), List.of(),
+                                                "有効なインデックス0、1、2の間だけ繰り返す"),
+                                new CodeReadingPart("part-6", 6, "配列の要素を表示する",
+                                                List.of("現在のiをインデックスにして配列要素を取得し、1行ずつ表示します。"),
+                                                "System.out.println(scores[i]);",
+                                                List.of("print-command", "scores-element", "print-semicolon"),
+                                                List.of("System.out.println", "scores[i]", ";"), List.of(),
+                                                "scores[i]で取得した80、90、100を順番に表示する"),
+                                new CodeReadingPart("part-7", 7, "ブロックを閉じる",
                                                 List.of("for文、mainメソッド、Mainクラスのブロックを順番に閉じます。"),
                                                 "}\n}\n}",
                                                 List.of("for-close", "main-close", "class-close"),

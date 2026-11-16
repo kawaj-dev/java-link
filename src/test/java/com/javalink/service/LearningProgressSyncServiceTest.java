@@ -128,4 +128,21 @@ class LearningProgressSyncServiceTest {
                 CodeReadingLessonCatalog.STAGE5_LESSON_ID
         );
     }
+
+    @Test
+    void Stage6リセットはStage6のLessonIdだけを削除Serviceへ渡す() {
+        UserAccount userAccount = new UserAccount();
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+
+        learningProgressSyncService.resetIfAuthenticated(
+                session,
+                CodeReadingLessonCatalog.STAGE6_LESSON_ID
+        );
+
+        verify(learningProgressService).deleteProgress(
+                userAccount,
+                CodeReadingLessonCatalog.STAGE6_LESSON_ID
+        );
+    }
 }
