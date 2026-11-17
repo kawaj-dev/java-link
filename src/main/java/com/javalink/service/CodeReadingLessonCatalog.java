@@ -35,6 +35,7 @@ public class CodeReadingLessonCatalog {
         public static final String STAGE4_LESSON_ID = "conditional-program-reading";
         public static final String STAGE5_LESSON_ID = "loop-program-reading";
         public static final String STAGE6_LESSON_ID = "array-program-reading";
+        public static final String STAGE7_LESSON_ID = "method-program-reading";
         private static final String OFFICIAL_REFERENCES_TITLE =
                         "このページの技術的根拠：Javaの公式仕様・API";
         private static final String DISPLAY_AND_NEWLINE_CARD = "画面に表示して改行する";
@@ -83,7 +84,8 @@ public class CodeReadingLessonCatalog {
                 CodeReadingLessonDefinition stage4 = createStage4(stage2);
                 CodeReadingLessonDefinition stage5 = createStage5(stage2);
                 CodeReadingLessonDefinition stage6 = createStage6(stage2, stage5);
-                definitionsInOrder = List.of(stage1, stage2, stage3, stage4, stage5, stage6);
+                CodeReadingLessonDefinition stage7 = createStage7(stage2, stage3);
+                definitionsInOrder = List.of(stage1, stage2, stage3, stage4, stage5, stage6, stage7);
                 definitions = definitionsInOrder.stream().collect(Collectors.toUnmodifiableMap(
                                 CodeReadingLessonDefinition::lessonId,
                                 Function.identity()));
@@ -262,6 +264,32 @@ public class CodeReadingLessonCatalog {
                                 createStage6Circuits(),
                                 createStage6CodeLines(),
                                 "80\n90\n100");
+        }
+
+        private static CodeReadingLessonDefinition createStage7(
+                        CodeReadingLessonDefinition stage2,
+                        CodeReadingLessonDefinition stage3) {
+                return new CodeReadingLessonDefinition(
+                                STAGE7_LESSON_ID,
+                                "Stage 7",
+                                "メソッドを使って計算結果を表示しよう",
+                                """
+                                                public class Main {
+                                                    public static void main(String[] args) {
+                                                        int result = add(10, 20);
+                                                        System.out.println(result);
+                                                    }
+
+                                                    public static int add(int a, int b) {
+                                                        return a + b;
+                                                    }
+                                                }
+                                                """,
+                                createStage7Steps(stage2, stage3),
+                                createStage7Parts(),
+                                createStage7Circuits(),
+                                createStage7CodeLines(),
+                                "30");
         }
 
         private static List<CodeReadingStepDefinition> createStage1Steps() {
@@ -2386,5 +2414,298 @@ public class CodeReadingLessonCatalog {
                                                 List.of("for-close", "main-close", "class-close"),
                                                 List.of("}", "}", "}"), List.of(),
                                                 "for文の更新と再判定を経て繰り返しを終え、プログラム全体を閉じる"));
+        }
+
+        private static List<CodeReadingStepDefinition> createStage7Steps(
+                        CodeReadingLessonDefinition stage2,
+                        CodeReadingLessonDefinition stage3) {
+                List<CodeReadingExplanationSection> integerType =
+                                sharedExplanation(stage2, "int-type");
+                List<CodeReadingExplanationSection> variableName =
+                                sharedExplanation(stage2, "age-declaration");
+                List<CodeReadingExplanationSection> assignment =
+                                sharedExplanation(stage2, "assignment");
+                List<CodeReadingExplanationSection> integerLiteral =
+                                sharedExplanation(stage2, "integer-literal");
+                List<CodeReadingExplanationSection> variableUse =
+                                sharedExplanation(stage2, "age-use");
+                List<CodeReadingExplanationSection> addition =
+                                sharedExplanation(stage3, "addition");
+                List<CodeReadingExplanationSection> semicolon = semicolonExplanation();
+                List<CodeReadingExplanationSection> actualArgument = actualArgumentExplanation();
+                List<CodeReadingExplanationSection> formalParameter = formalParameterExplanation();
+                return List.of(
+                                richStep("class-public", 1, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("class-keyword", 2, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("class-name", 3, "Main", "Main", "main-class-name", CLASS_NAME_CARD,
+                                                "クラス名", CLASS_NAME_EXPLANATION),
+                                richStep("class-open", 4, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("main-public", 5, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("main-static", 6, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("main-void", 7, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("main-name", 8, "main", "main", "program-entry", MAIN_CARD,
+                                                "メソッド名", MAIN_EXPLANATION),
+                                richStep("main-string-array", 9, "String[]", "String[]", "multiple-strings",
+                                                STRING_ARRAY_CARD, "引数の型", STRING_ARRAY_EXPLANATION),
+                                richStep("main-args", 10, "args", "args", "argument-variable", ARGS_CARD,
+                                                "引数名", ARGS_EXPLANATION),
+                                richStep("main-open", 11, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("result-int", 12, "int", "int", "integer-type", "整数を扱うデータ型",
+                                                "整数型", integerType),
+                                richStep("result-name", 13, "result", "result", "variable-name", "変数の名前",
+                                                "変数名", variableName),
+                                richStep("result-assignment", 14, "=", "=", "assignment",
+                                                "右側から返された値を左側に入れる", "代入演算子", assignment),
+                                richStep("add-call", 15, "add", "add", "method-invocation",
+                                                "addメソッドを呼び出す", "メソッド呼び出し", methodCallExplanation()),
+                                richStep("actual-argument-10", 16, "10", "10", "actual-argument",
+                                                "1番目の仮引数aへ渡す値", "実引数", actualArgument),
+                                richStep("actual-argument-20", 17, "20", "20", "actual-argument",
+                                                "2番目の仮引数bへ渡す値", "実引数", actualArgument),
+                                richStep("result-semicolon", 18, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", semicolon),
+                                richStep("print-command", 19, "System.out.println", "System.out.println",
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("result-use", 20, "result", "result", "use-variable-value",
+                                                VARIABLE_VALUE_USE_CARD, "変数の利用", variableUse),
+                                richStep("print-semicolon", 21, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", semicolon),
+                                richStep("main-close", 22, "}", "}", "close-main", "mainメソッドを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("add-public", 23, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("add-static", 24, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("add-return-type", 25, "int", "int", "method-return-type",
+                                                "int型の値を呼び出し元へ返す", "戻り値の型", methodReturnTypeExplanation()),
+                                richStep("add-name", 26, "add", "add", "method-declaration-name",
+                                                "足し算を行うメソッドの名前", "メソッド名", methodDefinitionNameExplanation()),
+                                richStep("parameter-a-int", 27, "int", "int", "integer-type",
+                                                "整数を受け取るデータ型", "仮引数の型", integerType),
+                                richStep("parameter-a", 28, "a", "a", "formal-parameter",
+                                                "1番目の実引数を受け取る変数", "仮引数", formalParameter),
+                                richStep("parameter-b-int", 29, "int", "int", "integer-type",
+                                                "整数を受け取るデータ型", "仮引数の型", integerType),
+                                richStep("parameter-b", 30, "b", "b", "formal-parameter",
+                                                "2番目の実引数を受け取る変数", "仮引数", formalParameter),
+                                richStep("add-open", 31, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("return-keyword", 32, "return", "return", "return-value",
+                                                "計算結果を呼び出し元へ返す", "return文", returnExplanation()),
+                                richStep("return-a", 33, "a", "a", "use-variable-value",
+                                                VARIABLE_VALUE_USE_CARD, "仮引数の利用", variableUse),
+                                richStep("return-addition", 34, "+", "+", "addition", "左右の数値を足す",
+                                                "算術演算子", addition),
+                                richStep("return-b", 35, "b", "b", "use-variable-value",
+                                                VARIABLE_VALUE_USE_CARD, "仮引数の利用", variableUse),
+                                richStep("return-semicolon", 36, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", semicolon),
+                                richStep("add-close", 37, "}", "}", "close-method", "addメソッドを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("class-close", 38, "}", "}", "close-class", "Mainクラスを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION));
+        }
+
+        private static List<CodeReadingExplanationSection> methodCallExplanation() {
+                return List.of(
+                                textSection("メソッド呼び出し　method invocation",
+                                                text("add(10, 20)は、addメソッドを呼び出し、2つの値を渡す式です。"),
+                                                text("呼び出し位置とメソッドの定義位置は離れていても、メソッド名と引数によって対応します。")),
+                                textSection("処理の移動",
+                                                text("mainメソッドの処理はいったんaddメソッドへ移ります。"),
+                                                text("addメソッドがreturnで値を返すと、処理は呼び出し元へ戻り、その値30がresultへ代入されます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.12", "Method Invocation Expressions",
+                                                                "メソッド呼び出し式の探索、引数の受け渡し、実行を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.12")));
+        }
+
+        private static List<CodeReadingExplanationSection> actualArgumentExplanation() {
+                return List.of(
+                                textSection("実引数　argument",
+                                                text("メソッドを呼び出すときに、丸かっこの中で実際に渡す値です。"),
+                                                text("10は仮引数aへ、20は仮引数bへ、左から同じ順番で渡されます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.12.4.2", "Evaluate Arguments",
+                                                                "メソッド呼び出しで引数を左から評価して仮引数へ渡す処理を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.12.4.2")));
+        }
+
+        private static List<CodeReadingExplanationSection> methodReturnTypeExplanation() {
+                return List.of(
+                                textSection("戻り値の型　return type",
+                                                text("メソッド名の前にあるintは、このメソッドがint型の値を呼び出し元へ返すことを表します。"),
+                                                text("mainメソッドのvoidは値を返さないことを表しますが、addメソッドは計算結果を返すためintです。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§8.4.5", "Method Result",
+                                                                "メソッドが返す値の型とvoidを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4.5")));
+        }
+
+        private static List<CodeReadingExplanationSection> methodDefinitionNameExplanation() {
+                return List.of(
+                                textSection("メソッド名　method name",
+                                                text("addは、このメソッドにつけた名前です。Javaの予約語ではありません。"),
+                                                text("呼び出し側のadd(10, 20)は、この定義を利用します。")),
+                                textSection("呼び出しと定義",
+                                                text("Javaでは、同じクラス内のメソッド定義をmainメソッドより後ろに書くこともできます。"),
+                                                text("ソースコードを上から実行して定義行を通過するのではなく、呼び出されたときにaddメソッドの処理へ移ります。")));
+        }
+
+        private static List<CodeReadingExplanationSection> formalParameterExplanation() {
+                return List.of(
+                                textSection("仮引数　formal parameter",
+                                                text("メソッドが呼び出されたときに、呼び出し元から渡された値を受け取る変数です。"),
+                                                text("このコードではaが10を、bが20を受け取ります。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§8.4.1", "Formal Parameters",
+                                                                "メソッド宣言に記述する仮引数とその型を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> returnExplanation() {
+                return List.of(
+                                textSection("return文　return statement",
+                                                text("return a + b;は、aとbを足した結果をaddメソッドの呼び出し元へ返します。"),
+                                                text("値を返すとaddメソッドの処理は終わり、mainメソッドのadd(10, 20)を呼び出した位置へ戻ります。")),
+                                textSection("値の流れ",
+                                                text("a + bの結果は30です。"),
+                                                text("返された30はint result = add(10, 20);の右側の値となり、resultへ代入されます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§14.17", "The return Statement",
+                                                                "return文が値を呼び出し元へ返してメソッドの実行を終了することを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.17")));
+        }
+
+        private static List<CodeReadingCircuitDefinition> createStage7Circuits() {
+                return List.of(
+                                new CodeReadingCircuitDefinition("class-declaration", "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{")),
+                                new CodeReadingCircuitDefinition("main-method", "public static void main(String[] args) {",
+                                                List.of("main-public", "main-static", "main-void", "main-name",
+                                                                "main-string-array", "main-args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{")),
+                                new CodeReadingCircuitDefinition("method-call", "int result = add(10, 20);",
+                                                List.of("result-int", "result-name", "result-assignment", "add-call",
+                                                                "actual-argument-10", "actual-argument-20", "result-semicolon"),
+                                                List.of("int", "result", "=", "add", "10", "20", ";")),
+                                new CodeReadingCircuitDefinition("result-output", "System.out.println(result);",
+                                                List.of("print-command", "result-use", "print-semicolon"),
+                                                List.of("System.out.println", "result", ";")),
+                                new CodeReadingCircuitDefinition("main-close", "mainメソッド終了 }",
+                                                List.of("main-close"), List.of("mainメソッド終了 }")),
+                                new CodeReadingCircuitDefinition("add-header", "public static int add(",
+                                                List.of("add-public", "add-static", "add-return-type", "add-name"),
+                                                List.of("public", "static", "int", "add")),
+                                new CodeReadingCircuitDefinition("add-parameters", "int a, int b) {",
+                                                List.of("parameter-a-int", "parameter-a", "parameter-b-int",
+                                                                "parameter-b", "add-open"),
+                                                List.of("int", "a", "int", "b", "{")),
+                                new CodeReadingCircuitDefinition("return-result", "return a + b;",
+                                                List.of("return-keyword", "return-a", "return-addition", "return-b",
+                                                                "return-semicolon"),
+                                                List.of("return", "a", "+", "b", ";")),
+                                new CodeReadingCircuitDefinition("block-closes",
+                                                "addメソッド終了 }　Mainクラス終了 }",
+                                                List.of("add-close", "class-close"),
+                                                List.of("addメソッド終了 }", "Mainクラス終了 }")));
+        }
+
+        private static Map<String, List<CodeReadingCodeLineDefinition>> createStage7CodeLines() {
+                return Map.of(
+                                "part-1", List.of(line(
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"), "", "")),
+                                "part-2", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("main-public"), token("main-static"), token("main-void"),
+                                                                token("main-name"),
+                                                                new CodeReadingCodeTokenDefinition("main-string-array", "(", ""),
+                                                                new CodeReadingCodeTokenDefinition("main-args", "", ")"), token("main-open")),
+                                                "", "quiz-reading-code-line--part-2")),
+                                "part-3", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("result-int"), token("result-name"), token("result-assignment"),
+                                                                new CodeReadingCodeTokenDefinition("add-call", "", "("),
+                                                                new CodeReadingCodeTokenDefinition("actual-argument-10", "", ","),
+                                                                new CodeReadingCodeTokenDefinition("actual-argument-20", "", ")"),
+                                                                token("result-semicolon")), "", "")),
+                                "part-4", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("print-command"),
+                                                                new CodeReadingCodeTokenDefinition("result-use", "(", ")"),
+                                                                token("print-semicolon")), "", "")),
+                                "part-5", List.of(line(List.of("main-close"), "", "")),
+                                "part-6", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("add-public"), token("add-static"), token("add-return-type"),
+                                                                new CodeReadingCodeTokenDefinition("add-name", "", "(")), "", "")),
+                                "part-7", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("parameter-a-int"),
+                                                                new CodeReadingCodeTokenDefinition("parameter-a", "", ","),
+                                                                token("parameter-b-int"),
+                                                                new CodeReadingCodeTokenDefinition("parameter-b", "", ")"),
+                                                                token("add-open")), "", "")),
+                                "part-8", List.of(line(List.of("return-keyword", "return-a", "return-addition",
+                                                "return-b", "return-semicolon"), "", "")),
+                                "part-9", List.of(line(List.of("add-close", "class-close"), "", "")));
+        }
+
+        private static List<CodeReadingPart> createStage7Parts() {
+                return List.of(
+                                new CodeReadingPart("part-1", 1, "クラスを作る", List.of(), "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{"), List.of(),
+                                                "Mainというクラスを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-2", 2, "mainメソッドを作る", List.of(),
+                                                "public static void main(String[] args) {",
+                                                List.of("main-public", "main-static", "main-void", "main-name",
+                                                                "main-string-array", "main-args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{"),
+                                                List.of(), "mainメソッドを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-3", 3, "addメソッドを呼び出す",
+                                                List.of("10と20を渡してaddメソッドを呼び出し、戻り値をresultへ代入します。"),
+                                                "int result = add(10, 20);",
+                                                List.of("result-int", "result-name", "result-assignment", "add-call",
+                                                                "actual-argument-10", "actual-argument-20", "result-semicolon"),
+                                                List.of("int", "result", "=", "add", "10", "20", ";"), List.of(),
+                                                "addメソッドへ10と20を渡し、返された30をresultへ代入する"),
+                                new CodeReadingPart("part-4", 4, "計算結果を表示する",
+                                                List.of("addメソッドから返されてresultへ入った値を表示します。"),
+                                                "System.out.println(result);",
+                                                List.of("print-command", "result-use", "print-semicolon"),
+                                                List.of("System.out.println", "result", ";"), List.of(),
+                                                "変数resultの値30を表示する"),
+                                new CodeReadingPart("part-5", 5, "mainメソッドを閉じる", List.of(), "}",
+                                                List.of("main-close"), List.of("}"), List.of(),
+                                                "mainメソッドの処理を閉じる"),
+                                new CodeReadingPart("part-6", 6, "addメソッドを定義する",
+                                                List.of("int型の値を返すstaticなaddメソッドの定義を始めます。"),
+                                                "public static int add(",
+                                                List.of("add-public", "add-static", "add-return-type", "add-name"),
+                                                List.of("public", "static", "int", "add"), List.of(),
+                                                "呼び出し元へint型の値を返すaddメソッドを宣言する"),
+                                new CodeReadingPart("part-7", 7, "仮引数で値を受け取る",
+                                                List.of("呼び出し元の10と20を、int型の仮引数aとbで受け取ります。"),
+                                                "int a, int b) {",
+                                                List.of("parameter-a-int", "parameter-a", "parameter-b-int",
+                                                                "parameter-b", "add-open"),
+                                                List.of("int", "a", "int", "b", "{"), List.of(),
+                                                "2つのint型の仮引数aとbで実引数を受け取る"),
+                                new CodeReadingPart("part-8", 8, "計算結果をreturnで返す",
+                                                List.of("aとbを足した結果を呼び出し元へ返し、mainメソッドの処理へ戻ります。"),
+                                                "return a + b;",
+                                                List.of("return-keyword", "return-a", "return-addition", "return-b",
+                                                                "return-semicolon"),
+                                                List.of("return", "a", "+", "b", ";"), List.of(),
+                                                "aとbを足した30を呼び出し元へ返す"),
+                                new CodeReadingPart("part-9", 9, "プログラムを閉じる",
+                                                List.of("addメソッドとMainクラスのブロックを順番に閉じます。"),
+                                                "}\n}", List.of("add-close", "class-close"), List.of("}", "}"), List.of(),
+                                                "addメソッドとMainクラスを閉じる"));
         }
 }
