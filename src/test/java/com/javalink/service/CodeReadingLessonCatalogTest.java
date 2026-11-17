@@ -20,6 +20,85 @@ class CodeReadingLessonCatalogTest {
             new CodeReadingLessonCatalog();
 
     @Test
+    void Stage7は9Part38Stepとメソッドコードと実行結果を持つ() {
+        var definition = catalog.getDefinition(
+                CodeReadingLessonCatalog.STAGE7_LESSON_ID
+        );
+
+        assertEquals("Stage 7", definition.stageName());
+        assertEquals("メソッドを使って計算結果を表示しよう", definition.learningGoal());
+        assertEquals(9, definition.parts().size());
+        assertEquals(38, definition.steps().size());
+        assertEquals(java.util.List.of(1, 2, 3, 4, 5, 6, 7, 8, 9),
+                definition.parts().stream().map(part -> part.order()).toList());
+        assertEquals(definition.steps().size(), definition.steps().stream()
+                .map(step -> step.id()).distinct().count());
+        assertTrue(definition.parts().stream()
+                .allMatch(part -> part.stepIds().size() <= 7));
+        assertEquals("int result = add(10, 20);", definition.parts().get(2).targetCode());
+        assertEquals("public static int add(", definition.parts().get(5).targetCode());
+        assertEquals("int a, int b) {", definition.parts().get(6).targetCode());
+        assertEquals("return a + b;", definition.parts().get(7).targetCode());
+        assertEquals("}\n}", definition.parts().get(8).targetCode());
+        assertEquals("30", definition.consoleOutput());
+        assertEquals("""
+                public class Main {
+                    public static void main(String[] args) {
+                        int result = add(10, 20);
+                        System.out.println(result);
+                    }
+
+                    public static int add(int a, int b) {
+                        return a + b;
+                    }
+                }
+                """.strip(), definition.completedCode().strip());
+    }
+
+    @Test
+    void Stage7は呼び出しからreturnで戻る値の流れを正しく説明する() {
+        var definition = catalog.getDefinition(
+                CodeReadingLessonCatalog.STAGE7_LESSON_ID
+        );
+
+        assertTrue(allExplanationText(definition, "add-call")
+                .contains("処理はいったんaddメソッドへ移ります"));
+        assertTrue(allExplanationText(definition, "add-call")
+                .contains("値30がresultへ代入"));
+        assertTrue(allExplanationText(definition, "add-name")
+                .contains("mainメソッドより後ろ"));
+        assertTrue(allExplanationText(definition, "return-keyword")
+                .contains("呼び出した位置へ戻ります"));
+        assertTrue(allExplanationText(definition, "parameter-a")
+                .contains("aが10"));
+        assertTrue(allExplanationText(definition, "add-return-type")
+                .contains("mainメソッドのvoid"));
+    }
+
+    @Test
+    void Stage7は基礎構文と変数と加算の共通Explanationを再利用する() {
+        var stage1 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE1_LESSON_ID);
+        var stage2 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE2_LESSON_ID);
+        var stage3 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE3_LESSON_ID);
+        var stage7 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE7_LESSON_ID);
+
+        assertSame(stage1.getStep("class-public").explanationSections(),
+                stage7.getStep("class-public").explanationSections());
+        assertSame(stage1.getStep("static").explanationSections(),
+                stage7.getStep("add-static").explanationSections());
+        assertSame(stage2.getStep("int-type").explanationSections(),
+                stage7.getStep("result-int").explanationSections());
+        assertSame(stage2.getStep("age-declaration").explanationSections(),
+                stage7.getStep("result-name").explanationSections());
+        assertSame(stage2.getStep("assignment").explanationSections(),
+                stage7.getStep("result-assignment").explanationSections());
+        assertSame(stage2.getStep("age-use").explanationSections(),
+                stage7.getStep("result-use").explanationSections());
+        assertSame(stage3.getStep("addition").explanationSections(),
+                stage7.getStep("return-addition").explanationSections());
+    }
+
+    @Test
     void Stage6は7Part35Stepと配列コードと実行結果を持つ() {
         var definition = catalog.getDefinition(
                 CodeReadingLessonCatalog.STAGE6_LESSON_ID
@@ -286,7 +365,7 @@ class CodeReadingLessonCatalogTest {
     }
 
     @Test
-    void Stage3からStage6まで順に遷移しStage6の次は存在しない() {
+    void Stage3からStage7まで順に遷移しStage7の次は存在しない() {
         assertEquals(CodeReadingLessonCatalog.STAGE4_LESSON_ID,
                 catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE3_LESSON_ID)
                         .orElseThrow().lessonId());
@@ -296,8 +375,11 @@ class CodeReadingLessonCatalogTest {
         assertEquals(CodeReadingLessonCatalog.STAGE6_LESSON_ID,
                 catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE5_LESSON_ID)
                         .orElseThrow().lessonId());
+        assertEquals(CodeReadingLessonCatalog.STAGE7_LESSON_ID,
+                catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE6_LESSON_ID)
+                        .orElseThrow().lessonId());
         assertTrue(catalog.getNextDefinition(
-                CodeReadingLessonCatalog.STAGE6_LESSON_ID
+                CodeReadingLessonCatalog.STAGE7_LESSON_ID
         ).isEmpty());
     }
 
