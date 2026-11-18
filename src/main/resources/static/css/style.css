@@ -860,6 +860,138 @@ body:has(.quiz-final-review[data-lesson-id="array-program-reading"]) .quiz-summa
     }
 }
 
+/* Stage 7のINTRO・LEARNINGだけを、メソッド教材の可読性を保ちながらコンパクトに整えます。 */
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .quiz-focus-page,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .quiz-focus-page {
+    padding-top: 16px;
+    padding-bottom: 28px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .page-home-navigation,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .page-home-navigation {
+    margin-bottom: 8px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .quiz-focus-header,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .quiz-focus-header {
+    margin-bottom: 12px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .quiz-focus-header .label,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .quiz-focus-header .label {
+    margin-bottom: 4px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .quiz-focus-header h1,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .quiz-focus-header h1 {
+    font-size: clamp(2.25rem, 5vw, 3.1rem);
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .quiz-focus-stage,
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .quiz-focus-header h2,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .quiz-focus-stage,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .quiz-focus-header h2 {
+    margin-top: 4px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .quiz-focus-header h2,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .quiz-focus-header h2 {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .quiz-focus-program,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .quiz-focus-learning {
+    margin-top: 10px;
+    padding: clamp(12px, 1.8vw, 18px);
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"])
+    .quiz-focus-program .quiz-ide-tabbar,
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"])
+    .quiz-focus-program .quiz-ide-tab {
+    min-height: 36px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"])
+    .quiz-focus-program .quiz-ide-editor,
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"])
+    .quiz-focus-program .quiz-full-code {
+    min-height: 260px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"])
+    .quiz-focus-program .quiz-ide-line-numbers,
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"])
+    .quiz-focus-program .quiz-full-code {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    line-height: 1.55;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"])
+    .quiz-intro-start .next-button,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"])
+    .quiz-understood-link,
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"])
+    .next-button {
+    min-height: 44px;
+}
+
+body:has(.quiz-focus-program[data-lesson-id="method-program-reading"])
+    .quiz-intro-start .next-button {
+    margin-top: 10px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"])
+    .quiz-focus-learning-header {
+    min-height: 44px;
+    padding-bottom: 7px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"])
+    .quiz-reading-stage {
+    gap: 10px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"])
+    .quiz-reading-code-panel {
+    padding-top: 12px;
+    padding-bottom: 8px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"])
+    .quiz-reading-code-meaning {
+    min-height: 42px;
+    margin-top: 8px;
+    padding-top: 8px;
+}
+
+body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"])
+    .quiz-reading-circuit-panel {
+    padding-top: 0;
+    padding-bottom: 2px;
+}
+
+@media (max-width: 600px) {
+    body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .quiz-focus-page,
+    body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .quiz-focus-page {
+        padding-top: 14px;
+        padding-bottom: 24px;
+    }
+
+    body:has(.quiz-focus-program[data-lesson-id="method-program-reading"]) .quiz-focus-program,
+    body:has(.quiz-focus-learning[data-lesson-id="method-program-reading"]) .quiz-focus-learning {
+        padding: 12px;
+    }
+
+    body:has(.quiz-focus-program[data-lesson-id="method-program-reading"])
+        .quiz-focus-program .quiz-ide-editor,
+    body:has(.quiz-focus-program[data-lesson-id="method-program-reading"])
+        .quiz-focus-program .quiz-full-code {
+        min-height: 250px;
+    }
+}
+
 /* Stage 1専用のスタイルです。既存のクイズ画面には影響しません。 */
 .stage-page {
     width: min(100% - 32px, 920px);
