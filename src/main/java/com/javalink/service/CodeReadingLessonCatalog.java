@@ -36,6 +36,7 @@ public class CodeReadingLessonCatalog {
         public static final String STAGE5_LESSON_ID = "loop-program-reading";
         public static final String STAGE6_LESSON_ID = "array-program-reading";
         public static final String STAGE7_LESSON_ID = "method-program-reading";
+        public static final String STAGE8_LESSON_ID = "car-instance-reading";
         private static final String OFFICIAL_REFERENCES_TITLE =
                         "このページの技術的根拠：Javaの公式仕様・API";
         private static final String DISPLAY_AND_NEWLINE_CARD = "画面に表示して改行する";
@@ -85,7 +86,8 @@ public class CodeReadingLessonCatalog {
                 CodeReadingLessonDefinition stage5 = createStage5(stage2);
                 CodeReadingLessonDefinition stage6 = createStage6(stage2, stage5);
                 CodeReadingLessonDefinition stage7 = createStage7(stage2, stage3);
-                definitionsInOrder = List.of(stage1, stage2, stage3, stage4, stage5, stage6, stage7);
+                CodeReadingLessonDefinition stage8 = createStage8(stage2, stage4);
+                definitionsInOrder = List.of(stage1, stage2, stage3, stage4, stage5, stage6, stage7, stage8);
                 definitions = definitionsInOrder.stream().collect(Collectors.toUnmodifiableMap(
                                 CodeReadingLessonDefinition::lessonId,
                                 Function.identity()));
@@ -290,6 +292,42 @@ public class CodeReadingLessonCatalog {
                                 createStage7Circuits(),
                                 createStage7CodeLines(),
                                 "30");
+        }
+
+        private static CodeReadingLessonDefinition createStage8(
+                        CodeReadingLessonDefinition stage2,
+                        CodeReadingLessonDefinition stage4) {
+                return new CodeReadingLessonDefinition(
+                                STAGE8_LESSON_ID,
+                                "Stage 8",
+                                "クラスから2台の車を作ってみよう",
+                                """
+                                                public class Main {
+                                                    public static void main(String[] args) {
+                                                        Car car1 = new Car();
+                                                        Car car2 = new Car();
+
+                                                        car1.color = "red";
+                                                        car2.color = "blue";
+
+                                                        car1.showColor();
+                                                        car2.showColor();
+                                                    }
+                                                }
+
+                                                class Car {
+                                                    String color;
+
+                                                    void showColor() {
+                                                        System.out.println(color);
+                                                    }
+                                                }
+                                                """,
+                                createStage8Steps(stage2, stage4),
+                                createStage8Parts(),
+                                createStage8Circuits(),
+                                createStage8CodeLines(),
+                                "red\nblue");
         }
 
         private static List<CodeReadingStepDefinition> createStage1Steps() {
@@ -2707,5 +2745,411 @@ public class CodeReadingLessonCatalog {
                                                 List.of("addメソッドとMainクラスのブロックを順番に閉じます。"),
                                                 "}\n}", List.of("add-close", "class-close"), List.of("}", "}"), List.of(),
                                                 "addメソッドとMainクラスを閉じる"));
+        }
+
+        private static List<CodeReadingStepDefinition> createStage8Steps(
+                        CodeReadingLessonDefinition stage2,
+                        CodeReadingLessonDefinition stage4) {
+                List<CodeReadingExplanationSection> variableName =
+                                sharedExplanation(stage2, "age-declaration");
+                List<CodeReadingExplanationSection> assignment =
+                                sharedExplanation(stage2, "assignment");
+                List<CodeReadingExplanationSection> stringType =
+                                sharedExplanation(stage4, "signal-string-type");
+                List<CodeReadingExplanationSection> carType = carTypeExplanation();
+                List<CodeReadingExplanationSection> referenceVariable = referenceVariableExplanation();
+                List<CodeReadingExplanationSection> instanceCreation = instanceCreationExplanation();
+                List<CodeReadingExplanationSection> fieldAccess = fieldAccessExplanation();
+                List<CodeReadingExplanationSection> colorLiteral = colorLiteralExplanation();
+                List<CodeReadingExplanationSection> instanceMethodCall = instanceMethodCallExplanation();
+                List<CodeReadingExplanationSection> carClassName = carClassNameExplanation();
+                List<CodeReadingExplanationSection> colorField = colorFieldExplanation();
+                List<CodeReadingExplanationSection> showColorMethod = showColorMethodExplanation();
+                List<CodeReadingExplanationSection> fieldValueUse = fieldValueUseExplanation();
+                return List.of(
+                                richStep("class-public", 1, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("class-keyword", 2, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("class-name", 3, "Main", "Main", "main-class-name", CLASS_NAME_CARD,
+                                                "クラス名", CLASS_NAME_EXPLANATION),
+                                richStep("class-open", 4, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("main-public", 5, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("main-static", 6, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("main-void", 7, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("main-name", 8, "main", "main", "program-entry", MAIN_CARD,
+                                                "メソッド名", MAIN_EXPLANATION),
+                                richStep("main-string-array", 9, "String[]", "String[]", "multiple-strings",
+                                                STRING_ARRAY_CARD, "引数の型", STRING_ARRAY_EXPLANATION),
+                                richStep("main-args", 10, "args", "args", "argument-variable", ARGS_CARD,
+                                                "引数名", ARGS_EXPLANATION),
+                                richStep("main-open", 11, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("car1-type", 12, "Car", "Car", "reference-type",
+                                                "Car型の参照を扱う", "参照型", carType),
+                                richStep("car1-name", 13, "car1", "car1", "reference-variable",
+                                                "1台目を参照する変数", "参照変数", referenceVariable),
+                                richStep("car1-assignment", 14, "=", "=", "assignment",
+                                                "右側の参照を左側に入れる", "代入演算子", assignment),
+                                richStep("car1-new", 15, "new", "new", "create-instance",
+                                                "新しいインスタンスを生成する", "クラスインスタンス生成式", instanceCreation),
+                                richStep("car1-constructor", 16, "Car()", "Car()", "constructor-call",
+                                                "Carクラスからオブジェクトを作る", "コンストラクタ呼び出し", instanceCreation),
+                                richStep("car1-semicolon", 17, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("car2-type", 18, "Car", "Car", "reference-type",
+                                                "Car型の参照を扱う", "参照型", carType),
+                                richStep("car2-name", 19, "car2", "car2", "reference-variable",
+                                                "2台目を参照する変数", "参照変数", referenceVariable),
+                                richStep("car2-assignment", 20, "=", "=", "assignment",
+                                                "右側の参照を左側に入れる", "代入演算子", assignment),
+                                richStep("car2-new", 21, "new", "new", "create-instance",
+                                                "別のインスタンスを生成する", "クラスインスタンス生成式", instanceCreation),
+                                richStep("car2-constructor", 22, "Car()", "Car()", "constructor-call",
+                                                "Carクラスから別のオブジェクトを作る", "コンストラクタ呼び出し", instanceCreation),
+                                richStep("car2-semicolon", 23, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("car1-field-owner", 24, "car1", "car1", "field-owner",
+                                                "1台目のオブジェクトを参照する", "参照変数", referenceVariable),
+                                richStep("car1-color-field", 25, "color", "color", "instance-field",
+                                                "1台目のcolorフィールド", "フィールドアクセス", fieldAccess),
+                                richStep("car1-color-assignment", 26, "=", "=", "assignment",
+                                                "redをフィールドに入れる", "代入演算子", assignment),
+                                richStep("red-literal", 27, "\"red\"", "\"red\"", "string-value",
+                                                "文字列red", "文字列リテラル", colorLiteral),
+                                richStep("car1-color-semicolon", 28, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("car2-field-owner", 29, "car2", "car2", "field-owner",
+                                                "2台目のオブジェクトを参照する", "参照変数", referenceVariable),
+                                richStep("car2-color-field", 30, "color", "color", "instance-field",
+                                                "2台目のcolorフィールド", "フィールドアクセス", fieldAccess),
+                                richStep("car2-color-assignment", 31, "=", "=", "assignment",
+                                                "blueをフィールドに入れる", "代入演算子", assignment),
+                                richStep("blue-literal", 32, "\"blue\"", "\"blue\"", "string-value",
+                                                "文字列blue", "文字列リテラル", colorLiteral),
+                                richStep("car2-color-semicolon", 33, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("car1-method-owner", 34, "car1", "car1", "method-owner",
+                                                "1台目のオブジェクトを参照する", "参照変数", referenceVariable),
+                                richStep("car1-show-color", 35, "showColor()", "showColor()", "instance-method-call",
+                                                "1台目の色を表示する", "インスタンスメソッド呼び出し", instanceMethodCall),
+                                richStep("car1-call-semicolon", 36, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("car2-method-owner", 37, "car2", "car2", "method-owner",
+                                                "2台目のオブジェクトを参照する", "参照変数", referenceVariable),
+                                richStep("car2-show-color", 38, "showColor()", "showColor()", "instance-method-call",
+                                                "2台目の色を表示する", "インスタンスメソッド呼び出し", instanceMethodCall),
+                                richStep("car2-call-semicolon", 39, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("main-close", 40, "}", "}", "close-method", "mainメソッドを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("main-class-close", 41, "}", "}", "close-class", "Mainクラスを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("car-class-keyword", 42, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("car-class-name", 43, "Car", "Car", "car-class-name",
+                                                "車を表すクラス名", "クラス名", carClassName),
+                                richStep("car-class-open", 44, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("color-string-type", 45, "String", "String", "string-type",
+                                                "文字列を扱うデータ型", "文字列型", stringType),
+                                richStep("color-field-name", 46, "color", "color", "instance-field",
+                                                "インスタンスごとに色を持つ", "フィールド", colorField),
+                                richStep("color-field-semicolon", 47, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("show-color-void", 48, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("show-color-name", 49, "showColor", "showColor", "instance-method",
+                                                "色を表示するメソッド", "インスタンスメソッド", showColorMethod),
+                                richStep("show-color-open", 50, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("print-command", 51, "System.out.println", "System.out.println",
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力メソッド", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("print-color", 52, "color", "color", "field-value",
+                                                "呼び出した車の色を使う", "フィールドの利用", fieldValueUse),
+                                richStep("print-semicolon", 53, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("show-color-close", 54, "}", "}", "close-method",
+                                                "showColorメソッドを閉じる", "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("car-class-close", 55, "}", "}", "close-class", "Carクラスを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION));
+        }
+
+        private static List<CodeReadingExplanationSection> carTypeExplanation() {
+                return List.of(
+                                textSection("参照型　reference type",
+                                                text("Carは、このあと定義するCarクラスを型として使っています。"),
+                                                text("Car型の変数には、Carクラスから生成したオブジェクトへの参照を保持できます。")),
+                                textSection("クラスと変数",
+                                                text("Carはオブジェクトの構造や動作を定義するクラスです。"),
+                                                text("car1やcar2はオブジェクトそのものではなく、生成したインスタンスを参照する変数です。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§4.3.1", "Objects",
+                                                                "クラスインスタンスがオブジェクトであり、参照値を通して扱われることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-4.html#jls-4.3.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> referenceVariableExplanation() {
+                return List.of(
+                                textSection("参照変数　reference variable",
+                                                text("car1とcar2は、Carクラスから生成したインスタンスへの参照を保持する変数です。"),
+                                                text("同じCarクラスから生成しても、2つの変数はそれぞれ別のインスタンスを参照します。")),
+                                textSection("言葉の区別",
+                                                text("car1そのものをインスタンスと呼ぶのではなく、car1はインスタンスを参照する変数です。")));
+        }
+
+        private static List<CodeReadingExplanationSection> instanceCreationExplanation() {
+                return List.of(
+                                textSection("クラスインスタンス生成式　class instance creation expression",
+                                                text("new Car()は、プログラム内に新しいCarのインスタンスを生成します。"),
+                                                text("現実の自動車を製造するのではなく、車を表すデータと動作を持つオブジェクトをメモリ上に作ります。")),
+                                textSection("2回のnew",
+                                                text("new Car()を2回実行するため、car1とcar2は互いに独立した2つのインスタンスを参照します。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.9", "Class Instance Creation Expressions",
+                                                                "newによるクラスインスタンスの生成とコンストラクタ呼び出しを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.9")));
+        }
+
+        private static List<CodeReadingExplanationSection> fieldAccessExplanation() {
+                return List.of(
+                                textSection("フィールドアクセス　field access",
+                                                text("car1.colorは、car1が参照するインスタンスのcolorフィールドを指定します。"),
+                                                text("car2.colorは別のインスタンスのcolorフィールドなので、互いに異なる値を保持できます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.11", "Field Access Expressions",
+                                                                "オブジェクトへの参照を使ってフィールドへアクセスする式を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.11")));
+        }
+
+        private static List<CodeReadingExplanationSection> colorLiteralExplanation() {
+                return List.of(
+                                textSection("文字列リテラル　string literal",
+                                                text("ダブルクォートで囲んだredとblueは、色を表すString型の値です。"),
+                                                text("redはcar1のcolorへ、blueはcar2のcolorへそれぞれ代入されます。")));
+        }
+
+        private static List<CodeReadingExplanationSection> instanceMethodCallExplanation() {
+                return List.of(
+                                textSection("インスタンスメソッド呼び出し　instance method invocation",
+                                                text("car1.showColor()は、car1が参照するインスタンスのshowColorメソッドを呼び出します。"),
+                                                text("car2.showColor()では、car2が参照する別のインスタンスを対象に同じメソッドを呼び出します。")),
+                                textSection("呼び出す対象",
+                                                text("showColor()の処理は同じでも、呼び出し対象が異なるため、それぞれのcolorの値redとblueが表示されます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.12", "Method Invocation Expressions",
+                                                                "対象となるオブジェクトを使ったメソッド呼び出しを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.12")));
+        }
+
+        private static List<CodeReadingExplanationSection> carClassNameExplanation() {
+                return List.of(
+                                textSection("クラス名　class name",
+                                                text("Carは、車を表すオブジェクトの構造と動作を定義するクラスの名前です。"),
+                                                text("このクラスには、色を保存するcolorフィールドと、色を表示するshowColorメソッドがあります。")));
+        }
+
+        private static List<CodeReadingExplanationSection> colorFieldExplanation() {
+                return List.of(
+                                textSection("インスタンスフィールド　instance field",
+                                                text("colorは、Carの各インスタンスがそれぞれ持つString型のフィールドです。"),
+                                                text("car1のcolorとcar2のcolorは別々に保存されるため、redとblueという異なる値を保持できます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§8.3.1.1", "static Fields",
+                                                                "staticでないフィールドがクラスの各インスタンスに作られることを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.3.1.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> showColorMethodExplanation() {
+                return List.of(
+                                textSection("インスタンスメソッド　instance method",
+                                                text("showColorはstaticが付いていないため、Carのインスタンスを対象に呼び出すメソッドです。"),
+                                                text("呼び出されたインスタンスが持つcolorフィールドの値を表示します。")));
+        }
+
+        private static List<CodeReadingExplanationSection> fieldValueUseExplanation() {
+                return List.of(
+                                textSection("フィールドの利用",
+                                                text("showColorメソッド内のcolorは、メソッドを呼び出した対象インスタンスのcolorフィールドを参照します。"),
+                                                text("car1.showColor()ではred、car2.showColor()ではblueがSystem.out.printlnへ渡されます。")));
+        }
+
+        private static List<CodeReadingCircuitDefinition> createStage8Circuits() {
+                return List.of(
+                                new CodeReadingCircuitDefinition("main-class", "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{")),
+                                new CodeReadingCircuitDefinition("main-method", "public static void main(String[] args) {",
+                                                List.of("main-public", "main-static", "main-void", "main-name",
+                                                                "main-string-array", "main-args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{")),
+                                new CodeReadingCircuitDefinition("car1-creation", "Car car1 = new Car();",
+                                                List.of("car1-type", "car1-name", "car1-assignment", "car1-new",
+                                                                "car1-constructor", "car1-semicolon"),
+                                                List.of("Car", "car1", "=", "new", "Car()", ";")),
+                                new CodeReadingCircuitDefinition("car2-creation", "Car car2 = new Car();",
+                                                List.of("car2-type", "car2-name", "car2-assignment", "car2-new",
+                                                                "car2-constructor", "car2-semicolon"),
+                                                List.of("Car", "car2", "=", "new", "Car()", ";")),
+                                new CodeReadingCircuitDefinition("car1-color", "car1.color = \"red\";",
+                                                List.of("car1-field-owner", "car1-color-field", "car1-color-assignment",
+                                                                "red-literal", "car1-color-semicolon"),
+                                                List.of("car1", "color", "=", "\"red\"", ";")),
+                                new CodeReadingCircuitDefinition("car2-color", "car2.color = \"blue\";",
+                                                List.of("car2-field-owner", "car2-color-field", "car2-color-assignment",
+                                                                "blue-literal", "car2-color-semicolon"),
+                                                List.of("car2", "color", "=", "\"blue\"", ";")),
+                                new CodeReadingCircuitDefinition("show-colors", "car1.showColor(); / car2.showColor();",
+                                                List.of("car1-method-owner", "car1-show-color", "car1-call-semicolon",
+                                                                "car2-method-owner", "car2-show-color", "car2-call-semicolon"),
+                                                List.of("car1", "showColor()", ";", "car2", "showColor()", ";")),
+                                new CodeReadingCircuitDefinition("main-closes", "mainメソッド終了 }　Mainクラス終了 }",
+                                                List.of("main-close", "main-class-close"),
+                                                List.of("mainメソッド終了 }", "Mainクラス終了 }")),
+                                new CodeReadingCircuitDefinition("car-class", "class Car {",
+                                                List.of("car-class-keyword", "car-class-name", "car-class-open"),
+                                                List.of("class", "Car", "{")),
+                                new CodeReadingCircuitDefinition("color-field", "String color;",
+                                                List.of("color-string-type", "color-field-name", "color-field-semicolon"),
+                                                List.of("String", "color", ";")),
+                                new CodeReadingCircuitDefinition("show-color-method", "void showColor() {",
+                                                List.of("show-color-void", "show-color-name", "show-color-open"),
+                                                List.of("void", "showColor", "{")),
+                                new CodeReadingCircuitDefinition("show-color-body", "System.out.println(color); と終了",
+                                                List.of("print-command", "print-color", "print-semicolon",
+                                                                "show-color-close", "car-class-close"),
+                                                List.of("System.out.println", "color", ";", "}", "}")));
+        }
+
+        private static Map<String, List<CodeReadingCodeLineDefinition>> createStage8CodeLines() {
+                return Map.ofEntries(
+                                Map.entry("part-1", List.of(line(
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"), "", ""))),
+                                Map.entry("part-2", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("main-public"), token("main-static"), token("main-void"),
+                                                                token("main-name"),
+                                                                new CodeReadingCodeTokenDefinition("main-string-array", "(", ""),
+                                                                new CodeReadingCodeTokenDefinition("main-args", "", ")"), token("main-open")),
+                                                "", "quiz-reading-code-line--part-2"))),
+                                Map.entry("part-3", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("car1-type"), token("car1-name"), token("car1-assignment"),
+                                                                token("car1-new"), token("car1-constructor"), token("car1-semicolon")),
+                                                "", ""))),
+                                Map.entry("part-4", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("car2-type"), token("car2-name"), token("car2-assignment"),
+                                                                token("car2-new"), token("car2-constructor"), token("car2-semicolon")),
+                                                "", ""))),
+                                Map.entry("part-5", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(new CodeReadingCodeTokenDefinition("car1-field-owner", "", "."),
+                                                                token("car1-color-field"), token("car1-color-assignment"),
+                                                                token("red-literal"), token("car1-color-semicolon")), "", ""))),
+                                Map.entry("part-6", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(new CodeReadingCodeTokenDefinition("car2-field-owner", "", "."),
+                                                                token("car2-color-field"), token("car2-color-assignment"),
+                                                                token("blue-literal"), token("car2-color-semicolon")), "", ""))),
+                                Map.entry("part-7", List.of(
+                                                new CodeReadingCodeLineDefinition(
+                                                                List.of(new CodeReadingCodeTokenDefinition("car1-method-owner", "", "."),
+                                                                                token("car1-show-color"), token("car1-call-semicolon")), "", ""),
+                                                new CodeReadingCodeLineDefinition(
+                                                                List.of(new CodeReadingCodeTokenDefinition("car2-method-owner", "", "."),
+                                                                                token("car2-show-color"), token("car2-call-semicolon")), "", ""))),
+                                Map.entry("part-8", List.of(line(List.of("main-close", "main-class-close"), "", ""))),
+                                Map.entry("part-9", List.of(line(
+                                                List.of("car-class-keyword", "car-class-name", "car-class-open"), "", ""))),
+                                Map.entry("part-10", List.of(line(
+                                                List.of("color-string-type", "color-field-name", "color-field-semicolon"), "", ""))),
+                                Map.entry("part-11", List.of(new CodeReadingCodeLineDefinition(
+                                                List.of(token("show-color-void"),
+                                                                new CodeReadingCodeTokenDefinition("show-color-name", "", "()"),
+                                                                token("show-color-open")), "", ""))),
+                                Map.entry("part-12", List.of(
+                                                new CodeReadingCodeLineDefinition(
+                                                                List.of(token("print-command"),
+                                                                                new CodeReadingCodeTokenDefinition("print-color", "(", ")"),
+                                                                                token("print-semicolon")), "", ""),
+                                                line(List.of("show-color-close", "car-class-close"), "", ""))));
+        }
+
+        private static List<CodeReadingPart> createStage8Parts() {
+                return List.of(
+                                new CodeReadingPart("part-1", 1, "Mainクラスを作る", List.of(), "public class Main {",
+                                                List.of("class-public", "class-keyword", "class-name", "class-open"),
+                                                List.of("public", "class", "Main", "{"), List.of(),
+                                                "Mainというクラスを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-2", 2, "mainメソッドを作る", List.of(),
+                                                "public static void main(String[] args) {",
+                                                List.of("main-public", "main-static", "main-void", "main-name",
+                                                                "main-string-array", "main-args", "main-open"),
+                                                List.of("public", "static", "void", "main", "String[]", "args", "{"),
+                                                List.of(), "mainメソッドを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-3", 3, "1台目の車を表すオブジェクトを作る",
+                                                List.of("new Car()でCarのインスタンスを生成し、その参照をcar1へ代入します。"),
+                                                "Car car1 = new Car();",
+                                                List.of("car1-type", "car1-name", "car1-assignment", "car1-new",
+                                                                "car1-constructor", "car1-semicolon"),
+                                                List.of("Car", "car1", "=", "new", "Car()", ";"), List.of(),
+                                                "新しいCarインスタンスを生成し、参照を変数car1へ代入する"),
+                                new CodeReadingPart("part-4", 4, "2台目の車を表すオブジェクトを作る",
+                                                List.of("もう一度new Car()を実行し、1台目とは別のインスタンスを生成します。"),
+                                                "Car car2 = new Car();",
+                                                List.of("car2-type", "car2-name", "car2-assignment", "car2-new",
+                                                                "car2-constructor", "car2-semicolon"),
+                                                List.of("Car", "car2", "=", "new", "Car()", ";"), List.of(),
+                                                "別のCarインスタンスを生成し、参照を変数car2へ代入する"),
+                                new CodeReadingPart("part-5", 5, "1台目の色を保存する",
+                                                List.of("car1が参照するインスタンスのcolorフィールドへredを代入します。"),
+                                                "car1.color = \"red\";",
+                                                List.of("car1-field-owner", "car1-color-field", "car1-color-assignment",
+                                                                "red-literal", "car1-color-semicolon"),
+                                                List.of("car1", "color", "=", "\"red\"", ";"), List.of(),
+                                                "1台目のインスタンスだけが持つcolorへredを保存する"),
+                                new CodeReadingPart("part-6", 6, "2台目の色を保存する",
+                                                List.of("car2が参照する別のインスタンスのcolorフィールドへblueを代入します。"),
+                                                "car2.color = \"blue\";",
+                                                List.of("car2-field-owner", "car2-color-field", "car2-color-assignment",
+                                                                "blue-literal", "car2-color-semicolon"),
+                                                List.of("car2", "color", "=", "\"blue\"", ";"), List.of(),
+                                                "2台目のインスタンスだけが持つcolorへblueを保存する"),
+                                new CodeReadingPart("part-7", 7, "2台の色を順番に表示する",
+                                                List.of("同じshowColorメソッドを、car1とcar2が参照する別々のインスタンスに対して呼び出します。"),
+                                                "car1.showColor();\ncar2.showColor();",
+                                                List.of("car1-method-owner", "car1-show-color", "car1-call-semicolon",
+                                                                "car2-method-owner", "car2-show-color", "car2-call-semicolon"),
+                                                List.of("car1", "showColor()", ";", "car2", "showColor()", ";"), List.of(),
+                                                "car1ではred、car2ではblueを表示するため同じメソッドを順番に呼ぶ"),
+                                new CodeReadingPart("part-8", 8, "Mainクラスを閉じる", List.of(), "}\n}",
+                                                List.of("main-close", "main-class-close"), List.of("}", "}"), List.of(),
+                                                "mainメソッドとMainクラスを閉じる"),
+                                new CodeReadingPart("part-9", 9, "Carクラスを作る",
+                                                List.of("車を表す各オブジェクトが持つデータと動作をCarクラスに定義します。"),
+                                                "class Car {",
+                                                List.of("car-class-keyword", "car-class-name", "car-class-open"),
+                                                List.of("class", "Car", "{"), List.of(),
+                                                "Carというクラスを宣言し、その中身を始める"),
+                                new CodeReadingPart("part-10", 10, "色を保存するフィールドを作る",
+                                                List.of("各Carインスタンスがそれぞれ文字列の色を保持できるようにします。"),
+                                                "String color;",
+                                                List.of("color-string-type", "color-field-name", "color-field-semicolon"),
+                                                List.of("String", "color", ";"), List.of(),
+                                                "各インスタンスが独立して持つString型のcolorフィールドを宣言する"),
+                                new CodeReadingPart("part-11", 11, "色を表示するメソッドを作る",
+                                                List.of("呼び出し対象のインスタンスが持つ色を表示するメソッドを定義します。"),
+                                                "void showColor() {",
+                                                List.of("show-color-void", "show-color-name", "show-color-open"),
+                                                List.of("void", "showColor", "{"), List.of(),
+                                                "戻り値を返さないインスタンスメソッドshowColorを宣言する"),
+                                new CodeReadingPart("part-12", 12, "呼び出した車の色を表示して閉じる",
+                                                List.of("呼び出し対象のインスタンスのcolorを表示し、メソッドとCarクラスを閉じます。"),
+                                                "System.out.println(color);\n}\n}",
+                                                List.of("print-command", "print-color", "print-semicolon",
+                                                                "show-color-close", "car-class-close"),
+                                                List.of("System.out.println", "color", ";", "}", "}"), List.of(),
+                                                "呼び出し対象のcolorを表示し、showColorメソッドとCarクラスを閉じる"));
         }
 }

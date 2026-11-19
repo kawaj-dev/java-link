@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='stage7-layout-1')}"
-          href="/css/style.css?v=stage7-layout-1">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='stage8-layout-1')}"
+          href="/css/style.css?v=stage8-layout-1">
     <script th:if="${phase.name() == 'LEARNING'}" defer
             th:src="@{/js/quiz-reading.js(v='stage3-reading-6')}"
             src="/js/quiz-reading.js?v=stage3-reading-6"></script>
@@ -58,6 +58,20 @@
                     <span th:if="${lessonId == 'conditional-program-reading' or lessonId == 'loop-program-reading' or lessonId == 'array-program-reading' or lessonId == 'method-program-reading'}">9</span>
                     <span th:if="${lessonId == 'conditional-program-reading' or lessonId == 'method-program-reading'}">10</span>
                     <span th:if="${lessonId == 'conditional-program-reading'}">11</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">7</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">8</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">9</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">10</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">11</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">12</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">13</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">14</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">15</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">16</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">17</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">18</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">19</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">20</span>
                 </div>
                 <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId == 'hello-program-reading'}"><code>public class Main {
     public static void main(String[] args) {
@@ -345,6 +359,20 @@
                     <span th:if="${lessonId == 'conditional-program-reading' or lessonId == 'loop-program-reading' or lessonId == 'array-program-reading' or lessonId == 'method-program-reading'}">9</span>
                     <span th:if="${lessonId == 'conditional-program-reading' or lessonId == 'method-program-reading'}">10</span>
                     <span th:if="${lessonId == 'conditional-program-reading'}">11</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">7</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">8</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">9</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">10</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">11</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">12</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">13</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">14</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">15</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">16</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">17</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">18</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">19</span>
+                    <span th:if="${lessonId == 'car-instance-reading'}">20</span>
                 </div>
                 <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId == 'hello-program-reading'}"><code>public class Main {
     public static void main(String[] args) {

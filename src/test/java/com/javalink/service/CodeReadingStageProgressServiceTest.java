@@ -157,6 +157,23 @@ class CodeReadingStageProgressServiceTest {
     }
 
     @Test
+    void Stage8も共通のStep数から進捗率を計算する() {
+        Lesson lesson = lessonCatalog.getLesson(
+                CodeReadingLessonCatalog.STAGE8_LESSON_ID
+        );
+        LessonProgress progress = initialProgress(lesson);
+        lesson.steps().subList(0, 22)
+                .forEach(step -> progress.completeStep(step.id()));
+        when(lessonProgressService.findStoredProgress(session, lesson.id()))
+                .thenReturn(Optional.of(progress));
+
+        StageProgress result = service.getStageProgresses(session).get(lesson.id());
+
+        assertEquals(StageLearningStatus.IN_PROGRESS, result.status());
+        assertEquals(40, result.percentage());
+    }
+
+    @Test
     void 全Step完了でもStage未完了なら学習中100パーセントになる() {
         Lesson lesson = lessonCatalog.getLesson(
                 CodeReadingLessonCatalog.STAGE1_LESSON_ID
