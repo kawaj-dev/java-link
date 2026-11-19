@@ -31,7 +31,9 @@ public class CodeReadingIndexController {
             CodeReadingLessonCatalog.STAGE6_LESSON_ID,
             "配列に複数の値をまとめ、for文を使って各要素を順番に表示するコードを学びます。",
             CodeReadingLessonCatalog.STAGE7_LESSON_ID,
-            "メソッドに値を渡して計算し、戻り値を受け取って表示するコードを学びます。"
+            "メソッドに値を渡して計算し、戻り値を受け取って表示するコードを学びます。",
+            CodeReadingLessonCatalog.STAGE8_LESSON_ID,
+            "同じクラスから2つの独立したインスタンスを作り、フィールドとメソッドを使うコードを学びます。"
     );
 
     private final CodeReadingLessonCatalog lessonCatalog;

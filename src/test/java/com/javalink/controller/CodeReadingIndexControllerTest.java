@@ -45,12 +45,13 @@ class CodeReadingIndexControllerTest {
                         "conditional-program-reading", notStarted(),
                         "loop-program-reading", notStarted(),
                         "array-program-reading", notStarted(),
-                        "method-program-reading", notStarted()
+                        "method-program-reading", notStarted(),
+                        "car-instance-reading", notStarted()
                 ));
     }
 
     @Test
-    void 目次にStage1から7を教材定義の順番で表示する() throws Exception {
+    void 目次にStage1から8を教材定義の順番で表示する() throws Exception {
         mockMvc.perform(get("/quiz/stages"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("code-reading-index"))
@@ -96,6 +97,12 @@ class CodeReadingIndexControllerTest {
                                 "Stage 7",
                                 "メソッドを使って計算結果を表示しよう",
                                 "メソッドに値を渡して計算し、戻り値を受け取って表示するコードを学びます。",
+                                "未学習", "is-not-started", 0),
+                        new CodeReadingIndexController.StageIndexItem(
+                                "car-instance-reading",
+                                "Stage 8",
+                                "クラスから2台の車を作ってみよう",
+                                "同じクラスから2つの独立したインスタンスを作り、フィールドとメソッドを使うコードを学びます。",
                                 "未学習", "is-not-started", 0)
                 )))
                 .andExpect(content().string(containsString("コードを左から読む")))
@@ -107,7 +114,7 @@ class CodeReadingIndexControllerTest {
         mockMvc.perform(get("/quiz/stages"))
                 .andExpect(status().isOk())
                 .andExpect(result -> assertEquals(
-                        7,
+                        8,
                         countOccurrences(
                                 result.getResponse().getContentAsString(),
                                 "class=\"code-reading-stage-card "
@@ -126,7 +133,9 @@ class CodeReadingIndexControllerTest {
                 .andExpect(content().string(containsString(
                         "href=\"/quiz?lessonId=array-program-reading\"")))
                 .andExpect(content().string(containsString(
-                        "href=\"/quiz?lessonId=method-program-reading\"")));
+                        "href=\"/quiz?lessonId=method-program-reading\"")))
+                .andExpect(content().string(containsString(
+                        "href=\"/quiz?lessonId=car-instance-reading\"")));
     }
 
     @Test
@@ -141,7 +150,8 @@ class CodeReadingIndexControllerTest {
                         "conditional-program-reading", notStarted(),
                         "loop-program-reading", notStarted(),
                         "array-program-reading", notStarted(),
-                        "method-program-reading", notStarted()
+                        "method-program-reading", notStarted(),
+                        "car-instance-reading", notStarted()
                 ));
 
         mockMvc.perform(get("/quiz/stages"))
