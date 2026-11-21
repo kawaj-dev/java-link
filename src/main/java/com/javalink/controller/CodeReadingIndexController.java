@@ -33,7 +33,9 @@ public class CodeReadingIndexController {
             CodeReadingLessonCatalog.STAGE7_LESSON_ID,
             "メソッドに値を渡して計算し、戻り値を受け取って表示するコードを学びます。",
             CodeReadingLessonCatalog.STAGE8_LESSON_ID,
-            "同じクラスから2つの独立したインスタンスを作り、フィールドとメソッドを使うコードを学びます。"
+            "同じクラスから2つの独立したインスタンスを作り、フィールドとメソッドを使うコードを学びます。",
+            CodeReadingLessonCatalog.STAGE9_LESSON_ID,
+            "コンストラクタへ色を渡してインスタンスを初期化し、thisでフィールドを指定するコードを学びます。"
     );
 
     private final CodeReadingLessonCatalog lessonCatalog;

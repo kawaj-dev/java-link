@@ -20,6 +20,87 @@ class CodeReadingLessonCatalogTest {
             new CodeReadingLessonCatalog();
 
     @Test
+    void Stage9は12Part57Stepとコンストラクタのコードと実行結果を持つ() {
+        var definition = catalog.getDefinition(
+                CodeReadingLessonCatalog.STAGE9_LESSON_ID
+        );
+
+        assertEquals("Stage 9", definition.stageName());
+        assertEquals("コンストラクタを使って車の色を設定しよう", definition.learningGoal());
+        assertEquals(12, definition.parts().size());
+        assertEquals(57, definition.steps().size());
+        assertEquals(java.util.List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12),
+                definition.parts().stream().map(part -> part.order()).toList());
+        assertEquals(definition.steps().size(), definition.steps().stream()
+                .map(step -> step.id()).distinct().count());
+        assertTrue(definition.parts().stream()
+                .allMatch(part -> part.stepIds().size() <= 7));
+        assertEquals("Car car1 = new Car(\"red\");", definition.parts().get(2).targetCode());
+        assertEquals("Car(String color) {", definition.parts().get(8).targetCode());
+        assertEquals("this.color = color;", definition.parts().get(9).targetCode());
+        assertEquals("red\nblue", definition.consoleOutput());
+        assertEquals("""
+                public class Main {
+                    public static void main(String[] args) {
+                        Car car1 = new Car("red");
+                        Car car2 = new Car("blue");
+
+                        car1.showColor();
+                        car2.showColor();
+                    }
+                }
+
+                class Car {
+                    String color;
+
+                    Car(String color) {
+                        this.color = color;
+                    }
+
+                    void showColor() {
+                        System.out.println(color);
+                    }
+                }
+                """.strip(), definition.completedCode().strip());
+    }
+
+    @Test
+    void Stage9はコンストラクタとthisと仮引数を区別して説明する() {
+        var definition = catalog.getDefinition(
+                CodeReadingLessonCatalog.STAGE9_LESSON_ID
+        );
+
+        assertTrue(allExplanationText(definition, "car1-constructor")
+                .contains("Car(String color)コンストラクタ"));
+        assertTrue(allExplanationText(definition, "constructor-name")
+                .contains("戻り値の型を宣言しません"));
+        assertTrue(allExplanationText(definition, "this-keyword")
+                .contains("現在コンストラクタで初期化しているインスタンス"));
+        assertTrue(allExplanationText(definition, "this-color-field")
+                .contains("現在初期化しているインスタンスが持つcolorフィールド"));
+        assertTrue(allExplanationText(definition, "parameter-color")
+                .contains("右辺のcolorは、コンストラクタが受け取った仮引数"));
+    }
+
+    @Test
+    void Stage9は基礎構文とStage8のクラス関連Explanationを再利用する() {
+        var stage1 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE1_LESSON_ID);
+        var stage8 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE8_LESSON_ID);
+        var stage9 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE9_LESSON_ID);
+
+        assertSame(stage1.getStep("class-public").explanationSections(),
+                stage9.getStep("class-public").explanationSections());
+        assertSame(stage8.getStep("car1-type").explanationSections(),
+                stage9.getStep("car1-type").explanationSections());
+        assertSame(stage8.getStep("car1-name").explanationSections(),
+                stage9.getStep("car1-name").explanationSections());
+        assertSame(stage8.getStep("car1-new").explanationSections(),
+                stage9.getStep("car1-new").explanationSections());
+        assertSame(stage8.getStep("show-color-name").explanationSections(),
+                stage9.getStep("show-color-name").explanationSections());
+    }
+
+    @Test
     void Stage8は12Part55Stepと車のコードと実行結果を持つ() {
         var definition = catalog.getDefinition(
                 CodeReadingLessonCatalog.STAGE8_LESSON_ID
@@ -449,7 +530,7 @@ class CodeReadingLessonCatalogTest {
     }
 
     @Test
-    void Stage3からStage8まで順に遷移しStage8の次は存在しない() {
+    void Stage3からStage9まで順に遷移しStage9の次は存在しない() {
         assertEquals(CodeReadingLessonCatalog.STAGE4_LESSON_ID,
                 catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE3_LESSON_ID)
                         .orElseThrow().lessonId());
@@ -465,9 +546,10 @@ class CodeReadingLessonCatalogTest {
         assertEquals(CodeReadingLessonCatalog.STAGE8_LESSON_ID,
                 catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE7_LESSON_ID)
                         .orElseThrow().lessonId());
-        assertTrue(catalog.getNextDefinition(
-                CodeReadingLessonCatalog.STAGE8_LESSON_ID
-        ).isEmpty());
+        assertEquals(CodeReadingLessonCatalog.STAGE9_LESSON_ID,
+                catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE8_LESSON_ID)
+                        .orElseThrow().lessonId());
+        assertTrue(catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE9_LESSON_ID).isEmpty());
     }
 
     @Test
