@@ -7530,6 +7530,7 @@ body:has(.quiz-focus-program[data-lesson-id="operator-program-reading"]) .quiz-i
     font-size: clamp(1.15rem, 2.4vw, 1.35rem);
     font-weight: 700;
     line-height: 1.6;
+    white-space: pre-line;
 }
 
 .quiz-summary-run-complete {

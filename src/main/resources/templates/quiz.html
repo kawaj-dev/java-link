@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='stage8-layout-1')}"
-          href="/css/style.css?v=stage8-layout-1">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='terminal-output-lines-1')}"
+          href="/css/style.css?v=terminal-output-lines-1">
     <script th:if="${phase.name() == 'LEARNING'}" defer
             th:src="@{/js/quiz-reading.js(v='stage3-reading-6')}"
             src="/js/quiz-reading.js?v=stage3-reading-6"></script>
@@ -72,6 +72,10 @@
                     <span th:if="${lessonId == 'car-instance-reading'}">18</span>
                     <span th:if="${lessonId == 'car-instance-reading'}">19</span>
                     <span th:if="${lessonId == 'car-instance-reading'}">20</span>
+                    <th:block th:if="${lessonId == 'constructor-program-reading'}">
+                        <span th:each="lineNumber : ${#numbers.sequence(7, 21)}"
+                              th:text="${lineNumber}">7</span>
+                    </th:block>
                 </div>
                 <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId == 'hello-program-reading'}"><code>public class Main {
     public static void main(String[] args) {
@@ -373,6 +377,10 @@
                     <span th:if="${lessonId == 'car-instance-reading'}">18</span>
                     <span th:if="${lessonId == 'car-instance-reading'}">19</span>
                     <span th:if="${lessonId == 'car-instance-reading'}">20</span>
+                    <th:block th:if="${lessonId == 'constructor-program-reading'}">
+                        <span th:each="lineNumber : ${#numbers.sequence(7, 21)}"
+                              th:text="${lineNumber}">7</span>
+                    </th:block>
                 </div>
                 <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId == 'hello-program-reading'}"><code>public class Main {
     public static void main(String[] args) {

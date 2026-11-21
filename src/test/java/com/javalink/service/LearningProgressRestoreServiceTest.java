@@ -606,6 +606,47 @@ class LearningProgressRestoreServiceTest {
     }
 
     @Test
+    void Stage9の詳細進捗はコンストラクタの完了Stepと現在位置を復元する() {
+        String lessonId = CodeReadingLessonCatalog.STAGE9_LESSON_ID;
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("this-color-field", false);
+        Set<String> completedStepIds = Set.of(
+                "class-public", "class-keyword", "class-name", "class-open",
+                "main-public", "main-static", "main-void", "main-name",
+                "main-string-array", "main-args", "main-open",
+                "car1-type", "car1-name", "car1-assignment", "car1-new",
+                "car1-constructor", "car1-argument", "car1-semicolon",
+                "car2-type", "car2-name", "car2-assignment", "car2-new",
+                "car2-constructor", "car2-argument", "car2-semicolon",
+                "car1-method-owner", "car1-show-color", "car1-call-semicolon",
+                "car2-method-owner", "car2-show-color", "car2-call-semicolon",
+                "main-close", "main-class-close", "car-class-keyword",
+                "car-class-name", "car-class-open", "color-string-type",
+                "color-field-name", "color-field-semicolon", "constructor-name",
+                "constructor-parameter-type", "constructor-parameter-name",
+                "constructor-open", "this-keyword"
+        );
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+        when(learningProgressService.findProgressSnapshot(userAccount, lessonId))
+                .thenReturn(Optional.of(new LearningProgressService.ProgressSnapshot(
+                        storedProgress,
+                        completedStepIds,
+                        true
+                )));
+        when(lessonService.getLesson(lessonId))
+                .thenReturn(new CodeReadingLessonCatalog().getLesson(lessonId));
+
+        LessonProgress restored = restoreService.restoreIfAuthenticated(session, lessonId).orElseThrow();
+
+        assertEquals("this-color-field", restored.getCurrentStepId());
+        assertEquals(completedStepIds, restored.getCompletedStepIds());
+        assertFalse(restored.isStepCompleted("this-color-field"));
+        assertFalse(restored.isStepCompleted("parameter-color"));
+        assertFalse(restored.isCompleted());
+    }
+
+    @Test
     void ログインユーザーの複数Lessonを一括スナップショットから復元する() {
         String secondLessonId = "stage2";
         UserAccount userAccount = mock(UserAccount.class);

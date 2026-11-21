@@ -33,9 +33,26 @@ class QuizSummaryRunScriptTest {
         assertTrue(script.contains("reducedMotion ? 200 : 600"));
     }
 
+    @Test
+    void 複数行の実行結果は改行を維持して表示する() throws IOException {
+        String style = readStyle();
+
+        assertTrue(style.contains(".quiz-summary-terminal-primary"));
+        assertTrue(style.contains("white-space: pre-line"));
+    }
+
     private String readScript() throws IOException {
         try (InputStream stream = getClass().getResourceAsStream(
                 "/static/js/quiz-summary-run.js"
+        )) {
+            assertNotNull(stream);
+            return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
+        }
+    }
+
+    private String readStyle() throws IOException {
+        try (InputStream stream = getClass().getResourceAsStream(
+                "/static/css/style.css"
         )) {
             assertNotNull(stream);
             return new String(stream.readAllBytes(), StandardCharsets.UTF_8);
