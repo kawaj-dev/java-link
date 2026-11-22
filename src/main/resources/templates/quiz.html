@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='terminal-output-lines-1')}"
-          href="/css/style.css?v=terminal-output-lines-1">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='stage9-intro-part-jump-3')}"
+          href="/css/style.css?v=stage9-intro-part-jump-3">
     <script th:if="${phase.name() == 'LEARNING'}" defer
             th:src="@{/js/quiz-reading.js(v='stage3-reading-6')}"
             src="/js/quiz-reading.js?v=stage3-reading-6"></script>
@@ -50,7 +50,8 @@
                 </span>
             </div>
             <div class="quiz-ide-editor">
-                <div class="quiz-ide-line-numbers" aria-hidden="true">
+                <div class="quiz-ide-line-numbers" aria-hidden="true"
+                     th:if="${lessonId != 'constructor-program-reading'}">
                     <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span
                         th:if="${lessonId != 'hello-program-reading'}">6</span>
                     <span th:if="${lessonId == 'operator-program-reading' or lessonId == 'conditional-program-reading' or lessonId == 'loop-program-reading' or lessonId == 'array-program-reading' or lessonId == 'method-program-reading'}">7</span>
@@ -72,17 +73,35 @@
                     <span th:if="${lessonId == 'car-instance-reading'}">18</span>
                     <span th:if="${lessonId == 'car-instance-reading'}">19</span>
                     <span th:if="${lessonId == 'car-instance-reading'}">20</span>
-                    <th:block th:if="${lessonId == 'constructor-program-reading'}">
-                        <span th:each="lineNumber : ${#numbers.sequence(7, 21)}"
-                              th:text="${lineNumber}">7</span>
-                    </th:block>
                 </div>
                 <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId == 'hello-program-reading'}"><code>public class Main {
     public static void main(String[] args) {
         System.out.println("Hello");
     }
 }</code></pre>
-                <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId != 'hello-program-reading'}"><code th:text="${codeReadingPage.completedCode}"></code></pre>
+                <pre class="quiz-full-code quiz-intro-code"
+                     th:if="${lessonId != 'hello-program-reading' and lessonId != 'constructor-program-reading'}"><code th:text="${codeReadingPage.completedCode}"></code></pre>
+                <div class="quiz-intro-code-lines"
+                     th:if="${lessonId == 'constructor-program-reading'}"
+                     aria-label="完成コード。各コード行から対応するPartへ移動できます。">
+                    <div class="quiz-intro-code-row"
+                         th:each="line : ${introCodeLines}"
+                         th:classappend="${line.clickable()} ? ' quiz-intro-code-row--interactive'">
+                        <span class="quiz-intro-code-line-number" aria-hidden="true"
+                              th:text="${line.lineNumber()}">1</span>
+                        <form class="quiz-intro-code-line-form"
+                              th:if="${line.clickable()}"
+                              th:action="@{/quiz/part/jump}" method="post">
+                            <input type="hidden" name="lessonId" th:value="${lessonId}">
+                            <input type="hidden" name="partId" th:value="${line.partId()}">
+                            <button class="quiz-intro-code-line-button" type="submit"
+                                    th:attr="aria-label=|${line.lineNumber()}行目から学習する|"><code
+                                    th:text="${line.code()}">public class Main {</code></button>
+                        </form>
+                        <code class="quiz-intro-code-blank" aria-hidden="true"
+                              th:unless="${line.clickable()}">&nbsp;</code>
+                    </div>
+                </div>
             </div>
         </div>
         <form class="quiz-intro-start" th:action="@{/quiz/start(lessonId=${lessonId})}" method="post">

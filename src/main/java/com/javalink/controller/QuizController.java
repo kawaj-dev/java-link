@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * 「コードを左から読む」画面の入力と画面遷移を担当します。
@@ -38,6 +39,15 @@ public class QuizController {
     public static final String SHUFFLED_OPTIONS_ATTRIBUTE =
             "shuffledOptions";
     public static final String READING_ITEMS_ATTRIBUTE = "readingItems";
+    public static final String INTRO_CODE_LINES_ATTRIBUTE = "introCodeLines";
+
+    private static final List<String> STAGE9_INTRO_PART_IDS = List.of(
+            "part-1", "part-2", "part-3", "part-4", "",
+            "part-5", "part-5", "part-6", "part-6", "",
+            "part-7", "part-8", "", "part-9", "part-10",
+            "part-11", "", "part-11", "part-12", "part-12",
+            "part-12"
+    );
 
     private final CodeReadingLessonCatalog lessonCatalog;
     private final CodeReadingCourseService courseService;
@@ -78,6 +88,23 @@ public class QuizController {
     public String start(@RequestParam(name = "lessonId", required = false) String lessonId, HttpSession session) {
         lessonId = resolveLessonId(lessonId);
         courseService.startLearning(session, lessonId);
+        return redirectToQuiz(lessonId);
+    }
+
+    /** Stage 9の導入コードから、選んだ行に対応するPartへ移動します。 */
+    @PostMapping("/quiz/part/jump")
+    public String jumpToPart(
+            @RequestParam("lessonId") String lessonId,
+            @RequestParam("partId") String partId,
+            HttpSession session
+    ) {
+        lessonId = resolveLessonId(lessonId);
+        if (!CodeReadingLessonCatalog.STAGE9_LESSON_ID.equals(lessonId)) {
+            throw new IllegalArgumentException(
+                    "INTROのコード行ジャンプはStage 9だけで利用できます。"
+            );
+        }
+        courseService.jumpToPart(session, lessonId, partId);
         return redirectToQuiz(lessonId);
     }
 
@@ -203,6 +230,14 @@ public class QuizController {
         );
         model.addAttribute("phase", page.phase());
 
+        if (page.phase() == CodeReadingPhase.INTRO
+                && CodeReadingLessonCatalog.STAGE9_LESSON_ID.equals(lessonId)) {
+            model.addAttribute(
+                    INTRO_CODE_LINES_ATTRIBUTE,
+                    createStage9IntroCodeLines(page.completedCode())
+            );
+        }
+
         if (page.phase() == CodeReadingPhase.LEARNING) {
             addLearningModel(model, session, page, lessonId);
         }
@@ -225,6 +260,32 @@ public class QuizController {
                     "summaryNextStageName",
                     nextStage.map(definition -> definition.stageName()).orElse(null)
             );
+        }
+    }
+
+    private List<IntroCodeLine> createStage9IntroCodeLines(String completedCode) {
+        List<String> codeLines = completedCode.lines().toList();
+        if (codeLines.size() != STAGE9_INTRO_PART_IDS.size()) {
+            throw new IllegalStateException(
+                    "Stage 9の完成コードとINTRO行マッピングの行数が一致しません。"
+            );
+        }
+        return IntStream.range(0, codeLines.size())
+                .mapToObj(index -> new IntroCodeLine(
+                        index + 1,
+                        codeLines.get(index),
+                        STAGE9_INTRO_PART_IDS.get(index)
+                ))
+                .toList();
+    }
+
+    public record IntroCodeLine(
+            int lineNumber,
+            String code,
+            String partId
+    ) {
+        public boolean clickable() {
+            return !partId.isBlank();
         }
     }
 

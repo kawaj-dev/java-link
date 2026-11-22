@@ -45,12 +45,7 @@ public class CodeReadingCourseService {
             HttpSession session,
             String lessonId
     ) {
-        LessonProgress progress = lessonProgressService
-                .findStoredProgress(session, lessonId)
-                .orElseGet(() -> restoreOrCreateInitialProgress(
-                        session,
-                        lessonId
-                ));
+        LessonProgress progress = getOrRestoreProgress(session, lessonId);
 
         if (progress.isCompleted()) {
             flowService.showSummary(session, lessonId);
@@ -58,6 +53,38 @@ public class CodeReadingCourseService {
             flowService.startLearning(session, lessonId);
         }
         return progress;
+    }
+
+    /** INTROのコード行から、指定Partの先頭Stepへ移動します。 */
+    public LessonProgress jumpToPart(
+            HttpSession session,
+            String lessonId,
+            String partId
+    ) {
+        CodeReadingPart part = lessonCatalog.getDefinition(lessonId).parts().stream()
+                .filter(candidate -> candidate.id().equals(partId))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Partが見つかりません。lessonId: " + lessonId + ", partId: " + partId
+                ));
+        LessonProgress progress = getOrRestoreProgress(session, lessonId);
+        progress.setCurrentStepId(part.stepIds().get(0));
+        progress.setSelectedOptionId("");
+        progress.setAnswered(false);
+        progress.setCorrect(false);
+        lessonProgressService.saveProgress(session, lessonId, progress);
+        flowService.startLearning(session, lessonId);
+        learningProgressSyncService.saveIfAuthenticated(session, progress);
+        return progress;
+    }
+
+    private LessonProgress getOrRestoreProgress(
+            HttpSession session,
+            String lessonId
+    ) {
+        return lessonProgressService
+                .findStoredProgress(session, lessonId)
+                .orElseGet(() -> restoreOrCreateInitialProgress(session, lessonId));
     }
 
     private LessonProgress restoreOrCreateInitialProgress(
