@@ -418,6 +418,91 @@ class QuizControllerTest {
     }
 
     @Test
+    void Stage9導入コードは空白行を除いてPartジャンプ操作を表示する() throws Exception {
+        var result = mockMvc.perform(get("/quiz")
+                        .param(
+                                "lessonId",
+                                CodeReadingLessonCatalog.STAGE9_LESSON_ID
+                        ))
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(
+                        "action=\"/quiz/part/jump\""
+                )))
+                .andExpect(content().string(containsString(
+                        "aria-label=\"1行目から学習する\""
+                )))
+                .andExpect(content().string(containsString(
+                        "aria-label=\"21行目から学習する\""
+                )))
+                .andExpect(content().string(not(containsString(
+                        "aria-label=\"5行目から学習する\""
+                ))))
+                .andReturn();
+
+        @SuppressWarnings("unchecked")
+        var lines = (java.util.List<QuizController.IntroCodeLine>) result
+                .getModelAndView()
+                .getModel()
+                .get(QuizController.INTRO_CODE_LINES_ATTRIBUTE);
+        assertEquals(
+                java.util.List.of(
+                        "part-1", "part-2", "part-3", "part-4", "",
+                        "part-5", "part-5", "part-6", "part-6", "",
+                        "part-7", "part-8", "", "part-9", "part-10",
+                        "part-11", "", "part-11", "part-12", "part-12",
+                        "part-12"
+                ),
+                lines.stream().map(QuizController.IntroCodeLine::partId).toList()
+        );
+        assertEquals(1, lines.get(0).lineNumber());
+        assertEquals("public class Main {", lines.get(0).code());
+        assertEquals(21, lines.get(20).lineNumber());
+        assertEquals("}", lines.get(20).code());
+        assertEquals("", lines.get(4).code());
+        assertEquals("    public static void main(String[] args) {", lines.get(1).code());
+    }
+
+    @Test
+    void Stage9導入コードから未学習Partへ移動しても既存の完了状態を維持する() throws Exception {
+        MockHttpSession session = new MockHttpSession();
+        String lessonId = CodeReadingLessonCatalog.STAGE9_LESSON_ID;
+        LessonProgress progress = progressService.resetProgress(session, lessonId);
+        progress.completeStep("class-public");
+        progress.setSelectedOptionId("answered-option");
+        progress.setAnswered(true);
+        progress.setCorrect(true);
+        progressService.saveProgress(session, lessonId, progress);
+
+        mockMvc.perform(post("/quiz/part/jump")
+                        .param("lessonId", lessonId)
+                        .param("partId", "part-10")
+                        .session(session))
+                .andExpect(status().is3xxRedirection())
+                .andExpect(redirectedUrl("/quiz?lessonId=" + lessonId));
+
+        LessonProgress jumped = progressService.getProgress(session, lessonId);
+        assertEquals("this-keyword", jumped.getCurrentStepId());
+        assertTrue(jumped.isStepCompleted("class-public"));
+        assertFalse(jumped.isStepCompleted("this-keyword"));
+        assertFalse(jumped.isAnswered());
+        assertFalse(jumped.isCorrect());
+        assertEquals("", jumped.getSelectedOptionId());
+        assertEquals(
+                CodeReadingPhase.LEARNING,
+                flowService.getState(session, lessonId).phase()
+        );
+    }
+
+    @Test
+    void Stage1導入画面にはコード行ジャンプを追加しない() throws Exception {
+        mockMvc.perform(get("/quiz"))
+                .andExpect(status().isOk())
+                .andExpect(content().string(not(containsString(
+                        "/quiz/part/jump"
+                ))));
+    }
+
+    @Test
     void Stage4の不正解ではStepと電球を完了扱いにしない() {
         MockHttpSession session = new MockHttpSession();
         String lessonId = CodeReadingLessonCatalog.STAGE4_LESSON_ID;

@@ -81,7 +81,7 @@ class QuizReadingScriptTest {
         assertTrue(template.contains("quiz-reading-access-row--header"));
         assertTrue(template.contains("(section.tableHeader and entryStat.first) or entry.tableHeader"));
         assertTrue(script.contains("entry.tableHeader === true"));
-        assertTrue(template.contains("style.css(v='terminal-output-lines-1')"));
+        assertTrue(template.contains("style.css(v='stage9-intro-part-jump-3')"));
         assertTrue(template.contains("quiz-reading.js(v='stage3-reading-6')"));
         assertFalse(template.contains("continuous-circuit-1"));
     }
@@ -100,6 +100,24 @@ class QuizReadingScriptTest {
                 + "    .quiz-reading-learning-aid[data-section-title=\"代入と初期化の違い\"]"));
         assertTrue(style.contains(".quiz-focus-learning\n"
                 + "    .quiz-reading-learning-aid[data-section-title=\"変数を「宣言する」と「使う」の違い\"]"));
+    }
+
+    @Test
+    void Stage9導入コード行はボタン既定表示を解除して一行分の高さを維持する() throws IOException {
+        String style = readStyle();
+        String template = readTemplate();
+        String normalizedTemplate = template.replace("\r\n", "\n");
+
+        assertTrue(template.contains("quiz-intro-code-line-button"));
+        assertTrue(template.contains("th:unless=\"${line.clickable()}\""));
+        assertTrue(normalizedTemplate.contains("学習する|\"><code\n"
+                + "                                    th:text=\"${line.code()}\""));
+        assertTrue(style.contains(".quiz-intro-code-line-button {\n"
+                + "    all: unset;"));
+        assertTrue(style.contains("height: 2.05em;"));
+        assertTrue(style.contains("text-align: left;"));
+        assertTrue(style.contains("white-space: normal;"));
+        assertTrue(style.contains("white-space: pre;"));
     }
 
     private String readScript() throws IOException {
