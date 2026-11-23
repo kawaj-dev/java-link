@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 /**
@@ -41,12 +42,45 @@ public class QuizController {
     public static final String READING_ITEMS_ATTRIBUTE = "readingItems";
     public static final String INTRO_CODE_LINES_ATTRIBUTE = "introCodeLines";
 
-    private static final List<String> STAGE9_INTRO_PART_IDS = List.of(
-            "part-1", "part-2", "part-3", "part-4", "",
-            "part-5", "part-5", "part-6", "part-6", "",
-            "part-7", "part-8", "", "part-9", "part-10",
-            "part-11", "", "part-11", "part-12", "part-12",
-            "part-12"
+    private static final Map<String, List<String>> INTRO_PART_IDS_BY_LESSON = Map.ofEntries(
+            Map.entry(CodeReadingLessonCatalog.STAGE1_LESSON_ID, List.of(
+                    "part-1", "part-2", "part-3", "part-4", "part-4"
+            )),
+            Map.entry(CodeReadingLessonCatalog.STAGE2_LESSON_ID, List.of(
+                    "part-1", "part-2", "part-3", "part-4", "part-5", "part-5"
+            )),
+            Map.entry(CodeReadingLessonCatalog.STAGE3_LESSON_ID, List.of(
+                    "part-1", "part-2", "part-3", "part-4", "part-5", "part-6",
+                    "part-7", "part-7"
+            )),
+            Map.entry(CodeReadingLessonCatalog.STAGE4_LESSON_ID, List.of(
+                    "part-1", "part-2", "part-3", "", "part-4", "part-5",
+                    "part-6", "part-7", "part-8", "part-9", "part-9"
+            )),
+            Map.entry(CodeReadingLessonCatalog.STAGE5_LESSON_ID, List.of(
+                    "part-1", "part-2", "", "part-3", "part-5", "part-6", "",
+                    "part-6", "part-6"
+            )),
+            Map.entry(CodeReadingLessonCatalog.STAGE6_LESSON_ID, List.of(
+                    "part-1", "part-2", "part-3", "", "part-4", "part-6",
+                    "part-7", "part-7", "part-7"
+            )),
+            Map.entry(CodeReadingLessonCatalog.STAGE7_LESSON_ID, List.of(
+                    "part-1", "part-2", "part-3", "part-4", "part-5", "",
+                    "part-6", "part-8", "part-9", "part-9"
+            )),
+            Map.entry(CodeReadingLessonCatalog.STAGE8_LESSON_ID, List.of(
+                    "part-1", "part-2", "part-3", "part-4", "", "part-5",
+                    "part-6", "", "part-7", "part-7", "part-8", "part-8", "",
+                    "part-9", "part-10", "", "part-11", "part-12", "part-12",
+                    "part-12"
+            )),
+            Map.entry(CodeReadingLessonCatalog.STAGE9_LESSON_ID, List.of(
+                    "part-1", "part-2", "part-3", "part-4", "", "part-5",
+                    "part-5", "part-6", "part-6", "", "part-7", "part-8", "",
+                    "part-9", "part-10", "part-11", "", "part-11", "part-12",
+                    "part-12", "part-12"
+            ))
     );
 
     private final CodeReadingLessonCatalog lessonCatalog;
@@ -91,7 +125,7 @@ public class QuizController {
         return redirectToQuiz(lessonId);
     }
 
-    /** Stage 9の導入コードから、選んだ行に対応するPartへ移動します。 */
+    /** 導入コードから、選んだ行に対応するPartへ移動します。 */
     @PostMapping("/quiz/part/jump")
     public String jumpToPart(
             @RequestParam("lessonId") String lessonId,
@@ -99,9 +133,9 @@ public class QuizController {
             HttpSession session
     ) {
         lessonId = resolveLessonId(lessonId);
-        if (!CodeReadingLessonCatalog.STAGE9_LESSON_ID.equals(lessonId)) {
+        if (!INTRO_PART_IDS_BY_LESSON.containsKey(lessonId)) {
             throw new IllegalArgumentException(
-                    "INTROのコード行ジャンプはStage 9だけで利用できます。"
+                    "INTROのコード行ジャンプに対応していない教材です。"
             );
         }
         courseService.jumpToPart(session, lessonId, partId);
@@ -230,11 +264,10 @@ public class QuizController {
         );
         model.addAttribute("phase", page.phase());
 
-        if (page.phase() == CodeReadingPhase.INTRO
-                && CodeReadingLessonCatalog.STAGE9_LESSON_ID.equals(lessonId)) {
+        if (page.phase() == CodeReadingPhase.INTRO) {
             model.addAttribute(
                     INTRO_CODE_LINES_ATTRIBUTE,
-                    createStage9IntroCodeLines(page.completedCode())
+                    createIntroCodeLines(lessonId, page.completedCode())
             );
         }
 
@@ -263,18 +296,28 @@ public class QuizController {
         }
     }
 
-    private List<IntroCodeLine> createStage9IntroCodeLines(String completedCode) {
+    private List<IntroCodeLine> createIntroCodeLines(
+            String lessonId,
+            String completedCode
+    ) {
+        List<String> partIds = INTRO_PART_IDS_BY_LESSON.get(lessonId);
+        if (partIds == null) {
+            throw new IllegalArgumentException(
+                    "INTROのコード行マッピングがありません。lessonId: " + lessonId
+            );
+        }
         List<String> codeLines = completedCode.lines().toList();
-        if (codeLines.size() != STAGE9_INTRO_PART_IDS.size()) {
+        if (codeLines.size() != partIds.size()) {
             throw new IllegalStateException(
-                    "Stage 9の完成コードとINTRO行マッピングの行数が一致しません。"
+                    "完成コードとINTRO行マッピングの行数が一致しません。lessonId: "
+                            + lessonId
             );
         }
         return IntStream.range(0, codeLines.size())
                 .mapToObj(index -> new IntroCodeLine(
                         index + 1,
                         codeLines.get(index),
-                        STAGE9_INTRO_PART_IDS.get(index)
+                        partIds.get(index)
                 ))
                 .toList();
     }
