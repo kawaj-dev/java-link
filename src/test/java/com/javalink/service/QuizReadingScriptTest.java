@@ -81,7 +81,7 @@ class QuizReadingScriptTest {
         assertTrue(template.contains("quiz-reading-access-row--header"));
         assertTrue(template.contains("(section.tableHeader and entryStat.first) or entry.tableHeader"));
         assertTrue(script.contains("entry.tableHeader === true"));
-        assertTrue(template.contains("style.css(v='stage9-intro-part-jump-3')"));
+        assertTrue(template.contains("style.css(v='intro-part-jump-all-1')"));
         assertTrue(template.contains("quiz-reading.js(v='stage3-reading-6')"));
         assertFalse(template.contains("continuous-circuit-1"));
     }
@@ -103,7 +103,7 @@ class QuizReadingScriptTest {
     }
 
     @Test
-    void Stage9導入コード行はボタン既定表示を解除して一行分の高さを維持する() throws IOException {
+    void 全Stageの導入コード行はボタン既定表示を解除して一行分の高さを維持する() throws IOException {
         String style = readStyle();
         String template = readTemplate();
         String normalizedTemplate = template.replace("\r\n", "\n");

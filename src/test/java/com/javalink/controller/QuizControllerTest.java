@@ -18,6 +18,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.containsString;
@@ -50,6 +51,9 @@ class QuizControllerTest {
 
     @Autowired
     private CodeReadingFlowService flowService;
+
+    @Autowired
+    private CodeReadingLessonCatalog lessonCatalog;
 
     QuizControllerTest(@Autowired WebApplicationContext context) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(context).build();
@@ -418,88 +422,84 @@ class QuizControllerTest {
     }
 
     @Test
-    void Stage9導入コードは空白行を除いてPartジャンプ操作を表示する() throws Exception {
-        var result = mockMvc.perform(get("/quiz")
-                        .param(
-                                "lessonId",
-                                CodeReadingLessonCatalog.STAGE9_LESSON_ID
-                        ))
-                .andExpect(status().isOk())
-                .andExpect(content().string(containsString(
-                        "action=\"/quiz/part/jump\""
-                )))
-                .andExpect(content().string(containsString(
-                        "aria-label=\"1行目から学習する\""
-                )))
-                .andExpect(content().string(containsString(
-                        "aria-label=\"21行目から学習する\""
-                )))
-                .andExpect(content().string(not(containsString(
-                        "aria-label=\"5行目から学習する\""
-                ))))
-                .andReturn();
+    void Stage1から9の導入コードは教材定義の行とPartを正確に対応させる() throws Exception {
+        for (var entry : expectedIntroPartIdsByLesson().entrySet()) {
+            String lessonId = entry.getKey();
+            var result = mockMvc.perform(get("/quiz").param("lessonId", lessonId))
+                    .andExpect(status().isOk())
+                    .andExpect(content().string(containsString(
+                            "action=\"/quiz/part/jump\""
+                    )))
+                    .andReturn();
 
-        @SuppressWarnings("unchecked")
-        var lines = (java.util.List<QuizController.IntroCodeLine>) result
-                .getModelAndView()
-                .getModel()
-                .get(QuizController.INTRO_CODE_LINES_ATTRIBUTE);
-        assertEquals(
-                java.util.List.of(
-                        "part-1", "part-2", "part-3", "part-4", "",
-                        "part-5", "part-5", "part-6", "part-6", "",
-                        "part-7", "part-8", "", "part-9", "part-10",
-                        "part-11", "", "part-11", "part-12", "part-12",
-                        "part-12"
-                ),
-                lines.stream().map(QuizController.IntroCodeLine::partId).toList()
-        );
-        assertEquals(1, lines.get(0).lineNumber());
-        assertEquals("public class Main {", lines.get(0).code());
-        assertEquals(21, lines.get(20).lineNumber());
-        assertEquals("}", lines.get(20).code());
-        assertEquals("", lines.get(4).code());
-        assertEquals("    public static void main(String[] args) {", lines.get(1).code());
+            @SuppressWarnings("unchecked")
+            var lines = (List<QuizController.IntroCodeLine>) result
+                    .getModelAndView()
+                    .getModel()
+                    .get(QuizController.INTRO_CODE_LINES_ATTRIBUTE);
+            List<String> codeLines = lessonCatalog.getDefinition(lessonId)
+                    .completedCode()
+                    .lines()
+                    .toList();
+
+            assertEquals(entry.getValue(), lines.stream()
+                    .map(QuizController.IntroCodeLine::partId)
+                    .toList());
+            assertEquals(codeLines, lines.stream()
+                    .map(QuizController.IntroCodeLine::code)
+                    .toList());
+            for (int index = 0; index < lines.size(); index++) {
+                assertEquals(index + 1, lines.get(index).lineNumber());
+                assertEquals(!entry.getValue().get(index).isBlank(),
+                        lines.get(index).clickable());
+            }
+        }
     }
 
     @Test
-    void Stage9導入コードから未学習Partへ移動しても既存の完了状態を維持する() throws Exception {
-        MockHttpSession session = new MockHttpSession();
-        String lessonId = CodeReadingLessonCatalog.STAGE9_LESSON_ID;
-        LessonProgress progress = progressService.resetProgress(session, lessonId);
-        progress.completeStep("class-public");
-        progress.setSelectedOptionId("answered-option");
-        progress.setAnswered(true);
-        progress.setCorrect(true);
-        progressService.saveProgress(session, lessonId, progress);
+    void Stage1から9の未学習Partへ移動しても既存の完了状態を維持する() throws Exception {
+        for (var entry : expectedIntroPartIdsByLesson().entrySet()) {
+            MockHttpSession session = new MockHttpSession();
+            String lessonId = entry.getKey();
+            var definition = lessonCatalog.getDefinition(lessonId);
+            String completedStepId = definition.parts().get(0).stepIds().get(0);
+            String targetPartId = entry.getValue().stream()
+                    .filter(partId -> !partId.isBlank())
+                    .reduce((first, second) -> second)
+                    .orElseThrow();
+            var targetPart = definition.parts().stream()
+                    .filter(part -> part.id().equals(targetPartId))
+                    .findFirst()
+                    .orElseThrow();
+            String targetStepId = targetPart.stepIds().get(0);
+            LessonProgress progress = progressService.resetProgress(session, lessonId);
+            progress.completeStep(completedStepId);
+            progress.setSelectedOptionId("answered-option");
+            progress.setAnswered(true);
+            progress.setCorrect(true);
+            progressService.saveProgress(session, lessonId, progress);
 
-        mockMvc.perform(post("/quiz/part/jump")
-                        .param("lessonId", lessonId)
-                        .param("partId", "part-10")
-                        .session(session))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/quiz?lessonId=" + lessonId));
+            mockMvc.perform(post("/quiz/part/jump")
+                            .param("lessonId", lessonId)
+                            .param("partId", targetPartId)
+                            .session(session))
+                    .andExpect(status().is3xxRedirection())
+                    .andExpect(redirectedUrl(
+                            CodeReadingLessonCatalog.STAGE1_LESSON_ID.equals(lessonId)
+                                    ? "/quiz"
+                                    : "/quiz?lessonId=" + lessonId
+                    ));
 
-        LessonProgress jumped = progressService.getProgress(session, lessonId);
-        assertEquals("this-keyword", jumped.getCurrentStepId());
-        assertTrue(jumped.isStepCompleted("class-public"));
-        assertFalse(jumped.isStepCompleted("this-keyword"));
-        assertFalse(jumped.isAnswered());
-        assertFalse(jumped.isCorrect());
-        assertEquals("", jumped.getSelectedOptionId());
-        assertEquals(
-                CodeReadingPhase.LEARNING,
-                flowService.getState(session, lessonId).phase()
-        );
-    }
-
-    @Test
-    void Stage1導入画面にはコード行ジャンプを追加しない() throws Exception {
-        mockMvc.perform(get("/quiz"))
-                .andExpect(status().isOk())
-                .andExpect(content().string(not(containsString(
-                        "/quiz/part/jump"
-                ))));
+            LessonProgress jumped = progressService.getProgress(session, lessonId);
+            assertEquals(targetStepId, jumped.getCurrentStepId());
+            assertTrue(jumped.isStepCompleted(completedStepId));
+            assertFalse(jumped.isStepCompleted(targetStepId));
+            assertFalse(jumped.isAnswered());
+            assertFalse(jumped.isCorrect());
+            assertEquals("", jumped.getSelectedOptionId());
+            assertEquals(CodeReadingPhase.LEARNING,
+                    flowService.getState(session, lessonId).phase());
+        }
     }
 
     @Test
@@ -535,16 +535,63 @@ class QuizControllerTest {
                 .andExpect(content().string(containsString("完成コード")))
                 .andExpect(content().string(containsString("Main.java")))
                 .andExpect(content().string(containsString("quiz-intro-code")))
-                .andExpect(result -> assertTrue(
+                .andExpect(result -> assertEquals(
+                        completedCode,
                         normalizeLineEndings(
-                                result.getResponse().getContentAsString()
-                        ).contains(completedCode)
+                                ((CodeReadingPageViewModel) result.getModelAndView()
+                                        .getModel()
+                                        .get("codeReadingPage"))
+                                        .completedCode()
+                        ).stripTrailing()
                 ))
                 .andExpect(content().string(containsString("スタート")));
     }
 
     private static String normalizeLineEndings(String value) {
         return value.replace("\r\n", "\n").replace('\r', '\n');
+    }
+
+    private static Map<String, List<String>> expectedIntroPartIdsByLesson() {
+        Map<String, List<String>> mappings = new LinkedHashMap<>();
+        mappings.put(CodeReadingLessonCatalog.STAGE1_LESSON_ID, List.of(
+                "part-1", "part-2", "part-3", "part-4", "part-4"
+        ));
+        mappings.put(CodeReadingLessonCatalog.STAGE2_LESSON_ID, List.of(
+                "part-1", "part-2", "part-3", "part-4", "part-5", "part-5"
+        ));
+        mappings.put(CodeReadingLessonCatalog.STAGE3_LESSON_ID, List.of(
+                "part-1", "part-2", "part-3", "part-4", "part-5", "part-6",
+                "part-7", "part-7"
+        ));
+        mappings.put(CodeReadingLessonCatalog.STAGE4_LESSON_ID, List.of(
+                "part-1", "part-2", "part-3", "", "part-4", "part-5",
+                "part-6", "part-7", "part-8", "part-9", "part-9"
+        ));
+        mappings.put(CodeReadingLessonCatalog.STAGE5_LESSON_ID, List.of(
+                "part-1", "part-2", "", "part-3", "part-5", "part-6", "",
+                "part-6", "part-6"
+        ));
+        mappings.put(CodeReadingLessonCatalog.STAGE6_LESSON_ID, List.of(
+                "part-1", "part-2", "part-3", "", "part-4", "part-6",
+                "part-7", "part-7", "part-7"
+        ));
+        mappings.put(CodeReadingLessonCatalog.STAGE7_LESSON_ID, List.of(
+                "part-1", "part-2", "part-3", "part-4", "part-5", "",
+                "part-6", "part-8", "part-9", "part-9"
+        ));
+        mappings.put(CodeReadingLessonCatalog.STAGE8_LESSON_ID, List.of(
+                "part-1", "part-2", "part-3", "part-4", "", "part-5",
+                "part-6", "", "part-7", "part-7", "part-8", "part-8", "",
+                "part-9", "part-10", "", "part-11", "part-12", "part-12",
+                "part-12"
+        ));
+        mappings.put(CodeReadingLessonCatalog.STAGE9_LESSON_ID, List.of(
+                "part-1", "part-2", "part-3", "part-4", "", "part-5",
+                "part-5", "part-6", "part-6", "", "part-7", "part-8", "",
+                "part-9", "part-10", "part-11", "", "part-11", "part-12",
+                "part-12", "part-12"
+        ));
+        return mappings;
     }
 
     @Test

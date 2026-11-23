@@ -5006,15 +5006,15 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
     font-size: clamp(0.62rem, 2.4vw, 1rem);
 }
 
-/* Stage 9 INTRO: 完成コードの各行を、対応するPartへの操作として表示します。 */
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+/* INTRO: 完成コードの各行を、対応するPartへの操作として表示します。 */
+.quiz-focus-program
     .quiz-ide-editor:has(.quiz-intro-code-lines) {
     display: block;
     min-height: 0;
     overflow-x: auto;
 }
 
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-lines {
     width: max-content;
     min-width: 100%;
@@ -5026,7 +5026,7 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
         "Cascadia Mono", "Courier New", monospace;
 }
 
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-row {
     display: grid;
     grid-template-columns: 36px minmax(max-content, 1fr);
@@ -5035,14 +5035,14 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
     line-height: 2.05;
 }
 
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-row--interactive:hover,
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-row--interactive:focus-within {
     background: rgba(22, 133, 255, 0.14);
 }
 
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-line-number {
     padding: 0 6px 0 4px;
     border-right: 1px solid #183656;
@@ -5053,7 +5053,7 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
     user-select: none;
 }
 
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-line-form {
     display: block;
     height: 2.05em;
@@ -5062,7 +5062,7 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
     padding: 0;
 }
 
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-line-button {
     all: unset;
     display: block;
@@ -5078,15 +5078,15 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
     cursor: pointer;
 }
 
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-line-button:focus-visible {
     outline: 2px solid #66b5ff;
     outline-offset: -3px;
 }
 
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-line-button code,
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-blank {
     display: block;
     color: inherit;
@@ -5095,7 +5095,7 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
     white-space: pre;
 }
 
-.quiz-focus-program[data-lesson-id="constructor-program-reading"]
+.quiz-focus-program
     .quiz-intro-code-blank {
     height: 2.05em;
     padding: 0 20px;
