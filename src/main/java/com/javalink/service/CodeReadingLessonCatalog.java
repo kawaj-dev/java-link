@@ -38,6 +38,7 @@ public class CodeReadingLessonCatalog {
         public static final String STAGE7_LESSON_ID = "method-program-reading";
         public static final String STAGE8_LESSON_ID = "car-instance-reading";
         public static final String STAGE9_LESSON_ID = "constructor-program-reading";
+        public static final String STAGE10_LESSON_ID = "encapsulation-program-reading";
         private static final String OFFICIAL_REFERENCES_TITLE =
                         "このページの技術的根拠：Javaの公式仕様・API";
         private static final String DISPLAY_AND_NEWLINE_CARD = "画面に表示して改行する";
@@ -89,7 +90,11 @@ public class CodeReadingLessonCatalog {
                 CodeReadingLessonDefinition stage7 = createStage7(stage2, stage3);
                 CodeReadingLessonDefinition stage8 = createStage8(stage2, stage4);
                 CodeReadingLessonDefinition stage9 = createStage9(stage2, stage4, stage8);
-                definitionsInOrder = List.of(stage1, stage2, stage3, stage4, stage5, stage6, stage7, stage8, stage9);
+                CodeReadingLessonDefinition stage10 = createStage10(
+                                stage2, stage4, stage8, stage9);
+                definitionsInOrder = List.of(
+                                stage1, stage2, stage3, stage4, stage5,
+                                stage6, stage7, stage8, stage9, stage10);
                 definitions = definitionsInOrder.stream().collect(Collectors.toUnmodifiableMap(
                                 CodeReadingLessonDefinition::lessonId,
                                 Function.identity()));
@@ -367,6 +372,51 @@ public class CodeReadingLessonCatalog {
                                 createStage9Parts(),
                                 createStage9Circuits(),
                                 createStage9CodeLines(),
+                                "red\nblue");
+        }
+
+        private static CodeReadingLessonDefinition createStage10(
+                        CodeReadingLessonDefinition stage2,
+                        CodeReadingLessonDefinition stage4,
+                        CodeReadingLessonDefinition stage8,
+                        CodeReadingLessonDefinition stage9) {
+                return new CodeReadingLessonDefinition(
+                                STAGE10_LESSON_ID,
+                                "Stage 10",
+                                "メソッドを使って車の色を変更しよう",
+                                """
+                                                public class Main {
+                                                    public static void main(String[] args) {
+                                                        Car car = new Car("red");
+
+                                                        System.out.println(car.getColor());
+
+                                                        car.setColor("blue");
+
+                                                        System.out.println(car.getColor());
+                                                    }
+                                                }
+
+                                                class Car {
+                                                    private String color;
+
+                                                    Car(String color) {
+                                                        this.color = color;
+                                                    }
+
+                                                    public String getColor() {
+                                                        return color;
+                                                    }
+
+                                                    public void setColor(String color) {
+                                                        this.color = color;
+                                                    }
+                                                }
+                                                """,
+                                createStage10Steps(stage2, stage4, stage8, stage9),
+                                createStage10Parts(),
+                                createStage10Circuits(),
+                                createStage10CodeLines(),
                                 "red\nblue");
         }
 
@@ -3583,5 +3633,333 @@ public class CodeReadingLessonCatalog {
                                                                 "show-color-close", "car-class-close"),
                                                 List.of("System.out.println", "color", ";", "}", "}"), List.of(),
                                                 "呼び出し対象のcolorを表示し、showColorメソッドとCarクラスを閉じる"));
+        }
+
+        private static List<CodeReadingStepDefinition> createStage10Steps(
+                        CodeReadingLessonDefinition stage2,
+                        CodeReadingLessonDefinition stage4,
+                        CodeReadingLessonDefinition stage8,
+                        CodeReadingLessonDefinition stage9) {
+                List<CodeReadingExplanationSection> assignment = sharedExplanation(stage2, "assignment");
+                List<CodeReadingExplanationSection> stringType = sharedExplanation(stage4, "signal-string-type");
+                List<CodeReadingExplanationSection> carType = sharedExplanation(stage9, "car1-type");
+                List<CodeReadingExplanationSection> referenceVariable = sharedExplanation(stage9, "car1-name");
+                List<CodeReadingExplanationSection> instanceCreation = sharedExplanation(stage9, "car1-new");
+                List<CodeReadingExplanationSection> constructorCall = sharedExplanation(stage9, "car1-constructor");
+                List<CodeReadingExplanationSection> actualArgument = sharedExplanation(stage9, "car1-argument");
+                List<CodeReadingExplanationSection> carClassName = sharedExplanation(stage9, "car-class-name");
+                List<CodeReadingExplanationSection> colorField = sharedExplanation(stage9, "color-field-name");
+                List<CodeReadingExplanationSection> constructorDeclaration = sharedExplanation(stage9, "constructor-name");
+                List<CodeReadingExplanationSection> constructorParameter = sharedExplanation(stage9, "constructor-parameter-name");
+                List<CodeReadingExplanationSection> thisReference = sharedExplanation(stage9, "this-keyword");
+                List<CodeReadingExplanationSection> thisField = sharedExplanation(stage9, "this-color-field");
+                List<CodeReadingExplanationSection> parameterValue = sharedExplanation(stage9, "parameter-color");
+                List<CodeReadingExplanationSection> colorLiteral = sharedExplanation(stage8, "red-literal");
+                return List.of(
+                                richStep("class-public", 1, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("class-keyword", 2, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("class-name", 3, "Main", "Main", "main-class-name", CLASS_NAME_CARD,
+                                                "クラス名", CLASS_NAME_EXPLANATION),
+                                richStep("class-open", 4, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("main-public", 5, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("main-static", 6, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("main-void", 7, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("main-name", 8, "main", "main", "program-entry", MAIN_CARD,
+                                                "メソッド名", MAIN_EXPLANATION),
+                                richStep("main-string-array", 9, "String[]", "String[]", "multiple-strings",
+                                                STRING_ARRAY_CARD, "引数の型", STRING_ARRAY_EXPLANATION),
+                                richStep("main-args", 10, "args", "args", "argument-variable", ARGS_CARD,
+                                                "引数名", ARGS_EXPLANATION),
+                                richStep("main-open", 11, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("car-type", 12, "Car", "Car", "reference-type", "Car型の参照を扱う",
+                                                "参照型", carType),
+                                richStep("car-name", 13, "car", "car", "reference-variable", "車を参照する変数",
+                                                "参照変数", referenceVariable),
+                                richStep("car-assignment", 14, "=", "=", "assignment", "参照を変数へ入れる",
+                                                "代入演算子", assignment),
+                                richStep("car-new", 15, "new", "new", "create-instance", "新しいインスタンスを生成する",
+                                                "クラスインスタンス生成式", instanceCreation),
+                                richStep("car-constructor", 16, "Car", "Car", "constructor-call",
+                                                "Carのコンストラクタを呼ぶ", "コンストラクタ呼び出し", constructorCall),
+                                richStep("car-argument", 17, "\"red\"", "\"red\"", "actual-argument",
+                                                "最初の色を渡す", "実引数", actualArgument),
+                                richStep("car-semicolon", 18, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("print-before-command", 19, "System.out.println", "System.out.println",
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力メソッド", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("getter-before-owner", 20, "car", "car", "method-owner",
+                                                "同じCarインスタンスを参照する", "参照変数", referenceVariable),
+                                richStep("getter-before-call", 21, "getColor()", "getColor()", "getter-call",
+                                                "現在の色を取得する", "getter呼び出し", getterCallExplanation()),
+                                richStep("print-before-semicolon", 22, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("setter-owner", 23, "car", "car", "method-owner",
+                                                "同じCarインスタンスを参照する", "参照変数", referenceVariable),
+                                richStep("setter-call", 24, "setColor", "setColor", "setter-call",
+                                                "色を変更するメソッドを呼ぶ", "setter呼び出し", setterCallExplanation()),
+                                richStep("setter-argument", 25, "\"blue\"", "\"blue\"", "actual-argument",
+                                                "変更後の色を渡す", "実引数", colorLiteral),
+                                richStep("setter-call-semicolon", 26, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("print-after-command", 27, "System.out.println", "System.out.println",
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力メソッド", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("getter-after-owner", 28, "car", "car", "method-owner",
+                                                "変更したCarインスタンスを参照する", "参照変数", referenceVariable),
+                                richStep("getter-after-call", 29, "getColor()", "getColor()", "getter-call",
+                                                "変更後の色を取得する", "getter呼び出し", getterCallExplanation()),
+                                richStep("print-after-semicolon", 30, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("main-close", 31, "}", "}", "close-method", "mainメソッドを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("main-class-close", 32, "}", "}", "close-class", "Mainクラスを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("car-class-keyword", 33, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("car-class-name", 34, "Car", "Car", "car-class-name", "車を表すクラス名",
+                                                "クラス名", carClassName),
+                                richStep("car-class-open", 35, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("color-private", 36, "private", "private", "private-access",
+                                                "クラス外からの直接アクセスを制限する", "privateアクセス修飾子",
+                                                privateExplanation()),
+                                richStep("color-string-type", 37, "String", "String", "string-type",
+                                                "文字列を扱うデータ型", "文字列型", stringType),
+                                richStep("color-field-name", 38, "color", "color", "instance-field",
+                                                "車の色を保持する", "フィールド", colorField),
+                                richStep("color-field-semicolon", 39, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("constructor-name", 40, "Car", "Car", "constructor-declaration",
+                                                "Carのコンストラクタを宣言する", "コンストラクタ", constructorDeclaration),
+                                richStep("constructor-parameter-type", 41, "String", "String", "parameter-type",
+                                                "受け取る色の型", "仮引数の型", stringType),
+                                richStep("constructor-parameter-name", 42, "color", "color", "formal-parameter",
+                                                "受け取った色を表す名前", "仮引数", constructorParameter),
+                                richStep("constructor-open", 43, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("constructor-this", 44, "this", "this", "current-instance",
+                                                "現在のインスタンスを参照する", "this", thisReference),
+                                richStep("constructor-field", 45, "color", "color", "instance-field",
+                                                "現在のインスタンスのフィールド", "フィールドアクセス", thisField),
+                                richStep("constructor-assignment", 46, "=", "=", "assignment",
+                                                "受け取った色をフィールドへ入れる", "代入演算子", assignment),
+                                richStep("constructor-value", 47, "color", "color", "parameter-value",
+                                                "コンストラクタが受け取った値", "仮引数の利用", parameterValue),
+                                richStep("constructor-semicolon", 48, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("constructor-close", 49, "}", "}", "close-constructor",
+                                                "コンストラクタを閉じる", "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("getter-public", 50, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("getter-return-type", 51, "String", "String", "return-type",
+                                                "文字列を返す", "戻り値の型", getterReturnTypeExplanation()),
+                                richStep("getter-name", 52, "getColor", "getColor", "getter-declaration",
+                                                "色を取得するメソッド", "getter", getterDeclarationExplanation()),
+                                richStep("getter-parameters", 53, "()", "()", "no-parameters",
+                                                "引数を受け取らない", "引数リスト", noParametersExplanation()),
+                                richStep("getter-open", 54, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("getter-return", 55, "return", "return", "return-value",
+                                                "値を呼び出し元へ返す", "return文", getterReturnStatementExplanation()),
+                                richStep("getter-color", 56, "color", "color", "field-value",
+                                                "現在のインスタンスの色を返す", "フィールドの利用", getterValueExplanation()),
+                                richStep("getter-semicolon", 57, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("getter-close", 58, "}", "}", "close-method", "getterを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("setter-public", 59, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("setter-void", 60, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("setter-name", 61, "setColor", "setColor", "setter-declaration",
+                                                "色を設定・変更するメソッド", "setter", setterDeclarationExplanation()),
+                                richStep("setter-parameter-type", 62, "String", "String", "parameter-type",
+                                                "受け取る色の型", "仮引数の型", stringType),
+                                richStep("setter-parameter-name", 63, "color", "color", "formal-parameter",
+                                                "変更後の色を受け取る", "仮引数", constructorParameter),
+                                richStep("setter-open", 64, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("setter-this", 65, "this", "this", "current-instance",
+                                                "現在のインスタンスを参照する", "this", thisReference),
+                                richStep("setter-field", 66, "color", "color", "instance-field",
+                                                "現在のインスタンスのフィールド", "フィールドアクセス", thisField),
+                                richStep("setter-assignment", 67, "=", "=", "assignment",
+                                                "受け取った色をフィールドへ入れる", "代入演算子", assignment),
+                                richStep("setter-value", 68, "color", "color", "parameter-value",
+                                                "setterが受け取った値", "仮引数の利用", setterParameterValueExplanation()),
+                                richStep("setter-semicolon", 69, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("setter-close", 70, "}", "}", "close-method", "setterを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("car-class-close", 71, "}", "}", "close-class", "Carクラスを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION));
+        }
+
+        private static List<CodeReadingExplanationSection> privateExplanation() {
+                return List.of(
+                                textSection("privateアクセス修飾子",
+                                                text("privateは、宣言されたメンバーへアクセスできる範囲を制限するアクセス修飾子です。"),
+                                                text("このcolorフィールドはCarクラスのprivateメンバーなので、Mainクラスからcar.colorのように直接アクセスできません。")),
+                                textSection("カプセル化",
+                                                text("カプセル化は、データとそれを扱う処理をまとめ、外部からのアクセスを適切に制御する考え方です。"),
+                                                text("privateフィールドにgetterとsetterを用意する形は一例であり、それだけがカプセル化ではありません。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§6.6", "Access Control",
+                                                                "Javaのアクセス制御を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.6"),
+                                                jlsReference("§6.6.1", "Determining Accessibility",
+                                                                "privateを含む宣言へアクセスできる条件を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-6.html#jls-6.6.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> getterCallExplanation() {
+                return List.of(textSection("getterの呼び出し",
+                                text("getterはフィールドの値を取得する役割を持つメソッドの一般的な呼び方で、Javaの予約語ではありません。"),
+                                text("car.getColor()の戻り値は、System.out.printlnの引数として使われます。"),
+                                text("最初はredを返し、setColorの呼び出し後は同じインスタンスからblueを返します。")));
+        }
+
+        private static List<CodeReadingExplanationSection> setterCallExplanation() {
+                return List.of(textSection("setterの呼び出し",
+                                text("setterはフィールドの値を設定・変更する役割を持つメソッドの一般的な呼び方で、Javaの予約語ではありません。"),
+                                text("car.setColor(\"blue\")は新しいCarを生成せず、carが参照する同じインスタンスの状態をredからblueへ変更します。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§15.12", "Method Invocation Expressions",
+                                                                "メソッド呼び出し式を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-15.html#jls-15.12")));
+        }
+
+        private static List<CodeReadingExplanationSection> getterReturnTypeExplanation() {
+                return List.of(textSection("戻り値の型 String",
+                                text("getColorメソッドはString型の値を呼び出し元へ返すと宣言しています。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§8.4.5", "Method Result",
+                                                                "メソッドが返す結果の型を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-8.html#jls-8.4.5")));
+        }
+
+        private static List<CodeReadingExplanationSection> getterDeclarationExplanation() {
+                return List.of(textSection("getter getColor",
+                                text("getColorはcolorフィールドの値を取得するために定義したインスタンスメソッドです。"),
+                                text("getterという名前は役割を表す一般的な呼び方で、Java言語の構文や予約語ではありません。")));
+        }
+
+        private static List<CodeReadingExplanationSection> setterDeclarationExplanation() {
+                return List.of(textSection("setter setColor",
+                                text("setColorは受け取った値でcolorフィールドを設定・変更するインスタンスメソッドです。"),
+                                text("setterという名前は役割を表す一般的な呼び方で、Java言語の構文や予約語ではありません。")));
+        }
+
+        private static List<CodeReadingExplanationSection> noParametersExplanation() {
+                return List.of(textSection("空の引数リスト",
+                                text("getColor()の丸かっこ内は空なので、このメソッドは呼び出し時に値を受け取りません。")));
+        }
+
+        private static List<CodeReadingExplanationSection> getterValueExplanation() {
+                return List.of(textSection("getterが返すフィールド値",
+                                text("return color;は、呼び出し対象のCarインスタンスが現在保持しているcolorの値を返します。")));
+        }
+
+        private static List<CodeReadingExplanationSection> getterReturnStatementExplanation() {
+                return List.of(
+                                textSection("return文　return statement",
+                                                text("return color;は、現在のインスタンスのcolorフィールド値をgetColorの呼び出し元へ返します。"),
+                                                text("値を返すとgetColorメソッドの実行は終わり、その値が呼び出し式car.getColor()の結果になります。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jlsReference("§14.17", "The return Statement",
+                                                                "return文が値を呼び出し元へ返してメソッドの実行を終了することを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se21/html/jls-14.html#jls-14.17")));
+        }
+
+        private static List<CodeReadingExplanationSection> setterParameterValueExplanation() {
+                return List.of(textSection("setterの仮引数color",
+                                text("右辺のcolorはsetColorメソッドが受け取った仮引数で、左辺のthis.colorは現在のインスタンスのフィールドです。"),
+                                text("this.color = color;によって、同じインスタンスが保持する色を変更します。")));
+        }
+
+        private static List<CodeReadingCircuitDefinition> createStage10Circuits() {
+                return List.of(
+                                circuit("main-class", "public class Main {", List.of("class-public", "class-keyword", "class-name", "class-open"), List.of("public", "class", "Main", "{")),
+                                circuit("main-method", "public static void main(String[] args) {", List.of("main-public", "main-static", "main-void", "main-name", "main-string-array", "main-args", "main-open"), List.of("public", "static", "void", "main", "String[]", "args", "{")),
+                                circuit("car-creation", "Car car = new Car(\"red\");", List.of("car-type", "car-name", "car-assignment", "car-new", "car-constructor", "car-argument", "car-semicolon"), List.of("Car", "car", "=", "new", "Car", "\"red\"", ";")),
+                                circuit("getter-before", "System.out.println(car.getColor());", List.of("print-before-command", "getter-before-owner", "getter-before-call", "print-before-semicolon"), List.of("System.out.println", "car", "getColor()", ";")),
+                                circuit("setter-call", "car.setColor(\"blue\");", List.of("setter-owner", "setter-call", "setter-argument", "setter-call-semicolon"), List.of("car", "setColor", "\"blue\"", ";")),
+                                circuit("getter-after", "System.out.println(car.getColor());", List.of("print-after-command", "getter-after-owner", "getter-after-call", "print-after-semicolon"), List.of("System.out.println", "car", "getColor()", ";")),
+                                circuit("main-closes", "mainメソッド終了 }　Mainクラス終了 }", List.of("main-close", "main-class-close"), List.of("mainメソッド終了 }", "Mainクラス終了 }")),
+                                circuit("car-class", "class Car {", List.of("car-class-keyword", "car-class-name", "car-class-open"), List.of("class", "Car", "{")),
+                                circuit("private-field", "private String color;", List.of("color-private", "color-string-type", "color-field-name", "color-field-semicolon"), List.of("private", "String", "color", ";")),
+                                circuit("constructor", "Car(String color) {", List.of("constructor-name", "constructor-parameter-type", "constructor-parameter-name", "constructor-open"), List.of("Car", "String", "color", "{")),
+                                circuit("constructor-body", "this.color = color; と終了", List.of("constructor-this", "constructor-field", "constructor-assignment", "constructor-value", "constructor-semicolon", "constructor-close"), List.of("this", "color", "=", "color", ";", "}")),
+                                circuit("getter-declaration", "public String getColor() {", List.of("getter-public", "getter-return-type", "getter-name", "getter-parameters", "getter-open"), List.of("public", "String", "getColor", "()", "{")),
+                                circuit("getter-body", "return color; と終了", List.of("getter-return", "getter-color", "getter-semicolon", "getter-close"), List.of("return", "color", ";", "}")),
+                                circuit("setter-declaration", "public void setColor(String color) {", List.of("setter-public", "setter-void", "setter-name", "setter-parameter-type", "setter-parameter-name", "setter-open"), List.of("public", "void", "setColor", "String", "color", "{")),
+                                circuit("setter-body", "this.color = color; と終了", List.of("setter-this", "setter-field", "setter-assignment", "setter-value", "setter-semicolon", "setter-close", "car-class-close"), List.of("this", "color", "=", "color", ";", "}", "}")));
+        }
+
+        private static CodeReadingCircuitDefinition circuit(
+                        String id, String label, List<String> stepIds, List<String> tokens) {
+                return new CodeReadingCircuitDefinition(id, label, stepIds, tokens);
+        }
+
+        private static Map<String, List<CodeReadingCodeLineDefinition>> createStage10CodeLines() {
+                return Map.ofEntries(
+                                Map.entry("part-1", List.of(line(List.of("class-public", "class-keyword", "class-name", "class-open"), "", ""))),
+                                Map.entry("part-2", List.of(new CodeReadingCodeLineDefinition(List.of(token("main-public"), token("main-static"), token("main-void"), token("main-name"), new CodeReadingCodeTokenDefinition("main-string-array", "(", ""), new CodeReadingCodeTokenDefinition("main-args", "", ")"), token("main-open")), "", "quiz-reading-code-line--part-2"))),
+                                Map.entry("part-3", List.of(new CodeReadingCodeLineDefinition(List.of(token("car-type"), token("car-name"), token("car-assignment"), token("car-new"), new CodeReadingCodeTokenDefinition("car-constructor", "", "("), new CodeReadingCodeTokenDefinition("car-argument", "", ")"), token("car-semicolon")), "", ""))),
+                                Map.entry("part-4", List.of(methodCallPrintLine("print-before-command", "getter-before-owner", "getter-before-call", "print-before-semicolon"))),
+                                Map.entry("part-5", List.of(new CodeReadingCodeLineDefinition(List.of(new CodeReadingCodeTokenDefinition("setter-owner", "", "."), new CodeReadingCodeTokenDefinition("setter-call", "", "("), new CodeReadingCodeTokenDefinition("setter-argument", "", ")"), token("setter-call-semicolon")), "", ""))),
+                                Map.entry("part-6", List.of(methodCallPrintLine("print-after-command", "getter-after-owner", "getter-after-call", "print-after-semicolon"))),
+                                Map.entry("part-7", List.of(line(List.of("main-close", "main-class-close"), "", ""))),
+                                Map.entry("part-8", List.of(line(List.of("car-class-keyword", "car-class-name", "car-class-open"), "", ""))),
+                                Map.entry("part-9", List.of(line(List.of("color-private", "color-string-type", "color-field-name", "color-field-semicolon"), "", ""))),
+                                Map.entry("part-10", List.of(new CodeReadingCodeLineDefinition(List.of(new CodeReadingCodeTokenDefinition("constructor-name", "", "("), token("constructor-parameter-type"), new CodeReadingCodeTokenDefinition("constructor-parameter-name", "", ")"), token("constructor-open")), "", ""))),
+                                Map.entry("part-11", List.of(new CodeReadingCodeLineDefinition(List.of(new CodeReadingCodeTokenDefinition("constructor-this", "", "."), token("constructor-field"), token("constructor-assignment"), token("constructor-value"), token("constructor-semicolon")), "", ""), line(List.of("constructor-close"), "", ""))),
+                                Map.entry("part-12", List.of(new CodeReadingCodeLineDefinition(List.of(token("getter-public"), token("getter-return-type"), new CodeReadingCodeTokenDefinition("getter-name", "", ""), token("getter-parameters"), token("getter-open")), "", ""))),
+                                Map.entry("part-13", List.of(line(List.of("getter-return", "getter-color", "getter-semicolon"), "", ""), line(List.of("getter-close"), "", ""))),
+                                Map.entry("part-14", List.of(new CodeReadingCodeLineDefinition(List.of(token("setter-public"), token("setter-void"), new CodeReadingCodeTokenDefinition("setter-name", "", "("), token("setter-parameter-type"), new CodeReadingCodeTokenDefinition("setter-parameter-name", "", ")"), token("setter-open")), "", ""))),
+                                Map.entry("part-15", List.of(new CodeReadingCodeLineDefinition(List.of(new CodeReadingCodeTokenDefinition("setter-this", "", "."), token("setter-field"), token("setter-assignment"), token("setter-value"), token("setter-semicolon")), "", ""), line(List.of("setter-close", "car-class-close"), "", ""))));
+        }
+
+        private static CodeReadingCodeLineDefinition methodCallPrintLine(
+                        String printId, String ownerId, String callId, String semicolonId) {
+                return new CodeReadingCodeLineDefinition(
+                                List.of(new CodeReadingCodeTokenDefinition(printId, "", "("),
+                                                new CodeReadingCodeTokenDefinition(ownerId, "", "."),
+                                                new CodeReadingCodeTokenDefinition(callId, "", ")"), token(semicolonId)),
+                                "", "");
+        }
+
+        private static List<CodeReadingPart> createStage10Parts() {
+                return List.of(
+                                part("part-1", 1, "Mainクラスを作る", "public class Main {", List.of("class-public", "class-keyword", "class-name", "class-open"), List.of("public", "class", "Main", "{"), "Mainクラスを宣言する"),
+                                part("part-2", 2, "mainメソッドを作る", "public static void main(String[] args) {", List.of("main-public", "main-static", "main-void", "main-name", "main-string-array", "main-args", "main-open"), List.of("public", "static", "void", "main", "String[]", "args", "{"), "mainメソッドを宣言する"),
+                                part("part-3", 3, "赤い車を生成する", "Car car = new Car(\"red\");", List.of("car-type", "car-name", "car-assignment", "car-new", "car-constructor", "car-argument", "car-semicolon"), List.of("Car", "car", "=", "new", "Car", "\"red\"", ";"), "Carインスタンスを生成してredで初期化する"),
+                                part("part-4", 4, "getterで現在の色を表示する", "System.out.println(car.getColor());", List.of("print-before-command", "getter-before-owner", "getter-before-call", "print-before-semicolon"), List.of("System.out.println", "car", "getColor()", ";"), "getColorの戻り値redをprintlnの引数として表示する"),
+                                part("part-5", 5, "setterで同じ車の色を変更する", "car.setColor(\"blue\");", List.of("setter-owner", "setter-call", "setter-argument", "setter-call-semicolon"), List.of("car", "setColor", "\"blue\"", ";"), "同じインスタンスのcolorをblueへ変更する"),
+                                part("part-6", 6, "変更後の色を表示する", "System.out.println(car.getColor());", List.of("print-after-command", "getter-after-owner", "getter-after-call", "print-after-semicolon"), List.of("System.out.println", "car", "getColor()", ";"), "変更後の戻り値blueを表示する"),
+                                part("part-7", 7, "Mainクラスを閉じる", "}\n}", List.of("main-close", "main-class-close"), List.of("}", "}"), "mainメソッドとMainクラスを閉じる"),
+                                part("part-8", 8, "Carクラスを作る", "class Car {", List.of("car-class-keyword", "car-class-name", "car-class-open"), List.of("class", "Car", "{"), "Carクラスを宣言する"),
+                                part("part-9", 9, "色をprivateフィールドにする", "private String color;", List.of("color-private", "color-string-type", "color-field-name", "color-field-semicolon"), List.of("private", "String", "color", ";"), "colorへの外部からの直接アクセスを制限する"),
+                                part("part-10", 10, "コンストラクタを宣言する", "Car(String color) {", List.of("constructor-name", "constructor-parameter-type", "constructor-parameter-name", "constructor-open"), List.of("Car", "String", "color", "{"), "初期色を受け取るコンストラクタを宣言する"),
+                                part("part-11", 11, "フィールドを初期化する", "this.color = color;\n}", List.of("constructor-this", "constructor-field", "constructor-assignment", "constructor-value", "constructor-semicolon", "constructor-close"), List.of("this", "color", "=", "color", ";", "}"), "受け取った色でフィールドを初期化する"),
+                                part("part-12", 12, "getterを宣言する", "public String getColor() {", List.of("getter-public", "getter-return-type", "getter-name", "getter-parameters", "getter-open"), List.of("public", "String", "getColor", "()", "{"), "String型のcolorを返すgetterを宣言する"),
+                                part("part-13", 13, "getterから色を返す", "return color;\n}", List.of("getter-return", "getter-color", "getter-semicolon", "getter-close"), List.of("return", "color", ";", "}"), "現在のインスタンスのcolorを返す"),
+                                part("part-14", 14, "setterを宣言する", "public void setColor(String color) {", List.of("setter-public", "setter-void", "setter-name", "setter-parameter-type", "setter-parameter-name", "setter-open"), List.of("public", "void", "setColor", "String", "color", "{"), "変更後の色を受け取るsetterを宣言する"),
+                                part("part-15", 15, "色を変更してCarクラスを閉じる", "this.color = color;\n}\n}", List.of("setter-this", "setter-field", "setter-assignment", "setter-value", "setter-semicolon", "setter-close", "car-class-close"), List.of("this", "color", "=", "color", ";", "}", "}"), "同じインスタンスのcolorを変更しCarクラスを閉じる"));
+        }
+
+        private static CodeReadingPart part(
+                        String id, int order, String title, String targetCode,
+                        List<String> stepIds, List<String> tokens, String summary) {
+                return new CodeReadingPart(id, order, title, List.of(), targetCode,
+                                stepIds, tokens, List.of(), summary);
         }
 }
