@@ -35,7 +35,9 @@ public class CodeReadingIndexController {
             CodeReadingLessonCatalog.STAGE8_LESSON_ID,
             "同じクラスから2つの独立したインスタンスを作り、フィールドとメソッドを使うコードを学びます。",
             CodeReadingLessonCatalog.STAGE9_LESSON_ID,
-            "コンストラクタへ色を渡してインスタンスを初期化し、thisでフィールドを指定するコードを学びます。"
+            "コンストラクタへ色を渡してインスタンスを初期化し、thisでフィールドを指定するコードを学びます。",
+            CodeReadingLessonCatalog.STAGE10_LESSON_ID,
+            "privateフィールドとgetter・setterを使い、メソッドを通して車の色を取得・変更するコードを学びます。"
     );
 
     private final CodeReadingLessonCatalog lessonCatalog;

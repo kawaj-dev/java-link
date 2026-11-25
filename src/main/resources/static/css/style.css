@@ -5008,14 +5008,18 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
 
 /* INTRO: 完成コードの各行を、対応するPartへの操作として表示します。 */
 .quiz-focus-program
-    .quiz-ide-editor:has(.quiz-intro-code-lines) {
+    .quiz-ide-editor:has(.quiz-intro-code-lines),
+.quiz-final-review
+    .quiz-ide-editor:has(.quiz-summary-code-lines) {
     display: block;
     min-height: 0;
     overflow-x: auto;
 }
 
 .quiz-focus-program
-    .quiz-intro-code-lines {
+    .quiz-intro-code-lines,
+.quiz-final-review
+    .quiz-summary-code-lines {
     width: max-content;
     min-width: 100%;
     padding: 28px 0;
@@ -5027,7 +5031,9 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
 }
 
 .quiz-focus-program
-    .quiz-intro-code-row {
+    .quiz-intro-code-row,
+.quiz-final-review
+    .quiz-summary-code-row {
     display: grid;
     grid-template-columns: 36px minmax(max-content, 1fr);
     height: 2.05em;
@@ -5043,7 +5049,9 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
 }
 
 .quiz-focus-program
-    .quiz-intro-code-line-number {
+    .quiz-intro-code-line-number,
+.quiz-final-review
+    .quiz-summary-code-line-number {
     padding: 0 6px 0 4px;
     border-right: 1px solid #183656;
     color: #748aa3;
@@ -5051,6 +5059,32 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
     line-height: 2.05;
     text-align: right;
     user-select: none;
+}
+
+.quiz-final-review
+    .quiz-summary-code-line {
+    display: block;
+    padding: 0 20px;
+    box-sizing: border-box;
+    color: inherit;
+    font: inherit;
+    line-height: inherit;
+    text-align: left;
+    white-space: pre;
+}
+
+/* SUMMARYの既存配色は保ち、行配置だけINTROと共通化します。 */
+.quiz-final-review
+    .quiz-summary-code-lines {
+    color: #d8dee9;
+    background: #171b22;
+}
+
+.quiz-final-review
+    .quiz-summary-code-line-number {
+    border-right-color: #252d36;
+    color: #66717d;
+    background: #151920;
 }
 
 .quiz-focus-program

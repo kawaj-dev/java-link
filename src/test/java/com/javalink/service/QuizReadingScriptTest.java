@@ -81,7 +81,7 @@ class QuizReadingScriptTest {
         assertTrue(template.contains("quiz-reading-access-row--header"));
         assertTrue(template.contains("(section.tableHeader and entryStat.first) or entry.tableHeader"));
         assertTrue(script.contains("entry.tableHeader === true"));
-        assertTrue(template.contains("style.css(v='intro-part-jump-all-1')"));
+        assertTrue(template.contains("style.css(v='summary-code-rows-1')"));
         assertTrue(template.contains("quiz-reading.js(v='stage3-reading-6')"));
         assertFalse(template.contains("continuous-circuit-1"));
     }
@@ -118,6 +118,25 @@ class QuizReadingScriptTest {
         assertTrue(style.contains("text-align: left;"));
         assertTrue(style.contains("white-space: normal;"));
         assertTrue(style.contains("white-space: pre;"));
+    }
+
+    @Test
+    void まとめ画面は行番号と完成コードを同じGrid行に配置する() throws IOException {
+        String style = readStyle();
+        String template = readTemplate();
+
+        assertTrue(template.contains("class=\"quiz-summary-code-row\" th:each=\"line : ${summaryCodeLines}\""));
+        assertTrue(template.contains("class=\"quiz-summary-code-line-number\""));
+        assertTrue(template.contains("class=\"quiz-summary-code-line\""));
+        assertFalse(template.contains("#numbers.sequence(7, 27)"));
+        assertTrue(style.contains(".quiz-summary-code-row {\n"
+                + "    display: grid;\n"
+                + "    grid-template-columns: 36px minmax(max-content, 1fr);\n"
+                + "    height: 2.05em;"));
+        assertTrue(style.contains(".quiz-summary-code-line {\n"
+                + "    display: block;"));
+        assertTrue(style.contains("font: inherit;\n"
+                + "    line-height: inherit;"));
     }
 
     private String readScript() throws IOException {

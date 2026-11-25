@@ -647,6 +647,48 @@ class LearningProgressRestoreServiceTest {
     }
 
     @Test
+    void Stage10の詳細進捗はprivateフィールドまでの完了Stepと現在位置を復元する() {
+        String lessonId = CodeReadingLessonCatalog.STAGE10_LESSON_ID;
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("color-private", false);
+        Set<String> completedStepIds = Set.of(
+                "class-public", "class-keyword", "class-name", "class-open",
+                "main-public", "main-static", "main-void", "main-name",
+                "main-string-array", "main-args", "main-open",
+                "car-type", "car-name", "car-assignment", "car-new",
+                "car-constructor", "car-argument", "car-semicolon",
+                "print-before-command", "getter-before-owner",
+                "getter-before-call", "print-before-semicolon",
+                "setter-owner", "setter-call", "setter-argument",
+                "setter-call-semicolon", "print-after-command",
+                "getter-after-owner", "getter-after-call",
+                "print-after-semicolon", "main-close", "main-class-close",
+                "car-class-keyword", "car-class-name", "car-class-open"
+        );
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+        when(learningProgressService.findProgressSnapshot(userAccount, lessonId))
+                .thenReturn(Optional.of(new LearningProgressService.ProgressSnapshot(
+                        storedProgress,
+                        completedStepIds,
+                        true
+                )));
+        when(lessonService.getLesson(lessonId))
+                .thenReturn(new CodeReadingLessonCatalog().getLesson(lessonId));
+
+        LessonProgress restored = restoreService.restoreIfAuthenticated(
+                session,
+                lessonId
+        ).orElseThrow();
+
+        assertEquals("color-private", restored.getCurrentStepId());
+        assertEquals(completedStepIds, restored.getCompletedStepIds());
+        assertFalse(restored.isStepCompleted("color-private"));
+        assertFalse(restored.isStepCompleted("getter-name"));
+        assertFalse(restored.isCompleted());
+    }
+
+    @Test
     void ログインユーザーの複数Lessonを一括スナップショットから復元する() {
         String secondLessonId = "stage2";
         UserAccount userAccount = mock(UserAccount.class);

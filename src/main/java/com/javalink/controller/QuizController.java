@@ -41,6 +41,7 @@ public class QuizController {
             "shuffledOptions";
     public static final String READING_ITEMS_ATTRIBUTE = "readingItems";
     public static final String INTRO_CODE_LINES_ATTRIBUTE = "introCodeLines";
+    public static final String SUMMARY_CODE_LINES_ATTRIBUTE = "summaryCodeLines";
 
     private static final Map<String, List<String>> INTRO_PART_IDS_BY_LESSON = Map.ofEntries(
             Map.entry(CodeReadingLessonCatalog.STAGE1_LESSON_ID, List.of(
@@ -80,6 +81,13 @@ public class QuizController {
                     "part-5", "part-6", "part-6", "", "part-7", "part-8", "",
                     "part-9", "part-10", "part-11", "", "part-11", "part-12",
                     "part-12", "part-12"
+            )),
+            Map.entry(CodeReadingLessonCatalog.STAGE10_LESSON_ID, List.of(
+                    "part-1", "part-2", "part-3", "", "part-4", "", "part-5",
+                    "", "part-6", "part-7", "part-7", "", "part-8", "part-9",
+                    "", "part-10", "part-11", "part-11", "", "part-12",
+                    "part-13", "part-13", "", "part-14", "part-15", "part-15",
+                    "part-15"
             ))
     );
 
@@ -275,6 +283,10 @@ public class QuizController {
             addLearningModel(model, session, page, lessonId);
         }
         if (page.phase() == CodeReadingPhase.SUMMARY) {
+            model.addAttribute(
+                    SUMMARY_CODE_LINES_ATTRIBUTE,
+                    createIntroCodeLines(lessonId, page.completedCode())
+            );
             LessonViewModel lessonViewModel =
                     lessonViewModelService.createViewModel(session, lessonId);
             model.addAttribute(

@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Java Link | コードを左から読む</title>
-    <link rel="stylesheet" th:href="@{/css/style.css(v='intro-part-jump-all-1')}"
-          href="/css/style.css?v=intro-part-jump-all-1">
+    <link rel="stylesheet" th:href="@{/css/style.css(v='summary-code-rows-1')}"
+          href="/css/style.css?v=summary-code-rows-1">
     <script th:if="${phase.name() == 'LEARNING'}" defer
             th:src="@{/js/quiz-reading.js(v='stage3-reading-6')}"
             src="/js/quiz-reading.js?v=stage3-reading-6"></script>
@@ -374,40 +374,15 @@
                     Main.java
                 </span>
             </div>
-            <div class="quiz-ide-editor">
-                <div class="quiz-ide-line-numbers" aria-hidden="true">
-                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span
-                        th:if="${lessonId != 'hello-program-reading'}">6</span>
-                    <span th:if="${lessonId == 'operator-program-reading' or lessonId == 'conditional-program-reading' or lessonId == 'loop-program-reading' or lessonId == 'array-program-reading' or lessonId == 'method-program-reading'}">7</span>
-                    <span th:if="${lessonId == 'operator-program-reading' or lessonId == 'conditional-program-reading' or lessonId == 'loop-program-reading' or lessonId == 'array-program-reading' or lessonId == 'method-program-reading'}">8</span>
-                    <span th:if="${lessonId == 'conditional-program-reading' or lessonId == 'loop-program-reading' or lessonId == 'array-program-reading' or lessonId == 'method-program-reading'}">9</span>
-                    <span th:if="${lessonId == 'conditional-program-reading' or lessonId == 'method-program-reading'}">10</span>
-                    <span th:if="${lessonId == 'conditional-program-reading'}">11</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">7</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">8</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">9</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">10</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">11</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">12</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">13</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">14</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">15</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">16</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">17</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">18</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">19</span>
-                    <span th:if="${lessonId == 'car-instance-reading'}">20</span>
-                    <th:block th:if="${lessonId == 'constructor-program-reading'}">
-                        <span th:each="lineNumber : ${#numbers.sequence(7, 21)}"
-                              th:text="${lineNumber}">7</span>
-                    </th:block>
+            <div class="quiz-ide-editor quiz-summary-code-editor">
+                <div class="quiz-summary-code-lines" aria-label="完成コード">
+                    <div class="quiz-summary-code-row" th:each="line : ${summaryCodeLines}">
+                        <span class="quiz-summary-code-line-number" aria-hidden="true"
+                              th:text="${line.lineNumber()}">1</span>
+                        <code class="quiz-summary-code-line"
+                              th:text="${line.code()}">public class Main {</code>
+                    </div>
                 </div>
-                <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId == 'hello-program-reading'}"><code>public class Main {
-    public static void main(String[] args) {
-        System.out.println("Hello");
-    }
-}</code></pre>
-                <pre class="quiz-full-code quiz-intro-code" th:if="${lessonId != 'hello-program-reading'}"><code th:text="${codeReadingPage.completedCode}"></code></pre>
             </div>
         </div>
 
