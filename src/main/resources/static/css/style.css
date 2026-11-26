@@ -5073,20 +5073,6 @@ body:has(.quiz-final-review[data-lesson-id="loop-program-reading"]) .quiz-summar
     white-space: pre;
 }
 
-/* SUMMARYの既存配色は保ち、行配置だけINTROと共通化します。 */
-.quiz-final-review
-    .quiz-summary-code-lines {
-    color: #d8dee9;
-    background: #171b22;
-}
-
-.quiz-final-review
-    .quiz-summary-code-line-number {
-    border-right-color: #252d36;
-    color: #66717d;
-    background: #151920;
-}
-
 .quiz-focus-program
     .quiz-intro-code-line-form {
     display: block;

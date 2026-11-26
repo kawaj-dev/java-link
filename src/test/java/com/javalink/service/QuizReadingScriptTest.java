@@ -81,7 +81,7 @@ class QuizReadingScriptTest {
         assertTrue(template.contains("quiz-reading-access-row--header"));
         assertTrue(template.contains("(section.tableHeader and entryStat.first) or entry.tableHeader"));
         assertTrue(script.contains("entry.tableHeader === true"));
-        assertTrue(template.contains("style.css(v='summary-code-rows-1')"));
+        assertTrue(template.contains("style.css(v='summary-editor-colors-1')"));
         assertTrue(template.contains("quiz-reading.js(v='stage3-reading-6')"));
         assertFalse(template.contains("continuous-circuit-1"));
     }
@@ -137,6 +137,28 @@ class QuizReadingScriptTest {
                 + "    display: block;"));
         assertTrue(style.contains("font: inherit;\n"
                 + "    line-height: inherit;"));
+    }
+
+    @Test
+    void まとめ画面のコードエディタは従来の濃紺配色を使用する() throws IOException {
+        String style = readStyle();
+
+        assertTrue(style.contains(".quiz-summary-development-flow .quiz-ide-editor,\n"
+                + "body:has(.quiz-summary-development-flow)\n"
+                + "    .quiz-summary-development-flow .quiz-full-code {\n"
+                + "    color: #e5edf7;\n"
+                + "    background: #071a35;"));
+        assertTrue(style.contains(".quiz-summary-development-flow .quiz-ide-line-numbers {\n"
+                + "    border-right-color: #183656;\n"
+                + "    color: #748aa3;\n"
+                + "    background: #06162b;"));
+        assertFalse(style.contains(".quiz-summary-code-lines {\n"
+                + "    color: #d8dee9;\n"
+                + "    background: #171b22;"));
+        assertFalse(style.contains(".quiz-summary-code-line-number {\n"
+                + "    border-right-color: #252d36;\n"
+                + "    color: #66717d;\n"
+                + "    background: #151920;"));
     }
 
     private String readScript() throws IOException {
