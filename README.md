@@ -132,12 +132,12 @@ Javaコードを左から順番に読み進めながら、それぞれの部分�
   <img src="docs/images/code-reading-before-run.png" alt="読み終えたプログラム全体と実行ボタンを確認する画面" width="900">
 </p>
 
-#### ④ プログラムを実行して結果を確認する
+#### ④ 実行結果をシミュレーションで確認する
 
-最後に「Run」ボタンを押してプログラムを実行し、読んできたコードが実際にどのような結果になるのかを確認します。
+最後に「Run」ボタンを押すと、教材に定義された実行結果がTERMINALに表示され、読んできたコードがどのような結果になるのかを確認できます。現段階ではJavaコードを実際にコンパイル・実行するのではなく、JavaScriptでコンパイルから結果表示までの流れを視覚的に表現する学習用シミュレーションです。
 
 <p align="center">
-  <img src="docs/images/code-reading-complete.png" alt="プログラムを実行して結果を確認する画面" width="900">
+  <img src="docs/images/code-reading-complete.png" alt="実行シミュレーションの結果をTERMINALで確認する画面" width="900">
 </p>
 
 ### Java Linkでできるようになること
@@ -163,10 +163,19 @@ Javaコードを左から順番に読み進めながら、それぞれの部分�
 - ✅ Stage 7 メソッドを使って計算結果を表示しよう
 - ✅ Stage 8 クラスから2台の車を作ってみよう
 - ✅ Stage 9 コンストラクタを使って車の色を設定しよう
+- ✅ Stage 10 メソッドを使って車の色を変更しよう
 
 Stage 4では、`if`・`else`による条件分岐と、`String.equals()`による文字列の内容比較を学びます。9 Part・33 Stepで構成し、クラス宣言から最後の閉じ波括弧まで、完成コードを省略せず左から順番に確認できます。
 
 Stage 8では、`Car`クラスから2つのインスタンスを生成し、それぞれが異なるフィールド値を持つことや、インスタンスメソッドを呼び出して値を表示する流れを学びます。
+
+Stage 9では、コンストラクタを使ったインスタンスの初期化と、`this`によるフィールドと仮引数の区別を学びます。
+
+Stage 10では、`private`によるフィールドへの直接アクセスの制限と、getter・setterを通じたフィールド値の取得・変更を学びます。1つの`Car`インスタンスの色をredからblueへ変更するプログラムを通して、カプセル化の考え方を学びます。
+
+学習目次ではStageごとの学習状況と進捗率を確認できます。Stage 1〜10のINTRO画面では、完成コードの行をマウスまたはキーボードで選択し、対応するPartへ移動できます。移動しても学習済みStepと💡の点灯状態は保持されます。
+
+学習画面の「Javaことば図鑑」では、`class`、フィールド、メソッド、`public`、`static`、`void`、`main`、`String[]`、`args`、`private`、getter、setterなどの用語を検索し、説明とJava公式資料へのリンクを確認できます。
 
 ## DB・ログイン・学習進捗の保存・復元
 
@@ -180,11 +189,52 @@ Stage 8では、`Car`クラスから2つのインスタンスを生成し、そ�
 
 - ✅ ログイン成功時にユーザーIDだけをHttpSessionへ保存し、必要なときにユーザー情報を取得
 
-- ✅ ログイン済みユーザーが次のStepへ進んだとき、またはLessonを完了したときの進捗保存
+- ✅ Lesson単位の現在位置・完了状態と、完了済みStepの保存
+
+- ✅ 正解直後のStep詳細、Step移動後の現在位置、Lesson完了時の完了状態をDBへ同期
 
 - ✅ 未ログインの場合は、従来どおりHttpSessionだけで学習可能
 
-- ✅ DBに保存した進捗を復元し、前回のStepから学習を再開
+- ✅ DBに保存した現在Stepと完了済みStepを復元し、前回の位置と💡の点灯状態から学習を再開
+
+- ✅ 対象Stageと全Stageの学習進捗リセット
+
+### 学習進捗のDB構造
+
+`learning_progress`は、ユーザーとLessonの組み合わせごとに現在位置とLessonの完了状態を管理する親進捗です。`learning_step_progress`は親進捗に紐づく完了済みStepを管理し、レコードが存在することをStep完了として扱います。
+
+ユーザーとLesson、親進捗とStepの組み合わせにはそれぞれUNIQUE制約を設け、同じ進捗やStepが重複して登録されないようにしています。親進捗とStep詳細は同一トランザクションで保存します。
+
+```mermaid
+erDiagram
+    user_account ||--o{ learning_progress : "学習する"
+    learning_progress ||--o{ learning_step_progress : "完了Stepを持つ"
+
+    user_account {
+        bigint id PK
+        varchar display_name
+        varchar email UK
+        varchar password_hash
+        timestamp created_at
+    }
+
+    learning_progress {
+        bigint id PK
+        bigint user_id FK
+        varchar lesson_id
+        varchar current_step_id
+        boolean completed
+        integer step_progress_version
+        timestamp updated_at
+    }
+
+    learning_step_progress {
+        bigint id PK
+        bigint learning_progress_id FK
+        varchar step_id
+        timestamp completed_at
+    }
+```
 
 ### ログインから学習進捗の保存・復元まで
 
@@ -193,22 +243,31 @@ flowchart LR
     Login[ログイン]
     Session[ユーザーIDを<br/>HttpSessionへ保存]
     Learning[学習]
-    Progress[次のStep確定<br/>またはLesson完了]
+    Correct[正解したStepを完了]
+    Progress[Step移動後の現在位置<br/>またはLesson完了]
     DB[(PostgreSQL)]
-    Restore[保存した進捗を復元]
-    Resume[前回のStepから再開]
+    SessionProgress{HttpSessionに<br/>進捗があるか}
+    Restore[現在Stepと完了済みStepを復元]
+    Resume[前回の位置と<br/>💡の点灯状態から再開]
 
     Login --> Session
     Session --> Learning
-    Learning --> Progress
+    Learning --> Correct
+    Correct -->|Step詳細を同期| DB
+    Correct --> Progress
     Progress --> DB
+    Session --> SessionProgress
+    SessionProgress -->|あり・セッション優先| Resume
+    SessionProgress -->|なし| DB
     DB --> Restore
     Restore --> Resume
 ```
 
-ログイン済みユーザーについては、Lesson単位の学習進捗をDBへ保存し、セッションに進捗が残っていない場合は、DBに保存された進捗から前回のStepを復元して学習を再開できます。
+ログイン済みユーザーについては、HttpSessionにある学習状態を優先し、セッションに進捗が残っていない場合にDBから現在Stepと完了済みStepを復元します。未ログインユーザーはDBを使用せず、HttpSessionだけで学習できます。
 
-現在は「続きから／最初から」を選択するUI、完了した個々のStepや回答状態のDB保存、ログアウト、アクセス制御、Spring Securityによる正式な認証状態管理は未実装です。
+対象Stageのリセットでは、ログイン済みユーザーのセッション進捗と対象LessonのDB進捗をリセットします。全Stageのリセットにも対応し、他ユーザーや対象外Lessonの進捗には影響を与えません。未ログインユーザーはセッション進捗だけをリセットします。
+
+一時的な回答内容、選択肢、不正解履歴、Run済み状態はDBへ保存していません。また、「続きから／最初から」を選択するUI、ログアウト、アクセス制御、Spring SecurityのSecurityContextやSecurityFilterChainによる正式な認証・認可は未実装です。現在使用しているSpring Securityの機能は、パスワードのハッシュ化に利用する`spring-security-crypto`です。
 
 ---
 
@@ -249,19 +308,31 @@ Java Linkでは、学習の進行や画面表示を実現するために、次�
   現在のStep、完了したStep、回答状態などをセッションに保存し、学習途中の状態を管理しています。
 
 * **Spring Data JPAによるデータ永続化**
-  PostgreSQLへユーザー情報とLesson単位の学習進捗を保存しています。メールアドレスはDBのUNIQUE制約でも重複を防ぎ、ユーザーとLessonの組み合わせごとに1件の進捗を管理しています。
+  PostgreSQLへユーザー情報、Lesson単位の現在位置・完了状態、完了済みStepを保存しています。メールアドレス、ユーザーとLesson、親進捗とStepの組み合わせはDBのUNIQUE制約でも重複を防いでいます。
 
 * **ユーザー登録・ログイン処理**
   パスワードは `spring-security-crypto` のBCryptでハッシュ化して保存し、ログイン時はメールアドレスとパスワードを照合します。ログイン成功後はUserAccountのIDだけをHttpSessionに保持します。
 
 * **学習フローとDB進捗の保存・復元の連携**
-  ログイン済みユーザーが次のStepへ進んだときは更新後のStep IDを、Lessonを完了したときは最終Step IDと完了状態をDBへ保存します。セッションに進捗が残っていない場合は、DBに保存された進捗を復元し、前回のStepから学習を再開します。未ログインユーザーはHttpSessionだけで学習を続けられます。
+  ログイン済みユーザーが正解した直後に完了済みStepを同期し、Step移動後には更新後のStep IDを、Lesson完了時には最終Step IDと完了状態をDBへ保存します。HttpSessionに進捗がない場合は、現在Stepと完了済みStepをDBから復元し、💡の点灯状態を再現します。未ログインユーザーはHttpSessionだけで学習を続けられます。
+
+* **学習進捗のリセット**
+  Stage単独と全Stageのリセットに対応しています。ログイン済みユーザーはセッションとDBの進捗を、未ログインユーザーはセッション進捗だけを初期化します。
 
 * **JavaScriptによる学習画面の動的な更新**
-  回答結果に応じた電球の点灯、説明・進捗表示の更新、次のStepの有効化に加え、まとめ画面ではコンパイルから実行結果表示までの流れを視覚的に表現しています。
+  回答結果に応じた電球の点灯、説明・進捗表示の更新、次のStepの有効化に加え、SUMMARY画面ではコンパイルから固定の実行結果表示までの流れを学習用シミュレーションとして視覚的に表現しています。教材コード自体のコンパイル・実行は行いません。
 
 * **コード行からのPartジャンプ機能**  
-  INTRO画面のコード行と学習Partを対応付け、選択した行から該当Partの先頭Stepへ移動できる機能を実装しています。マウス・キーボード操作に対応し、学習済みStepや💡の点灯状態を保持したまま移動できます。
+  Stage 1〜10のINTRO画面でコード行と学習Partを対応付け、選択した行から該当Partの先頭Stepへ移動できます。マウス・Tab・Enter・Spaceによる操作に対応し、学習済みStepや💡の点灯状態を保持したまま移動できます。
+
+* **Stage別の学習状況と進捗率の表示**
+  学習目次で各Stageの未学習・学習中・学習完了の状態と、完了済みStepに基づく進捗率を確認できます。
+
+* **Javaことば図鑑**
+  学習画面からJava用語を検索し、用語の説明とJava公式資料へのリンクを確認できます。
+
+* **SUMMARY画面の完成コード表示**
+  完成コードと各部分の意味をStage共通の構造で表示しています。行番号とコード本文をCSS Gridの同じ行に配置し、完成コードから行番号を自動生成することで、空白行やインデントを保ちながら構造的に位置をそろえています。
 
 * **Mavenによるビルド・テスト**
   Mavenを利用してアプリケーションの実行やテストを行っています。
@@ -274,10 +345,23 @@ Java Linkでは、学習の進行や画面表示を実現するために、次�
 
 ---
 
+# テスト
+
+教材定義、学習フロー、画面遷移、INTRO画面のPartジャンプ、学習進捗の保存・復元・リセット、ユーザー登録・ログイン、SUMMARY画面などを対象に、Controller・Service・Repositoryのテストを実装しています。Repositoryと永続化のテストにはH2を使用し、PostgreSQLの実データへ影響を与えずに検証できる構成としています。
+
+PR #83時点で確認済みのテスト実績は次のとおりです。今回のREADME更新に伴って再実行した結果ではありません。
+
+- Tests: 301
+- Failures: 0
+- Errors: 0
+- Skipped: 0
+
+---
+
 # 使用技術
 
-- Java
-- Spring Boot
+- Java 17
+- Spring Boot 3.5.4
 - Thymeleaf
 - HTML
 - CSS
@@ -310,7 +394,7 @@ Codexで作成・変更したファイルは、差分とテスト結果を確認
 # 開発環境
 
 - VS Code
-- JDK
+- JDK 17
 
 ---
 
