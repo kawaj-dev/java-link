@@ -39,6 +39,7 @@ public class CodeReadingLessonCatalog {
         public static final String STAGE8_LESSON_ID = "car-instance-reading";
         public static final String STAGE9_LESSON_ID = "constructor-program-reading";
         public static final String STAGE10_LESSON_ID = "encapsulation-program-reading";
+        public static final String STAGE11_LESSON_ID = "inheritance-program-reading";
         private static final String OFFICIAL_REFERENCES_TITLE =
                         "このページの技術的根拠：Javaの公式仕様・API";
         private static final String DISPLAY_AND_NEWLINE_CARD = "画面に表示して改行する";
@@ -92,9 +93,10 @@ public class CodeReadingLessonCatalog {
                 CodeReadingLessonDefinition stage9 = createStage9(stage2, stage4, stage8);
                 CodeReadingLessonDefinition stage10 = createStage10(
                                 stage2, stage4, stage8, stage9);
+                CodeReadingLessonDefinition stage11 = createStage11();
                 definitionsInOrder = List.of(
                                 stage1, stage2, stage3, stage4, stage5,
-                                stage6, stage7, stage8, stage9, stage10);
+                                stage6, stage7, stage8, stage9, stage10, stage11);
                 definitions = definitionsInOrder.stream().collect(Collectors.toUnmodifiableMap(
                                 CodeReadingLessonDefinition::lessonId,
                                 Function.identity()));
@@ -418,6 +420,50 @@ public class CodeReadingLessonCatalog {
                                 createStage10Circuits(),
                                 createStage10CodeLines(),
                                 "red\nblue");
+        }
+
+        private static CodeReadingLessonDefinition createStage11() {
+                return new CodeReadingLessonDefinition(
+                                STAGE11_LESSON_ID,
+                                "Stage 11",
+                                "継承を使って電気自動車を作ろう",
+                                """
+                                                public class Main {
+                                                    public static void main(String[] args) {
+                                                        ElectricCar car = new ElectricCar("red");
+
+                                                        System.out.println(car.getColor());
+                                                        car.charge();
+                                                    }
+                                                }
+
+                                                class Car {
+                                                    private String color;
+
+                                                    Car(String color) {
+                                                        this.color = color;
+                                                    }
+
+                                                    public String getColor() {
+                                                        return color;
+                                                    }
+                                                }
+
+                                                class ElectricCar extends Car {
+                                                    ElectricCar(String color) {
+                                                        super(color);
+                                                    }
+
+                                                    public void charge() {
+                                                        System.out.println("Charging");
+                                                    }
+                                                }
+                                                """,
+                                createStage11Steps(),
+                                createStage11Parts(),
+                                createStage11Circuits(),
+                                createStage11CodeLines(),
+                                "red\nCharging");
         }
 
         private static List<CodeReadingStepDefinition> createStage1Steps() {
@@ -3954,6 +4000,371 @@ public class CodeReadingLessonCatalog {
                                 part("part-13", 13, "getterから色を返す", "return color;\n}", List.of("getter-return", "getter-color", "getter-semicolon", "getter-close"), List.of("return", "color", ";", "}"), "現在のインスタンスのcolorを返す"),
                                 part("part-14", 14, "setterを宣言する", "public void setColor(String color) {", List.of("setter-public", "setter-void", "setter-name", "setter-parameter-type", "setter-parameter-name", "setter-open"), List.of("public", "void", "setColor", "String", "color", "{"), "変更後の色を受け取るsetterを宣言する"),
                                 part("part-15", 15, "色を変更してCarクラスを閉じる", "this.color = color;\n}\n}", List.of("setter-this", "setter-field", "setter-assignment", "setter-value", "setter-semicolon", "setter-close", "car-class-close"), List.of("this", "color", "=", "color", ";", "}", "}"), "同じインスタンスのcolorを変更しCarクラスを閉じる"));
+        }
+
+        private static List<CodeReadingStepDefinition> createStage11Steps() {
+                List<CodeReadingExplanationSection> electricCarType = electricCarTypeExplanation();
+                List<CodeReadingExplanationSection> referenceVariable = referenceVariableExplanation();
+                List<CodeReadingExplanationSection> assignment = assignmentExplanation();
+                List<CodeReadingExplanationSection> creation = electricCarCreationExplanation();
+                List<CodeReadingExplanationSection> actualArgument = constructorActualArgumentExplanation();
+                List<CodeReadingExplanationSection> privateField = privateExplanation();
+                List<CodeReadingExplanationSection> constructor = constructorDeclarationExplanation();
+                List<CodeReadingExplanationSection> constructorParameter = constructorParameterExplanation();
+
+                return List.of(
+                                richStep("class-public", 1, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("class-keyword", 2, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("class-name", 3, "Main", "Main", "main-class-name", CLASS_NAME_CARD,
+                                                "クラス名", CLASS_NAME_EXPLANATION),
+                                richStep("class-open", 4, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("main-public", 5, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("main-static", 6, "static", "static", "without-instance", STATIC_CARD,
+                                                "static修飾子", STATIC_EXPLANATION),
+                                richStep("main-void", 7, "void", "void", "no-return", VOID_CARD,
+                                                "戻り値の型", VOID_EXPLANATION),
+                                richStep("main-name", 8, "main", "main", "program-entry", MAIN_CARD,
+                                                "メソッド名", MAIN_EXPLANATION),
+                                richStep("main-string-array", 9, "String[]", "String[]", "multiple-strings", STRING_ARRAY_CARD,
+                                                "引数の型", STRING_ARRAY_EXPLANATION),
+                                richStep("main-args", 10, "args", "args", "argument-variable", ARGS_CARD,
+                                                "引数名", ARGS_EXPLANATION),
+                                richStep("main-open", 11, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("electric-car-type", 12, "ElectricCar", "ElectricCar", "reference-type",
+                                                "ElectricCar型の変数", "参照型", electricCarType),
+                                richStep("car-variable", 13, "car", "car", "reference-variable",
+                                                "電気自動車を参照する変数", "参照変数", referenceVariable),
+                                richStep("car-assignment", 14, "=", "=", "assignment", "生成した参照を代入する",
+                                                "代入演算子", assignment),
+                                richStep("car-new", 15, "new", "new", "instance-creation",
+                                                "新しいインスタンスを生成する", "クラスインスタンス生成", creation),
+                                richStep("electric-car-constructor-call", 16, "ElectricCar", "ElectricCar", "constructor-call",
+                                                "ElectricCarのコンストラクタを呼ぶ", "コンストラクタ呼び出し", creation),
+                                richStep("electric-car-red-argument", 17, "\"red\"", "\"red\"", "actual-argument",
+                                                "初期色redを渡す", "実引数", actualArgument),
+                                richStep("car-creation-semicolon", 18, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("print-color-command", 19, "System.out.println", "System.out.println",
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力メソッド", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("get-color-owner", 20, "car", "car", "method-owner",
+                                                "ElectricCarインスタンスを参照する", "参照変数", referenceVariable),
+                                richStep("inherited-get-color-call", 21, "getColor()", "getColor()", "inherited-method-call",
+                                                "Carから継承したメソッドを呼ぶ", "継承したメソッド", inheritedGetterExplanation()),
+                                richStep("print-color-semicolon", 22, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("charge-owner", 23, "car", "car", "method-owner",
+                                                "ElectricCarインスタンスを参照する", "参照変数", referenceVariable),
+                                richStep("charge-call", 24, "charge()", "charge()", "subclass-method-call",
+                                                "ElectricCar独自の充電処理を呼ぶ", "インスタンスメソッド呼び出し", chargeCallExplanation()),
+                                richStep("charge-call-semicolon", 25, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("main-close", 26, "}", "}", "close-method", "mainメソッドを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("main-class-close", 27, "}", "}", "close-class", "Mainクラスを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("car-class-keyword", 28, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("car-class-name", 29, "Car", "Car", "superclass-name",
+                                                "ElectricCarのスーパークラス", "スーパークラス", superclassExplanation()),
+                                richStep("car-class-open", 30, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("color-private", 31, "private", "private", "private-access",
+                                                "Carクラスの外から直接使えない", "privateアクセス修飾子", privateField),
+                                richStep("color-string", 32, "String", "String", "string-type",
+                                                "文字列を扱う型", "文字列型", stringTypeExplanation()),
+                                richStep("color-field", 33, "color", "color", "instance-field",
+                                                "Carの各インスタンスが持つ色", "インスタンスフィールド", inheritedFieldStateExplanation()),
+                                richStep("color-semicolon", 34, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("car-constructor-name", 35, "Car", "Car", "constructor-declaration",
+                                                "Carのコンストラクタ", "コンストラクタ", constructor),
+                                richStep("car-constructor-parameter", 36, "String color", "String color", "formal-parameter",
+                                                "初期色を受け取る", "仮引数", constructorParameter),
+                                richStep("car-constructor-open", 37, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("car-constructor-this-field", 38, "this.color", "this.color", "instance-field",
+                                                "現在のCarインスタンスのフィールド", "thisによるフィールド指定", thisFieldExplanation()),
+                                richStep("car-constructor-assignment", 39, "=", "=", "assignment",
+                                                "受け取った色をフィールドへ入れる", "代入演算子", assignment),
+                                richStep("car-constructor-value", 40, "color;", "color;", "parameter-value",
+                                                "仮引数の色を使って文を終える", "仮引数の利用", constructorParameterValueExplanation()),
+                                richStep("car-constructor-close", 41, "}", "}", "close-constructor",
+                                                "Carコンストラクタを閉じる", "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("getter-public", 42, "public", "public", "accessible", PUBLIC_CARD,
+                                                "アクセス修飾子", PUBLIC_EXPLANATION),
+                                richStep("getter-return-type", 43, "String", "String", "return-type",
+                                                "文字列を返す", "戻り値の型", getterReturnTypeExplanation()),
+                                richStep("getter-name", 44, "getColor()", "getColor()", "getter-declaration",
+                                                "色を返すpublicメソッド", "getter", getterDeclarationExplanation()),
+                                richStep("getter-open", 45, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("getter-return-color", 46, "return color;", "return color;", "return-value",
+                                                "現在の色を呼び出し元へ返す", "return文", getterReturnStatementExplanation()),
+                                richStep("getter-close", 47, "}", "}", "close-method", "getColorメソッドを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("car-class-close", 48, "}", "}", "close-class", "Carクラスを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("electric-class-keyword", 49, "class", "class", "declare-class", CLASS_CARD,
+                                                "クラスを作るキーワード", CLASS_EXPLANATION),
+                                richStep("electric-class-name", 50, "ElectricCar", "ElectricCar", "subclass-name",
+                                                "Carを継承するサブクラス", "サブクラス", subclassExplanation()),
+                                richStep("extends-keyword", 51, "extends", "extends", "inheritance",
+                                                "直接のスーパークラスを指定する", "extends", extendsExplanation()),
+                                richStep("extended-car-name", 52, "Car", "Car", "superclass-name",
+                                                "直接のスーパークラス", "スーパークラス", superclassExplanation()),
+                                richStep("electric-class-open", 53, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("electric-constructor-name", 54, "ElectricCar", "ElectricCar", "constructor-declaration",
+                                                "ElectricCarのコンストラクタ", "コンストラクタ", electricConstructorExplanation()),
+                                richStep("electric-constructor-parameter", 55, "String color", "String color", "formal-parameter",
+                                                "初期色を受け取る", "仮引数", constructorParameter),
+                                richStep("electric-constructor-open", 56, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("super-keyword", 57, "super", "super", "super-constructor-call",
+                                                "直接のスーパークラスのコンストラクタを呼ぶ", "super", superExplanation()),
+                                richStep("super-argument", 58, "color", "color", "actual-argument",
+                                                "Carコンストラクタへ色を渡す", "実引数", superArgumentExplanation()),
+                                richStep("super-semicolon", 59, ";", ";", "command-end", "文の終わり",
+                                                "セミコロン", SEMICOLON_EXPLANATION),
+                                richStep("electric-constructor-close", 60, "}", "}", "close-constructor",
+                                                "ElectricCarコンストラクタを閉じる", "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("charge-public-void", 61, "public void", "public void", "public-void-method",
+                                                "外から呼べて値を返さない", "メソッド修飾子と戻り値", publicVoidExplanation()),
+                                richStep("charge-name", 62, "charge()", "charge()", "subclass-method",
+                                                "ElectricCar独自の充電メソッド", "インスタンスメソッド", chargeMethodExplanation()),
+                                richStep("charge-open", 63, "{", "{", "block-start", BLOCK_START_CARD,
+                                                "開始波かっこ", BLOCK_START_EXPLANATION),
+                                richStep("charge-print-command", 64, "System.out.println", "System.out.println",
+                                                "display-and-newline", DISPLAY_AND_NEWLINE_CARD,
+                                                "標準出力メソッド", SYSTEM_OUT_PRINTLN_EXPLANATION),
+                                richStep("charging-literal", 65, "\"Charging\"", "\"Charging\"", "display-text",
+                                                "Chargingと表示する", "文字列リテラル", chargingLiteralExplanation()),
+                                richStep("charge-close", 66, "}", "}", "close-method", "chargeメソッドを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION),
+                                richStep("electric-class-close", 67, "}", "}", "close-class", "ElectricCarクラスを閉じる",
+                                                "終了波かっこ", BLOCK_END_EXPLANATION));
+        }
+
+        private static List<CodeReadingExplanationSection> electricCarTypeExplanation() {
+                return List.of(textSection("参照型 ElectricCar",
+                                text("ElectricCarは、Carを継承して定義するElectricCarクラスを型として使っています。"),
+                                text("変数carは、生成したElectricCarインスタンスへの参照を保持します。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§4.3.1", "Objects",
+                                                                "クラスインスタンスと参照値について定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-4.html#jls-4.3.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> electricCarCreationExplanation() {
+                return List.of(textSection("ElectricCarインスタンスの生成",
+                                text("new ElectricCar(\"red\")は新しいElectricCarインスタンスを生成し、ElectricCar(String color)コンストラクタを実行します。"),
+                                text("これは現実の電気自動車を製造するのではなく、プログラム内に電気自動車を表すオブジェクトを生成する処理です。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§15.9", "Class Instance Creation Expressions",
+                                                                "newによるインスタンス生成とコンストラクタ呼び出しを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.9")));
+        }
+
+        private static List<CodeReadingExplanationSection> inheritedGetterExplanation() {
+                return List.of(textSection("継承したpublicメソッドの呼び出し",
+                                text("ElectricCarはCarのpublicメソッドgetColor()を継承しているため、car.getColor()として呼び出せます。"),
+                                text("Carのコンストラクタで初期化されたcolorの値redが返されます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§8.4.8", "Inheritance, Overriding, and Hiding",
+                                                                "クラスがスーパークラスから継承するメソッドを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4.8"),
+                                                jls17Reference("§15.12", "Method Invocation Expressions",
+                                                                "メソッド呼び出し式を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.12")));
+        }
+
+        private static List<CodeReadingExplanationSection> chargeCallExplanation() {
+                return List.of(textSection("サブクラス独自のメソッド呼び出し",
+                                text("car.charge()は、ElectricCarクラスで独自に宣言したchargeメソッドを呼び出します。"),
+                                text("charge()はCarクラスから継承したメソッドではありません。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§15.12", "Method Invocation Expressions",
+                                                                "対象のインスタンスに対するメソッド呼び出しを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-15.html#jls-15.12")));
+        }
+
+        private static List<CodeReadingExplanationSection> superclassExplanation() {
+                return List.of(textSection("スーパークラス　superclass",
+                                text("CarはElectricCarの直接のスーパークラスです。"),
+                                text("スーパークラスは、サブクラスへ引き継がれるメンバーの基礎を定義します。ただし、アクセス制御や継承の規則により、すべてのフィールドやメソッドがそのまま継承されるわけではありません。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§8.1.4", "Superclasses and Subclasses",
+                                                                "直接のスーパークラスとサブクラスの関係を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.1.4")));
+        }
+
+        private static List<CodeReadingExplanationSection> inheritedFieldStateExplanation() {
+                return List.of(textSection("Carで宣言したインスタンスフィールド",
+                                text("colorはCarの各インスタンスが持つ状態です。ElectricCarインスタンスにも、Carで宣言されたこのフィールドの状態が存在します。"),
+                                text("ただしprivateフィールドのcolorは、ElectricCarのメンバーとしては継承されず、ElectricCarのコードからcolorを直接参照することはできません。この例ではCarのコンストラクタとgetColor()を通して扱います。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§8.2", "Class Members",
+                                                                "クラスのメンバーと継承されるメンバーの関係を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.2"),
+                                                jls17Reference("§6.6", "Access Control",
+                                                                "privateを含むアクセス制御を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-6.html#jls-6.6")));
+        }
+
+        private static List<CodeReadingExplanationSection> subclassExplanation() {
+                return List.of(textSection("サブクラス　subclass",
+                                text("ElectricCarはCarを直接継承するサブクラスです。"),
+                                text("Carから利用できる機能を受け継ぎながら、charge()というElectricCar独自の動作を追加しています。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§8.1.4", "Superclasses and Subclasses",
+                                                                "直接のスーパークラスとサブクラスの関係を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.1.4")));
+        }
+
+        private static List<CodeReadingExplanationSection> extendsExplanation() {
+                return List.of(textSection("extends　継承するクラスの指定",
+                                text("extends Carは、ElectricCarの直接のスーパークラスとしてCarを指定します。"),
+                                text("ElectricCarはCarのサブクラスになり、アクセス可能で継承の条件を満たすメソッドなどを引き継ぎます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§8.1.4", "Superclasses and Subclasses",
+                                                                "extends節が直接のスーパークラスを指定することを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.1.4")));
+        }
+
+        private static List<CodeReadingExplanationSection> electricConstructorExplanation() {
+                return List.of(textSection("サブクラスのコンストラクタ",
+                                text("ElectricCar(String color)はElectricCarインスタンスの生成時に実行されるコンストラクタです。"),
+                                text("コンストラクタそのものはCarから継承されないため、ElectricCar側で宣言しています。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§8.8", "Constructor Declarations",
+                                                                "コンストラクタの宣言と、コンストラクタが継承されないことを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.8")));
+        }
+
+        private static List<CodeReadingExplanationSection> superExplanation() {
+                return List.of(textSection("superによるスーパークラスのコンストラクタ呼び出し",
+                                text("super(color)は、直接のスーパークラスCarのCar(String color)コンストラクタを呼び出します。"),
+                                text("Carのコンストラクタが実行され、ElectricCarインスタンスが持つcolorの状態を初期化します。")),
+                                textSection("コンストラクタ本体の先頭",
+                                                text("Java 17では、明示的なスーパークラスのコンストラクタ呼び出しはコンストラクタ本体の先頭に置きます。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§8.8.7.1", "Explicit Constructor Invocations",
+                                                                "superによる直接のスーパークラスのコンストラクタ呼び出しを定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.8.7.1")));
+        }
+
+        private static List<CodeReadingExplanationSection> superArgumentExplanation() {
+                return List.of(textSection("superへ渡す実引数",
+                                text("ElectricCarコンストラクタが受け取った仮引数colorを、Carコンストラクタの実引数として渡します。"),
+                                text("この例ではredがCar(String color)へ渡されます。")));
+        }
+
+        private static List<CodeReadingExplanationSection> publicVoidExplanation() {
+                return List.of(textSection("publicで戻り値のないメソッド",
+                                text("publicによってほかのクラスからcharge()を呼び出せ、voidによって値を返さないことを示します。")),
+                                textSection("既出用語の組み合わせ",
+                                                text("publicとvoidの基本的な意味は、これまでのStageと同じです。")),
+                                officialReferencesSection(OFFICIAL_REFERENCES_TITLE,
+                                                jls17Reference("§8.4", "Method Declarations",
+                                                                "メソッド宣言の構造を定めています。",
+                                                                "https://docs.oracle.com/javase/specs/jls/se17/html/jls-8.html#jls-8.4")));
+        }
+
+        private static List<CodeReadingExplanationSection> chargeMethodExplanation() {
+                return List.of(textSection("ElectricCar独自のインスタンスメソッド",
+                                text("charge()はElectricCarで宣言した、ElectricCarインスタンスを対象に呼び出すメソッドです。"),
+                                text("スーパークラスCarにはない、サブクラス独自の動作を表します。")));
+        }
+
+        private static List<CodeReadingExplanationSection> chargingLiteralExplanation() {
+                return List.of(textSection("文字列リテラル Charging",
+                                text("ダブルクォートで囲んだChargingは、充電処理を確認するために表示するString型の値です。")));
+        }
+
+        private static CodeReadingOfficialReference jls17Reference(
+                        String sectionNumber,
+                        String sectionTitle,
+                        String description,
+                        String uri) {
+                return new CodeReadingOfficialReference(
+                                CodeReadingOfficialSource.JLS,
+                                "Java SE 17",
+                                "JLS Java SE 17",
+                                sectionNumber,
+                                sectionTitle,
+                                description,
+                                URI.create(uri));
+        }
+
+        private static List<CodeReadingCircuitDefinition> createStage11Circuits() {
+                return List.of(
+                                circuit("main-class", "public class Main {", List.of("class-public", "class-keyword", "class-name", "class-open"), List.of("public", "class", "Main", "{")),
+                                circuit("main-method", "public static void main(String[] args) {", List.of("main-public", "main-static", "main-void", "main-name", "main-string-array", "main-args", "main-open"), List.of("public", "static", "void", "main", "String[]", "args", "{")),
+                                circuit("electric-car-creation", "ElectricCar car = new ElectricCar(\"red\");", List.of("electric-car-type", "car-variable", "car-assignment", "car-new", "electric-car-constructor-call", "electric-car-red-argument", "car-creation-semicolon"), List.of("ElectricCar", "car", "=", "new", "ElectricCar", "\"red\"", ";")),
+                                circuit("print-color", "System.out.println(car.getColor());", List.of("print-color-command", "get-color-owner", "inherited-get-color-call", "print-color-semicolon"), List.of("System.out.println", "car", "getColor()", ";")),
+                                circuit("charge-call", "car.charge();", List.of("charge-owner", "charge-call", "charge-call-semicolon"), List.of("car", "charge()", ";")),
+                                circuit("main-closes", "mainメソッドとMainクラスの終了", List.of("main-close", "main-class-close"), List.of("}", "}")),
+                                circuit("car-class", "class Car {", List.of("car-class-keyword", "car-class-name", "car-class-open"), List.of("class", "Car", "{")),
+                                circuit("private-color", "private String color;", List.of("color-private", "color-string", "color-field", "color-semicolon"), List.of("private", "String", "color", ";")),
+                                circuit("car-constructor", "Car(String color) { ... }", List.of("car-constructor-name", "car-constructor-parameter", "car-constructor-open", "car-constructor-this-field", "car-constructor-assignment", "car-constructor-value", "car-constructor-close"), List.of("Car", "String color", "{", "this.color", "=", "color;", "}")),
+                                circuit("getter-and-car-close", "getColorメソッドとCarクラスの終了", List.of("getter-public", "getter-return-type", "getter-name", "getter-open", "getter-return-color", "getter-close", "car-class-close"), List.of("public", "String", "getColor()", "{", "return color;", "}", "}")),
+                                circuit("electric-class", "class ElectricCar extends Car {", List.of("electric-class-keyword", "electric-class-name", "extends-keyword", "extended-car-name", "electric-class-open"), List.of("class", "ElectricCar", "extends", "Car", "{")),
+                                circuit("electric-constructor", "ElectricCar(String color) { ... }", List.of("electric-constructor-name", "electric-constructor-parameter", "electric-constructor-open", "super-keyword", "super-argument", "super-semicolon", "electric-constructor-close"), List.of("ElectricCar", "String color", "{", "super", "color", ";", "}")),
+                                circuit("charge-method", "public void charge() { ... }", List.of("charge-public-void", "charge-name", "charge-open", "charge-print-command", "charging-literal", "charge-close", "electric-class-close"), List.of("public void", "charge()", "{", "System.out.println", "\"Charging\"", "}", "}")));
+        }
+
+        private static Map<String, List<CodeReadingCodeLineDefinition>> createStage11CodeLines() {
+                return Map.ofEntries(
+                                Map.entry("part-1", List.of(line(List.of("class-public", "class-keyword", "class-name", "class-open"), "", ""))),
+                                Map.entry("part-2", List.of(new CodeReadingCodeLineDefinition(List.of(token("main-public"), token("main-static"), token("main-void"), token("main-name"), new CodeReadingCodeTokenDefinition("main-string-array", "(", ""), new CodeReadingCodeTokenDefinition("main-args", "", ")"), token("main-open")), "", "quiz-reading-code-line--part-2"))),
+                                Map.entry("part-3", List.of(new CodeReadingCodeLineDefinition(List.of(token("electric-car-type"), token("car-variable"), token("car-assignment"), token("car-new"), new CodeReadingCodeTokenDefinition("electric-car-constructor-call", "", "("), new CodeReadingCodeTokenDefinition("electric-car-red-argument", "", ")"), token("car-creation-semicolon")), "", ""))),
+                                Map.entry("part-4", List.of(new CodeReadingCodeLineDefinition(List.of(token("print-color-command"), new CodeReadingCodeTokenDefinition("get-color-owner", "(", "."), new CodeReadingCodeTokenDefinition("inherited-get-color-call", "", ")"), token("print-color-semicolon")), "", ""))),
+                                Map.entry("part-5", List.of(new CodeReadingCodeLineDefinition(List.of(new CodeReadingCodeTokenDefinition("charge-owner", "", "."), token("charge-call"), token("charge-call-semicolon")), "", ""))),
+                                Map.entry("part-6", List.of(line(List.of("main-close"), "", ""), line(List.of("main-class-close"), "", ""))),
+                                Map.entry("part-7", List.of(line(List.of("car-class-keyword", "car-class-name", "car-class-open"), "", ""))),
+                                Map.entry("part-8", List.of(line(List.of("color-private", "color-string", "color-field", "color-semicolon"), "", ""))),
+                                Map.entry("part-9", List.of(
+                                                new CodeReadingCodeLineDefinition(List.of(new CodeReadingCodeTokenDefinition("car-constructor-name", "", "("), new CodeReadingCodeTokenDefinition("car-constructor-parameter", "", ")"), token("car-constructor-open")), "", ""),
+                                                new CodeReadingCodeLineDefinition(List.of(new CodeReadingCodeTokenDefinition("car-constructor-this-field", "", " "), token("car-constructor-assignment"), token("car-constructor-value")), "", ""),
+                                                line(List.of("car-constructor-close"), "", ""))),
+                                Map.entry("part-10", List.of(
+                                                new CodeReadingCodeLineDefinition(List.of(token("getter-public"), token("getter-return-type"), token("getter-name"), token("getter-open")), "", ""),
+                                                line(List.of("getter-return-color"), "", ""),
+                                                line(List.of("getter-close"), "", ""),
+                                                line(List.of("car-class-close"), "", ""))),
+                                Map.entry("part-11", List.of(line(List.of("electric-class-keyword", "electric-class-name", "extends-keyword", "extended-car-name", "electric-class-open"), "", ""))),
+                                Map.entry("part-12", List.of(
+                                                new CodeReadingCodeLineDefinition(List.of(new CodeReadingCodeTokenDefinition("electric-constructor-name", "", "("), new CodeReadingCodeTokenDefinition("electric-constructor-parameter", "", ")"), token("electric-constructor-open")), "", ""),
+                                                new CodeReadingCodeLineDefinition(List.of(new CodeReadingCodeTokenDefinition("super-keyword", "", "("), new CodeReadingCodeTokenDefinition("super-argument", "", ")"), token("super-semicolon")), "", ""),
+                                                line(List.of("electric-constructor-close"), "", ""))),
+                                Map.entry("part-13", List.of(
+                                                new CodeReadingCodeLineDefinition(List.of(token("charge-public-void"), token("charge-name"), token("charge-open")), "", ""),
+                                                new CodeReadingCodeLineDefinition(List.of(token("charge-print-command"), new CodeReadingCodeTokenDefinition("charging-literal", "(", ");")), "", ""),
+                                                line(List.of("charge-close"), "", ""),
+                                                line(List.of("electric-class-close"), "", ""))));
+        }
+
+        private static List<CodeReadingPart> createStage11Parts() {
+                return List.of(
+                                part("part-1", 1, "Mainクラスを作る", "public class Main {", List.of("class-public", "class-keyword", "class-name", "class-open"), List.of("public", "class", "Main", "{"), "Mainクラスを宣言する"),
+                                part("part-2", 2, "mainメソッドを作る", "public static void main(String[] args) {", List.of("main-public", "main-static", "main-void", "main-name", "main-string-array", "main-args", "main-open"), List.of("public", "static", "void", "main", "String[]", "args", "{"), "プログラムの開始地点を宣言する"),
+                                part("part-3", 3, "ElectricCarインスタンスを生成する", "ElectricCar car = new ElectricCar(\"red\");", List.of("electric-car-type", "car-variable", "car-assignment", "car-new", "electric-car-constructor-call", "electric-car-red-argument", "car-creation-semicolon"), List.of("ElectricCar", "car", "=", "new", "ElectricCar", "\"red\"", ";"), "redを渡してElectricCarインスタンスを生成する"),
+                                part("part-4", 4, "継承したgetColorを呼び出す", "System.out.println(car.getColor());", List.of("print-color-command", "get-color-owner", "inherited-get-color-call", "print-color-semicolon"), List.of("System.out.println", "car", "getColor()", ";"), "Carから継承したgetColor()でredを表示する"),
+                                part("part-5", 5, "ElectricCar独自のchargeを呼び出す", "car.charge();", List.of("charge-owner", "charge-call", "charge-call-semicolon"), List.of("car", "charge()", ";"), "ElectricCar独自のcharge()を呼び出す"),
+                                part("part-6", 6, "mainメソッドとMainクラスを閉じる", "}\n}", List.of("main-close", "main-class-close"), List.of("}", "}"), "mainメソッドとMainクラスを閉じる"),
+                                part("part-7", 7, "スーパークラスCarを作る", "class Car {", List.of("car-class-keyword", "car-class-name", "car-class-open"), List.of("class", "Car", "{"), "ElectricCarのスーパークラスになるCarを宣言する"),
+                                part("part-8", 8, "色をprivateフィールドにする", "private String color;", List.of("color-private", "color-string", "color-field", "color-semicolon"), List.of("private", "String", "color", ";"), "Carの各インスタンスが持つ色をprivateで宣言する"),
+                                part("part-9", 9, "Carコンストラクタで色を初期化する", "Car(String color) {\n    this.color = color;\n}", List.of("car-constructor-name", "car-constructor-parameter", "car-constructor-open", "car-constructor-this-field", "car-constructor-assignment", "car-constructor-value", "car-constructor-close"), List.of("Car", "String color", "{", "this.color", "=", "color;", "}"), "Carコンストラクタがcolorを初期化する"),
+                                part("part-10", 10, "getColorとCarクラスを閉じる", "public String getColor() {\n    return color;\n}\n}", List.of("getter-public", "getter-return-type", "getter-name", "getter-open", "getter-return-color", "getter-close", "car-class-close"), List.of("public", "String", "getColor()", "{", "return color;", "}", "}"), "publicなgetColor()で色を返しCarクラスを閉じる"),
+                                part("part-11", 11, "ElectricCarがCarを継承する", "class ElectricCar extends Car {", List.of("electric-class-keyword", "electric-class-name", "extends-keyword", "extended-car-name", "electric-class-open"), List.of("class", "ElectricCar", "extends", "Car", "{"), "extendsでCarを直接のスーパークラスに指定する"),
+                                part("part-12", 12, "superでCarコンストラクタを呼ぶ", "ElectricCar(String color) {\n    super(color);\n}", List.of("electric-constructor-name", "electric-constructor-parameter", "electric-constructor-open", "super-keyword", "super-argument", "super-semicolon", "electric-constructor-close"), List.of("ElectricCar", "String color", "{", "super", "color", ";", "}"), "super(color)でCarコンストラクタへ初期色を渡す"),
+                                part("part-13", 13, "ElectricCar独自のchargeを作る", "public void charge() {\n    System.out.println(\"Charging\");\n}\n}", List.of("charge-public-void", "charge-name", "charge-open", "charge-print-command", "charging-literal", "charge-close", "electric-class-close"), List.of("public void", "charge()", "{", "System.out.println", "\"Charging\"", "}", "}"), "ElectricCar独自のcharge()を宣言しクラスを閉じる"));
         }
 
         private static CodeReadingPart part(
