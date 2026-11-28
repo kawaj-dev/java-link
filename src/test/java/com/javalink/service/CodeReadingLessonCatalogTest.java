@@ -20,6 +20,93 @@ class CodeReadingLessonCatalogTest {
             new CodeReadingLessonCatalog();
 
     @Test
+    void Stage11は13Part67Stepと継承のコードと実行結果を持つ() {
+        var definition = catalog.getDefinition(
+                CodeReadingLessonCatalog.STAGE11_LESSON_ID
+        );
+
+        assertEquals("Stage 11", definition.stageName());
+        assertEquals("継承を使って電気自動車を作ろう", definition.learningGoal());
+        assertEquals(13, definition.parts().size());
+        assertEquals(67, definition.steps().size());
+        assertEquals(definition.steps().size(), definition.steps().stream()
+                .map(step -> step.id()).distinct().count());
+        assertTrue(definition.parts().stream()
+                .allMatch(part -> part.stepIds().size() <= 7));
+        assertEquals("class ElectricCar extends Car {",
+                definition.parts().get(10).targetCode());
+        assertEquals("red\nCharging", definition.consoleOutput());
+        assertEquals(30, definition.completedCode().lines().count());
+        assertEquals("""
+                public class Main {
+                    public static void main(String[] args) {
+                        ElectricCar car = new ElectricCar("red");
+
+                        System.out.println(car.getColor());
+                        car.charge();
+                    }
+                }
+
+                class Car {
+                    private String color;
+
+                    Car(String color) {
+                        this.color = color;
+                    }
+
+                    public String getColor() {
+                        return color;
+                    }
+                }
+
+                class ElectricCar extends Car {
+                    ElectricCar(String color) {
+                        super(color);
+                    }
+
+                    public void charge() {
+                        System.out.println("Charging");
+                    }
+                }
+                """.strip(), definition.completedCode().strip());
+    }
+
+    @Test
+    void Stage11は継承とsuperとprivateの関係を正確に説明する() {
+        var definition = catalog.getDefinition(CodeReadingLessonCatalog.STAGE11_LESSON_ID);
+
+        assertTrue(allExplanationText(definition, "extends-keyword")
+                .contains("直接のスーパークラス"));
+        assertTrue(allExplanationText(definition, "electric-constructor-name")
+                .contains("コンストラクタそのものはCarから継承されない"));
+        assertTrue(allExplanationText(definition, "super-keyword")
+                .contains("コンストラクタ本体の先頭"));
+        assertTrue(allExplanationText(definition, "color-field")
+                .contains("メンバーとしては継承されず"));
+        assertTrue(allExplanationText(definition, "color-field")
+                .contains("ElectricCarのコードからcolorを直接参照することはできません"));
+        assertTrue(allExplanationText(definition, "inherited-get-color-call")
+                .contains("publicメソッドgetColor()を継承"));
+        assertTrue(definition.getStep("extends-keyword").explanationSections().stream()
+                .flatMap(section -> section.officialReferences().stream())
+                .allMatch(reference -> reference.version().equals("Java SE 17")
+                        && reference.uri().toString().contains("/jls/se17/")));
+    }
+
+    @Test
+    void Stage11は既存の基礎構文Explanationを再利用する() {
+        var stage1 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE1_LESSON_ID);
+        var stage11 = catalog.getDefinition(CodeReadingLessonCatalog.STAGE11_LESSON_ID);
+
+        assertSame(stage1.getStep("class-public").explanationSections(),
+                stage11.getStep("class-public").explanationSections());
+        assertSame(stage1.getStep("main-close").explanationSections(),
+                stage11.getStep("main-close").explanationSections());
+        assertSame(stage1.getStep("print-command").explanationSections(),
+                stage11.getStep("charge-print-command").explanationSections());
+    }
+
+    @Test
     void Stage10は15Part71Stepとカプセル化のコードと実行結果を持つ() {
         var definition = catalog.getDefinition(
                 CodeReadingLessonCatalog.STAGE10_LESSON_ID
@@ -634,7 +721,10 @@ class CodeReadingLessonCatalogTest {
         assertEquals(CodeReadingLessonCatalog.STAGE10_LESSON_ID,
                 catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE9_LESSON_ID)
                         .orElseThrow().lessonId());
-        assertTrue(catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE10_LESSON_ID).isEmpty());
+        assertEquals(CodeReadingLessonCatalog.STAGE11_LESSON_ID,
+                catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE10_LESSON_ID)
+                        .orElseThrow().lessonId());
+        assertTrue(catalog.getNextDefinition(CodeReadingLessonCatalog.STAGE11_LESSON_ID).isEmpty());
     }
 
     @Test

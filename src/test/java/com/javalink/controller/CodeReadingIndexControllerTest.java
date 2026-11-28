@@ -38,22 +38,23 @@ class CodeReadingIndexControllerTest {
     @BeforeEach
     void setUpProgress() {
         when(stageProgressService.getStageProgresses(any(HttpSession.class)))
-                .thenReturn(Map.of(
-                        "hello-program-reading", notStarted(),
-                        "variable-program-reading", notStarted(),
-                        "operator-program-reading", notStarted(),
-                        "conditional-program-reading", notStarted(),
-                        "loop-program-reading", notStarted(),
-                        "array-program-reading", notStarted(),
-                        "method-program-reading", notStarted(),
-                        "car-instance-reading", notStarted(),
-                        "constructor-program-reading", notStarted(),
-                        "encapsulation-program-reading", notStarted()
+                .thenReturn(Map.ofEntries(
+                        Map.entry("hello-program-reading", notStarted()),
+                        Map.entry("variable-program-reading", notStarted()),
+                        Map.entry("operator-program-reading", notStarted()),
+                        Map.entry("conditional-program-reading", notStarted()),
+                        Map.entry("loop-program-reading", notStarted()),
+                        Map.entry("array-program-reading", notStarted()),
+                        Map.entry("method-program-reading", notStarted()),
+                        Map.entry("car-instance-reading", notStarted()),
+                        Map.entry("constructor-program-reading", notStarted()),
+                        Map.entry("encapsulation-program-reading", notStarted()),
+                        Map.entry("inheritance-program-reading", notStarted())
                 ));
     }
 
     @Test
-    void 目次にStage1から10を教材定義の順番で表示する() throws Exception {
+    void 目次にStage1から11を教材定義の順番で表示する() throws Exception {
         mockMvc.perform(get("/quiz/stages"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("code-reading-index"))
@@ -117,6 +118,12 @@ class CodeReadingIndexControllerTest {
                                 "Stage 10",
                                 "メソッドを使って車の色を変更しよう",
                                 "privateフィールドとgetter・setterを使い、メソッドを通して車の色を取得・変更するコードを学びます。",
+                                "未学習", "is-not-started", 0),
+                        new CodeReadingIndexController.StageIndexItem(
+                                "inheritance-program-reading",
+                                "Stage 11",
+                                "継承を使って電気自動車を作ろう",
+                                "Carを継承したElectricCarを作り、継承したメソッドとサブクラス独自のメソッドを学びます。",
                                 "未学習", "is-not-started", 0)
                 )))
                 .andExpect(content().string(containsString("コードを左から読む")))
@@ -128,7 +135,7 @@ class CodeReadingIndexControllerTest {
         mockMvc.perform(get("/quiz/stages"))
                 .andExpect(status().isOk())
                 .andExpect(result -> assertEquals(
-                        10,
+                        11,
                         countOccurrences(
                                 result.getResponse().getContentAsString(),
                                 "class=\"code-reading-stage-card "
@@ -153,25 +160,28 @@ class CodeReadingIndexControllerTest {
                 .andExpect(content().string(containsString(
                         "href=\"/quiz?lessonId=constructor-program-reading\"")))
                 .andExpect(content().string(containsString(
-                        "href=\"/quiz?lessonId=encapsulation-program-reading\"")));
+                        "href=\"/quiz?lessonId=encapsulation-program-reading\"")))
+                .andExpect(content().string(containsString(
+                        "href=\"/quiz?lessonId=inheritance-program-reading\"")));
     }
 
     @Test
     void 各Stageの学習状況と進捗率を表示する() throws Exception {
         when(stageProgressService.getStageProgresses(any(HttpSession.class)))
-                .thenReturn(Map.of(
-                        "hello-program-reading",
-                        new StageProgress(StageLearningStatus.COMPLETED, 100),
-                        "variable-program-reading",
-                        new StageProgress(StageLearningStatus.IN_PROGRESS, 30),
-                        "operator-program-reading", notStarted(),
-                        "conditional-program-reading", notStarted(),
-                        "loop-program-reading", notStarted(),
-                        "array-program-reading", notStarted(),
-                        "method-program-reading", notStarted(),
-                        "car-instance-reading", notStarted(),
-                        "constructor-program-reading", notStarted(),
-                        "encapsulation-program-reading", notStarted()
+                .thenReturn(Map.ofEntries(
+                        Map.entry("hello-program-reading",
+                                new StageProgress(StageLearningStatus.COMPLETED, 100)),
+                        Map.entry("variable-program-reading",
+                                new StageProgress(StageLearningStatus.IN_PROGRESS, 30)),
+                        Map.entry("operator-program-reading", notStarted()),
+                        Map.entry("conditional-program-reading", notStarted()),
+                        Map.entry("loop-program-reading", notStarted()),
+                        Map.entry("array-program-reading", notStarted()),
+                        Map.entry("method-program-reading", notStarted()),
+                        Map.entry("car-instance-reading", notStarted()),
+                        Map.entry("constructor-program-reading", notStarted()),
+                        Map.entry("encapsulation-program-reading", notStarted()),
+                        Map.entry("inheritance-program-reading", notStarted())
                 ));
 
         mockMvc.perform(get("/quiz/stages"))

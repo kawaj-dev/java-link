@@ -17,27 +17,29 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class CodeReadingIndexController {
 
-    private static final Map<String, String> STAGE_DESCRIPTIONS = Map.of(
-            CodeReadingLessonCatalog.STAGE1_LESSON_ID,
-            "クラスとmainメソッドを作り、文字列を画面に表示する基本のコードを学びます。",
-            CodeReadingLessonCatalog.STAGE2_LESSON_ID,
-            "int型の変数に整数を代入し、その値を利用して表示する流れを学びます。",
-            CodeReadingLessonCatalog.STAGE3_LESSON_ID,
-            "変数と演算子を使って計算し、その結果を表示するコードを学びます。",
-            CodeReadingLessonCatalog.STAGE4_LESSON_ID,
-            "if・elseによる条件分岐と、equals()による文字列の比較を学びます。",
-            CodeReadingLessonCatalog.STAGE5_LESSON_ID,
-            "for文を使って処理を繰り返し、変数の値が変化する仕組みを学びます。",
-            CodeReadingLessonCatalog.STAGE6_LESSON_ID,
-            "配列に複数の値をまとめ、for文を使って各要素を順番に表示するコードを学びます。",
-            CodeReadingLessonCatalog.STAGE7_LESSON_ID,
-            "メソッドに値を渡して計算し、戻り値を受け取って表示するコードを学びます。",
-            CodeReadingLessonCatalog.STAGE8_LESSON_ID,
-            "同じクラスから2つの独立したインスタンスを作り、フィールドとメソッドを使うコードを学びます。",
-            CodeReadingLessonCatalog.STAGE9_LESSON_ID,
-            "コンストラクタへ色を渡してインスタンスを初期化し、thisでフィールドを指定するコードを学びます。",
-            CodeReadingLessonCatalog.STAGE10_LESSON_ID,
-            "privateフィールドとgetter・setterを使い、メソッドを通して車の色を取得・変更するコードを学びます。"
+    private static final Map<String, String> STAGE_DESCRIPTIONS = Map.ofEntries(
+            Map.entry(CodeReadingLessonCatalog.STAGE1_LESSON_ID,
+                    "クラスとmainメソッドを作り、文字列を画面に表示する基本のコードを学びます。"),
+            Map.entry(CodeReadingLessonCatalog.STAGE2_LESSON_ID,
+                    "int型の変数に整数を代入し、その値を利用して表示する流れを学びます。"),
+            Map.entry(CodeReadingLessonCatalog.STAGE3_LESSON_ID,
+                    "変数と演算子を使って計算し、その結果を表示するコードを学びます。"),
+            Map.entry(CodeReadingLessonCatalog.STAGE4_LESSON_ID,
+                    "if・elseによる条件分岐と、equals()による文字列の比較を学びます。"),
+            Map.entry(CodeReadingLessonCatalog.STAGE5_LESSON_ID,
+                    "for文を使って処理を繰り返し、変数の値が変化する仕組みを学びます。"),
+            Map.entry(CodeReadingLessonCatalog.STAGE6_LESSON_ID,
+                    "配列に複数の値をまとめ、for文を使って各要素を順番に表示するコードを学びます。"),
+            Map.entry(CodeReadingLessonCatalog.STAGE7_LESSON_ID,
+                    "メソッドに値を渡して計算し、戻り値を受け取って表示するコードを学びます。"),
+            Map.entry(CodeReadingLessonCatalog.STAGE8_LESSON_ID,
+                    "同じクラスから2つの独立したインスタンスを作り、フィールドとメソッドを使うコードを学びます。"),
+            Map.entry(CodeReadingLessonCatalog.STAGE9_LESSON_ID,
+                    "コンストラクタへ色を渡してインスタンスを初期化し、thisでフィールドを指定するコードを学びます。"),
+            Map.entry(CodeReadingLessonCatalog.STAGE10_LESSON_ID,
+                    "privateフィールドとgetter・setterを使い、メソッドを通して車の色を取得・変更するコードを学びます。"),
+            Map.entry(CodeReadingLessonCatalog.STAGE11_LESSON_ID,
+                    "Carを継承したElectricCarを作り、継承したメソッドとサブクラス独自のメソッドを学びます。")
     );
 
     private final CodeReadingLessonCatalog lessonCatalog;

@@ -689,6 +689,35 @@ class LearningProgressRestoreServiceTest {
     }
 
     @Test
+    void Stage11の詳細進捗は完了Stepと現在位置を復元する() {
+        String lessonId = CodeReadingLessonCatalog.STAGE11_LESSON_ID;
+        UserAccount userAccount = mock(UserAccount.class);
+        LearningProgress storedProgress = storedProgress("class-keyword", false);
+        Set<String> completedStepIds = Set.of("class-public");
+        when(authenticatedUserService.findAuthenticatedUser(session))
+                .thenReturn(Optional.of(userAccount));
+        when(learningProgressService.findProgressSnapshot(userAccount, lessonId))
+                .thenReturn(Optional.of(new LearningProgressService.ProgressSnapshot(
+                        storedProgress,
+                        completedStepIds,
+                        true
+                )));
+        when(lessonService.getLesson(lessonId))
+                .thenReturn(new CodeReadingLessonCatalog().getLesson(lessonId));
+
+        LessonProgress restored = restoreService.restoreIfAuthenticated(
+                session,
+                lessonId
+        ).orElseThrow();
+
+        assertEquals("class-keyword", restored.getCurrentStepId());
+        assertEquals(completedStepIds, restored.getCompletedStepIds());
+        assertTrue(restored.isStepCompleted("class-public"));
+        assertFalse(restored.isStepCompleted("class-keyword"));
+        assertFalse(restored.isCompleted());
+    }
+
+    @Test
     void ログインユーザーの複数Lessonを一括スナップショットから復元する() {
         String secondLessonId = "stage2";
         UserAccount userAccount = mock(UserAccount.class);
